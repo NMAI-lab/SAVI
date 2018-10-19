@@ -211,7 +211,7 @@ public class MarsEnv extends Environment {
                 g.setColor(Color.white);
             }
             super.drawString(g, x, y, defaultFont, label);
-            repaint();
+            //repaint();
         }
 
         public void drawGarb(Graphics g, int x, int y) {
