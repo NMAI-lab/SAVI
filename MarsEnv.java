@@ -22,7 +22,7 @@ public class MarsEnv extends Environment {
     public static final Literal g1 = Literal.parseLiteral("garbage(r1)");
     public static final Literal g2 = Literal.parseLiteral("garbage(r2)");
 	public static final Term    rnd = Literal.parseLiteral("randMove(slot)");
-	public static final Literal poop = Literal.parseLiteral("maybePoop(garb)");
+	public static final Term poop = Literal.parseLiteral("maybePoop(garb)");
 
     static Logger logger = Logger.getLogger(MarsEnv.class.getName());
 
