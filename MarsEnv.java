@@ -42,9 +42,10 @@ public class MarsEnv extends Environment {
             if (action.equals(ns)) {
                 model.nextSlot();
             } else if (action.getFunctor().equals("move_towards")) {
-                int x = (int)((NumberTerm)action.getTerm(0)).solve();
-                int y = (int)((NumberTerm)action.getTerm(1)).solve();
-                model.moveTowards(x,y);
+                int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
+				int x = (int)((NumberTerm)action.getTerm(1)).solve();
+                int y = (int)((NumberTerm)action.getTerm(2)).solve();
+                model.moveTowards(id, x,y);
             } else if (action.equals(pg)) {
                 model.pickGarb();
             } else if (action.equals(dg)) {
@@ -129,16 +130,16 @@ public class MarsEnv extends Environment {
                 return;
             }
             setAgPos(0, r1);
-            setAgPos(1, getAgPos(1)); // just to draw it in the view
+            //setAgPos(1, getAgPos(1)); // just to draw it in the view
         }
 
-        void moveTowards(int x, int y) throws Exception {
-            Location r1 = getAgPos(0);
+        void moveTowards(int id, int x, int y) throws Exception {
+            Location r1 = getAgPos(id);
             if (r1.x < x)
                 r1.x++;
             else if (r1.x > x)
                 r1.x--;
-            if (r1.y < y)
+            else if (r1.y < y)
                 r1.y++;
             else if (r1.y > y)
                 r1.y--;
