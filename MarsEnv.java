@@ -117,7 +117,7 @@ public class MarsEnv extends Environment {
                 Location r2Loc = new Location(GSize/2, GSize/2);
                 setAgPos(1, r2Loc);
 
-                Location r3Loc = new Location(GSize-1, GSize-1); //agent 3 starts bottom right
+                Location r3Loc = new Location(0,1);//(GSize-1, GSize-1); //agent 3 starts bottom right
 				setAgPos(2, r3Loc);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -147,18 +147,53 @@ public class MarsEnv extends Environment {
         }
 
         void moveTowards(int id, int x, int y) throws Exception {
-            Location r1 = getAgPos(id);
-            if (r1.x < x)
-                r1.x++;
-            else if (r1.x > x)
-                r1.x--;
-            else if (r1.y < y)
-                r1.y++;
-            else if (r1.y > y)
-                r1.y--;
-            setAgPos(id, r1);
-            setAgPos(1, getAgPos(1)); // just to draw it in the view
+            Location position = getAgPos(id);
+			int newX = position.x;
+			int newY = position.y;
+            if (position.x < x)
+                newX++;
+            else if (position.x > x)
+                newX--;
+            else if (position.y < y)
+                newY++;
+            else if (position.y > y)
+                newY--;
+		
+			// Check for collision and move the agent
+			boolean movePossible = !checkCollision(id, newX, newY);
+			if (movePossible) {
+				position.x = newX;
+				position.y = newY;
+				setAgPos(id, position);
+				
+				// Redraw agent 1 in case there was an overlap (so it doesn't disapear)
+				setAgPos(1, getAgPos(1));
+			} else {
+				System.out.println("Move not possible due to collision!");
+			}
         }
+		
+		/**
+		 * Returns true if R1 and R3 will collide using proposed new position x and y
+		 */
+		boolean checkCollision(int myID, int x, int y) {
+			// Get the two agent IDs, hard code agent IDs for now
+			int otherID = 0;
+			if (myID == 0) {
+				otherID = 2;
+			} else {
+				otherID = 0;
+			}
+			// Other agent's position
+			Location otherPosition = getAgPos(otherID);
+			
+			// Check for collision and return result
+			if (otherPosition.x == x && otherPosition.y == y) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 
         void pickGarb() {
             // r1 location has garbage
