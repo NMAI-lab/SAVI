@@ -187,20 +187,25 @@ public class MarsEnv extends Environment {
             }
         }
 		
-		void randMove(){ //agent 3 moving randomly but within bounds
-			Location r3 = getAgPos(2);
-			int direction = random.nextInt(4);
+		void randMove() throws Exception{ //agent 3 moving randomly but within bounds
+			int agentID = 2;
+			int numDirections = 4;
+			Location r3 = getAgPos(agentID);
+			int newX = r3.x;
+			int newY = r3.y;
+			int direction = random.nextInt(numDirections);
 			switch (direction) {
-            case 0: if (r3.x < getWidth()-1) r3.x++;
+            case 0: if (newX < getWidth()-1) newX++;
                     break;
-            case 1:  if (r3.y < getHeight()-1) r3.y++;
+            case 1:  if (newY < getHeight()-1) newY++;
                      break;
-            case 2:  if (r3.x > 0) r3.x--;
+            case 2:  if (newX > 0) newX--;
                      break;
-            case 3:  if (r3.y > 0) r3.y--;
+            case 3:  if (newY > 0) newY--;
                      break;
 			}
-            setAgPos(2, r3);
+			moveTowards(agentID, newX, newY);
+            //setAgPos(2, r3);
 
 		}
 		
