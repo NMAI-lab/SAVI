@@ -160,18 +160,22 @@ public class MarsEnv extends Environment {
                 newY--;
 		
 			// Check for collision and move the agent
-			boolean movePossible = !checkCollision(id, newX, newY);
-			if (movePossible) {
+			if (movePossible(id, newX, newY)) {
 				position.x = newX;
 				position.y = newY;
 				setAgPos(id, position);
 				
 				// Redraw agent 1 in case there was an overlap (so it doesn't disapear)
 				setAgPos(1, getAgPos(1));
-			} else {
-				System.out.println("Move not possible due to collision!");
 			}
         }
+		
+		/**
+		 * Checks to make sure that the proposed move is possible
+		 */
+		boolean movePossible(int myID, int x, int y) {
+			return (!checkCollision(myID, x, y) && mapPositionExists(x, y));
+		}
 		
 		/**
 		 * Returns true if R1 and R3 will collide using proposed new position x and y
@@ -191,6 +195,26 @@ public class MarsEnv extends Environment {
 			if (otherPosition.x == x && otherPosition.y == y) {
 				return true;
 			} else {
+				System.out.println("Move not possible due to collision!");
+				return false;
+			}
+		}
+		
+		/**
+		 * Checks to make sure that a proposed location is infact on the map.
+		 */
+		boolean mapPositionExists(int x, int y) {
+			// Get the max and min values for x and y
+			int minX = 0;
+			int maxX = getWidth()-1;
+			int minY = 0;
+			int maxY = getHeight()-1;
+			
+			// Check to make sure that x and y is within the limits
+			if ((minX <= x) && (x <= maxX) && (minY <= y) && (y <= maxY)) {
+				return true;
+			} else {
+				System.out.println("Move not possible, no map position there!");
 				return false;
 			}
 		}
