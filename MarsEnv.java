@@ -211,7 +211,12 @@ public class MarsEnv extends Environment {
                 g.setColor(Color.white);
             }
             super.drawString(g, x, y, defaultFont, label);
-            repaint();
+			
+			// To avoid flicker issue with Windows 10, don't repaint.
+			String osName = System.getProperty("os.name");
+			if (!(osName.equals("Windows 10") || osName.equals("Linux"))) {
+				repaint();
+			} 
         }
 
         public void drawGarb(Graphics g, int x, int y) {
