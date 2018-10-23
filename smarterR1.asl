@@ -10,11 +10,11 @@ at(P) :- pos(P,X,Y) & pos(r1,X,Y).
 
 +!explore(slots) : true
 	<-	moveRight(3);
-		//moveRight(3);
+		moveRight(3);
 		moveDown(3);
-		//moveDown(3);
+		moveDown(3);
 		moveLeft(3);
-		//moveLeft(3);
+		moveLeft(3);
 		moveUp(3);
-		//moveUp(3);
+		moveUp(3);
 		!explore(slots).
