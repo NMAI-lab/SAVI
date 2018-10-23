@@ -23,10 +23,10 @@ public class MarsEnv extends Environment {
     public static final Literal g2 = Literal.parseLiteral("garbage(r2)");
 	public static final Term    rnd = Literal.parseLiteral("randMove(slot)");
 	public static final Term 	poop = Literal.parseLiteral("maybePoop(garb)");
-	public static final Term 	moveL = Literal.parseLiteral("moveLeft(slot)");
-	public static final Term 	moveR = Literal.parseLiteral("moveRight(slot)");
-	public static final Term 	moveU = Literal.parseLiteral("moveUp(slot)");
-	public static final Term 	moveD = Literal.parseLiteral("moveDown(slot)");
+	//public static final Term 	moveL = Literal.parseLiteral("moveLeft(slot)");
+	//public static final Term 	moveR = Literal.parseLiteral("moveRight(slot)");
+	//public static final Term 	moveU = Literal.parseLiteral("moveUp(slot)");
+	//public static final Term 	moveD = Literal.parseLiteral("moveDown(slot)");
 
     static Logger logger = Logger.getLogger(MarsEnv.class.getName());
 
@@ -62,16 +62,16 @@ public class MarsEnv extends Environment {
                 model.randMove();
             } else if (action.equals(poop)) {
                 model.maybePoop();
-			} else if (action.equals(moveL)) {
+			} else if (action.getFunctor().equals("moveLeft")) {
 				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
 				model.moveLeft(id);
-			} else if (action.equals(moveR)) {
+			} else if (action.getFunctor().equals("moveRight")) {
 				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
 				model.moveRight(id);
-			} else if (action.equals(moveU)) {
+			} else if (action.getFunctor().equals("moveUp")) {
 				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
 				model.moveUp(id);
-			} else if (action.equals(moveD)) {
+			} else if (action.getFunctor().equals("moveDown")) {
 				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
 				model.moveDown(id);
             } else {
@@ -135,7 +135,7 @@ public class MarsEnv extends Environment {
                 Location r3Loc = new Location(0,1);//(GSize-1, GSize-1); //agent 3 starts bottom right
 				setAgPos(2, r3Loc);
 				
-				Location smarterR1Loc = new Location(5,2);
+				Location smarterR1Loc = new Location(3,3);
 				setAgPos(3, smarterR1Loc);
 				
             } catch (Exception e) {
