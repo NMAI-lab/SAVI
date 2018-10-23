@@ -148,8 +148,6 @@ public class MarsEnv extends Environment {
 
         void moveTowards(int id, int x, int y) throws Exception {
             Location position = getAgPos(id);
-			//int newX = position.x;
-			//int newY = position.y;
             if (position.x < x)
                 moveRight(id);
             else if (position.x > x)
@@ -158,9 +156,6 @@ public class MarsEnv extends Environment {
                 moveUp(id);
             else if (position.y > y)
                 moveDown(id);
-		
-			// Move the agent if possible
-			//move(id, newX, newY);
         }
 		
 		/**
