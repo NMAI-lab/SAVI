@@ -172,9 +172,9 @@ public class MarsEnv extends Environment {
             else if (position.x > x)
                 moveLeft(id);
             else if (position.y < y)
-                moveUp(id);
-            else if (position.y > y)
                 moveDown(id);
+            else if (position.y > y)
+                moveUp(id);
         }
 		
 		/**
@@ -203,7 +203,7 @@ public class MarsEnv extends Environment {
 		void moveUp(int id) throws Exception {
 			Location position = getAgPos(id);
 			int x = position.x;
-			int y = position.y + 1;
+			int y = position.y - 1;
 			move(id, x, y);
 		}
 
@@ -213,7 +213,7 @@ public class MarsEnv extends Environment {
 		void moveDown(int id) throws Exception {
 			Location position = getAgPos(id);
 			int x = position.x;
-			int y = position.y - 1;
+			int y = position.y + 1;
 			move(id, x, y);
 		}		
 		
