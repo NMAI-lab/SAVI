@@ -148,27 +148,75 @@ public class MarsEnv extends Environment {
 
         void moveTowards(int id, int x, int y) throws Exception {
             Location position = getAgPos(id);
-			int newX = position.x;
-			int newY = position.y;
+			//int newX = position.x;
+			//int newY = position.y;
             if (position.x < x)
-                newX++;
+                moveRight(id);
             else if (position.x > x)
-                newX--;
+                moveLeft(id);
             else if (position.y < y)
-                newY++;
+                moveUp(id);
             else if (position.y > y)
-                newY--;
+                moveDown(id);
 		
+			// Move the agent if possible
+			//move(id, newX, newY);
+        }
+		
+		/**
+		 * Implementation of the moveLeft action
+		 */
+		void moveLeft(int id) throws Exception {
+			Location position = getAgPos(id);
+			int x = position.x - 1;
+			int y = position.y;
+			move(id, x, y);
+		}
+		
+		/**
+		 * Implementation of the moveRight action
+		 */
+		void moveRight(int id) throws Exception {
+			Location position = getAgPos(id);
+			int x = position.x + 1;
+			int y = position.y;
+			move(id, x, y);
+		}
+
+		/**
+		 * Implementation of the moveUp action
+		 */
+		void moveUp(int id) throws Exception {
+			Location position = getAgPos(id);
+			int x = position.x;
+			int y = position.y + 1;
+			move(id, x, y);
+		}
+
+		/**
+		 * Implementation of the moveDown action
+		 */
+		void moveDown(int id) throws Exception {
+			Location position = getAgPos(id);
+			int x = position.x;
+			int y = position.y - 1;
+			move(id, x, y);
+		}		
+		
+		/**
+		 * Moves agent with corresponding id to specified x and y location if 
+		 * possible.
+		 */
+		void move(int id, int x, int y) {
 			// Check for collision and move the agent
-			if (movePossible(id, newX, newY)) {
-				position.x = newX;
-				position.y = newY;
+			if (movePossible(id, x, y)) {
+				Location position = new Location(x,y);
 				setAgPos(id, position);
 				
 				// Redraw agent 1 in case there was an overlap (so it doesn't disapear)
 				setAgPos(1, getAgPos(1));
 			}
-        }
+		}
 		
 		/**
 		 * Checks to make sure that the proposed move is possible
