@@ -93,15 +93,18 @@ public class MarsEnv extends Environment {
         Location r1Loc = model.getAgPos(0);
         Location r2Loc = model.getAgPos(1);
         Location r3Loc = model.getAgPos(2);
+		Location smarterR1Loc = model.getAgPos(3);
 
         Literal pos1 = Literal.parseLiteral("pos(r1," + r1Loc.x + "," + r1Loc.y + ")");
         Literal pos2 = Literal.parseLiteral("pos(r2," + r2Loc.x + "," + r2Loc.y + ")");
         Literal pos3 = Literal.parseLiteral("pos(r3," + r3Loc.x + "," + r3Loc.y + ")");
-
+		Literal posSR1 = Literal.parseLiteral("pos(smarterR1," + smarterR1Loc.x + "," + smarterR1Loc.y + ")");
+		
         addPercept(pos1);
         addPercept(pos2);
         addPercept(pos3);
-
+		addPercept(posSR1);
+		
         if (model.hasObject(GARB, r1Loc)) {
             addPercept(g1);
         }
