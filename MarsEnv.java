@@ -58,18 +58,18 @@ public class MarsEnv extends Environment {
                 model.randMove();
             } else if (action.equals(poop)) {
                 model.maybePoop();
-			} else if (action.getFunctor().equals("moveLeft")) {
+			} else if (action.getFunctor().equals("moveWest")) {
 				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-				model.moveLeft(id);
-			} else if (action.getFunctor().equals("moveRight")) {
+				model.moveWest(id);
+			} else if (action.getFunctor().equals("moveEast")) {
 				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-				model.moveRight(id);
-			} else if (action.getFunctor().equals("moveUp")) {
+				model.moveEast(id);
+			} else if (action.getFunctor().equals("moveNorth")) {
 				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-				model.moveUp(id);
-			} else if (action.getFunctor().equals("moveDown")) {
+				model.moveNorth(id);
+			} else if (action.getFunctor().equals("moveSouth")) {
 				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-				model.moveDown(id);
+				model.moveSouth(id);
             } else {
                 return false;
             }
@@ -164,53 +164,45 @@ public class MarsEnv extends Environment {
         void moveTowards(int id, int x, int y) throws Exception {
             Location position = getAgPos(id);
             if (position.x < x)
-                moveRight(id);
+                moveEast(id);
             else if (position.x > x)
-                moveLeft(id);
+                moveWest(id);
             else if (position.y < y)
-                moveDown(id);
+                moveSouth(id);
             else if (position.y > y)
-                moveUp(id);
+                moveNorth(id);
         }
 		
 		/**
-		 * Implementation of the moveLeft action
+		 * Implementation of the moveWest action
 		 */
-		void moveLeft(int id) throws Exception {
+		void moveWest(int id) throws Exception {
 			Location position = getAgPos(id);
-			int x = position.x - 1;
-			int y = position.y;
-			move(id, x, y);
+			move(id, position.x - 1, position.y);
 		}
 		
 		/**
-		 * Implementation of the moveRight action
+		 * Implementation of the moveEast action
 		 */
-		void moveRight(int id) throws Exception {
+		void moveEast(int id) throws Exception {
 			Location position = getAgPos(id);
-			int x = position.x + 1;
-			int y = position.y;
-			move(id, x, y);
+			move(id, position.x + 1, position.y);
 		}
 
 		/**
-		 * Implementation of the moveUp action
+		 * Implementation of the moveNorth action
 		 */
-		void moveUp(int id) throws Exception {
+		void moveNorth(int id) throws Exception {
 			Location position = getAgPos(id);
-			int x = position.x;
-			int y = position.y - 1;
-			move(id, x, y);
+			move(id, position.x, position.y - 1);
 		}
 
 		/**
-		 * Implementation of the moveDown action
+		 * Implementation of the moveSouth action
 		 */
-		void moveDown(int id) throws Exception {
+		void moveSouth(int id) throws Exception {
 			Location position = getAgPos(id);
-			int x = position.x;
-			int y = position.y + 1;
-			move(id, x, y);
+			move(id, position.x, position.y + 1);
 		}		
 		
 		/**
