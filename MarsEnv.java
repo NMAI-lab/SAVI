@@ -22,7 +22,7 @@ public class MarsEnv extends Environment {
     public static final Literal g1 = Literal.parseLiteral("garbage(r1)");
     public static final Literal g2 = Literal.parseLiteral("garbage(r2)");
 	public static final Term    rnd = Literal.parseLiteral("randMove(slot)");
-	public static final Term poop = Literal.parseLiteral("maybePoop(garb)");
+	public static final Term 	poop = Literal.parseLiteral("maybePoop(garb)");
 
     static Logger logger = Logger.getLogger(MarsEnv.class.getName());
 
@@ -58,7 +58,18 @@ public class MarsEnv extends Environment {
                 model.randMove();
             } else if (action.equals(poop)) {
                 model.maybePoop();
-
+			} else if (action.getFunctor().equals("moveLeft")) {
+				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
+				model.moveLeft(id);
+			} else if (action.getFunctor().equals("moveRight")) {
+				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
+				model.moveRight(id);
+			} else if (action.getFunctor().equals("moveUp")) {
+				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
+				model.moveUp(id);
+			} else if (action.getFunctor().equals("moveDown")) {
+				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
+				model.moveDown(id);
             } else {
                 return false;
             }
@@ -108,7 +119,7 @@ public class MarsEnv extends Environment {
         Random random = new Random(System.currentTimeMillis());
 
         private MarsModel() {
-            super(GSize, GSize, 3); // 3 agents
+            super(GSize, GSize, 4); // 4 agents
 
             // initial location of agents
             try {
@@ -119,6 +130,10 @@ public class MarsEnv extends Environment {
 
                 Location r3Loc = new Location(0,1);//(GSize-1, GSize-1); //agent 3 starts bottom right
 				setAgPos(2, r3Loc);
+				
+				Location smarterR1Loc = new Location(3,3);
+				setAgPos(3, smarterR1Loc);
+				
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -148,30 +163,77 @@ public class MarsEnv extends Environment {
 
         void moveTowards(int id, int x, int y) throws Exception {
             Location position = getAgPos(id);
-			int newX = position.x;
-			int newY = position.y;
             if (position.x < x)
-                newX++;
+                moveRight(id);
             else if (position.x > x)
-                newX--;
+                moveLeft(id);
             else if (position.y < y)
-                newY++;
+                moveDown(id);
             else if (position.y > y)
-                newY--;
+                moveUp(id);
+        }
 		
+		/**
+		 * Implementation of the moveLeft action
+		 */
+		void moveLeft(int id) throws Exception {
+			Location position = getAgPos(id);
+			int x = position.x - 1;
+			int y = position.y;
+			move(id, x, y);
+		}
+		
+		/**
+		 * Implementation of the moveRight action
+		 */
+		void moveRight(int id) throws Exception {
+			Location position = getAgPos(id);
+			int x = position.x + 1;
+			int y = position.y;
+			move(id, x, y);
+		}
+
+		/**
+		 * Implementation of the moveUp action
+		 */
+		void moveUp(int id) throws Exception {
+			Location position = getAgPos(id);
+			int x = position.x;
+			int y = position.y - 1;
+			move(id, x, y);
+		}
+
+		/**
+		 * Implementation of the moveDown action
+		 */
+		void moveDown(int id) throws Exception {
+			Location position = getAgPos(id);
+			int x = position.x;
+			int y = position.y + 1;
+			move(id, x, y);
+		}		
+		
+		/**
+		 * Moves agent with corresponding id to specified x and y location if 
+		 * possible.
+		 */
+		void move(int id, int x, int y) {
 			// Check for collision and move the agent
-			boolean movePossible = !checkCollision(id, newX, newY);
-			if (movePossible) {
-				position.x = newX;
-				position.y = newY;
+			if (movePossible(id, x, y)) {
+				Location position = new Location(x,y);
 				setAgPos(id, position);
 				
 				// Redraw agent 1 in case there was an overlap (so it doesn't disapear)
 				setAgPos(1, getAgPos(1));
-			} else {
-				System.out.println("Move not possible due to collision!");
 			}
-        }
+		}
+		
+		/**
+		 * Checks to make sure that the proposed move is possible
+		 */
+		boolean movePossible(int myID, int x, int y) {
+			return (!checkCollision(myID, x, y) && mapPositionExists(x, y));
+		}
 		
 		/**
 		 * Returns true if R1 and R3 will collide using proposed new position x and y
@@ -191,6 +253,26 @@ public class MarsEnv extends Environment {
 			if (otherPosition.x == x && otherPosition.y == y) {
 				return true;
 			} else {
+				System.out.println("Move not possible due to collision!");
+				return false;
+			}
+		}
+		
+		/**
+		 * Checks to make sure that a proposed location is infact on the map.
+		 */
+		boolean mapPositionExists(int x, int y) {
+			// Get the max and min values for x and y
+			int minX = 0;
+			int maxX = getWidth()-1;
+			int minY = 0;
+			int maxY = getHeight()-1;
+			
+			// Check to make sure that x and y is within the limits
+			if ((minX <= x) && (x <= maxX) && (minY <= y) && (y <= maxY)) {
+				return true;
+			} else {
+				System.out.println("Move not possible, no map position there!");
 				return false;
 			}
 		}
