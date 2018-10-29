@@ -1,6 +1,7 @@
 /* Initial beliefs */
 
-at(P) :- pos(P,X,Y) & pos(r1,X,Y).
+at(P) :- pos(P,X,Y) & pos(r4,X,Y).
+
 
 /* Initial goal */
 
@@ -9,12 +10,5 @@ at(P) :- pos(P,X,Y) & pos(r1,X,Y).
 /* Plans */
 
 +!explore(slots) : true
-	<-	moveEast(3);
-		moveEast(3);
-		moveSouth(3);
-		moveSouth(3);
-		moveWest(3);
-		moveWest(3);
-		moveNorth(3);
-		moveNorth(3);
-		!explore(slots).
+   <- randMove(3);
+      !explore(slots).

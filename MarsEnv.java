@@ -21,7 +21,6 @@ public class MarsEnv extends Environment {
     public static final Term    bg = Literal.parseLiteral("burn(garb)");
     public static final Literal g1 = Literal.parseLiteral("garbage(r1)");
     public static final Literal g2 = Literal.parseLiteral("garbage(r2)");
-	public static final Term    rnd = Literal.parseLiteral("randMove(slot)");
 	public static final Term 	poop = Literal.parseLiteral("maybePoop(garb)");
 
     static Logger logger = Logger.getLogger(MarsEnv.class.getName());
@@ -54,8 +53,9 @@ public class MarsEnv extends Environment {
                 model.dropGarb();
             } else if (action.equals(bg)) {
                 model.burnGarb();
-			} else if (action.equals(rnd)) {
-                model.randMove();
+			} else if (action.getFunctor().equals("randMove")) {
+				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
+                model.randMove(id);
             } else if (action.equals(poop)) {
                 model.maybePoop();
 			} else if (action.getFunctor().equals("moveWest")) {
@@ -134,7 +134,7 @@ public class MarsEnv extends Environment {
                 Location r3Loc = new Location(0,1);//(GSize-1, GSize-1); //agent 3 starts bottom right
 				setAgPos(2, r3Loc);
 				
-				Location smarterR1Loc = new Location(3,3);
+				Location smarterR1Loc = new Location(5,5);
 				setAgPos(3, smarterR1Loc);
 				
             } catch (Exception e) {
@@ -299,26 +299,18 @@ public class MarsEnv extends Environment {
             }
         }
 		
-		void randMove() throws Exception{ //agent 3 moving randomly but within bounds
-			int agentID = 2;
+		void randMove(int id) throws Exception{
 			int numDirections = 4;
-			Location r3 = getAgPos(agentID);
-			int newX = r3.x;
-			int newY = r3.y;
 			int direction = random.nextInt(numDirections);
-			switch (direction) {
-            case 0: if (newX < getWidth()-1) newX++;
-                    break;
-            case 1:  if (newY < getHeight()-1) newY++;
-                     break;
-            case 2:  if (newX > 0) newX--;
-                     break;
-            case 3:  if (newY > 0) newY--;
-                     break;
+			if(direction == 0) {
+				moveNorth(id);
+			} else if(direction == 1) {
+				moveSouth(id);
+			} else if(direction == 2) {
+				moveEast(id);
+			} else {
+				moveWest(id);
 			}
-			moveTowards(agentID, newX, newY);
-            //setAgPos(2, r3);
-
 		}
 		
 		void maybePoop(){ //with a probability of .1, agent 3 drops some garbage in its location
