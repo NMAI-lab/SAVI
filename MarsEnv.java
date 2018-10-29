@@ -35,10 +35,28 @@ public class MarsEnv extends Environment {
         model.setView(view);
         updatePercepts();
     }
-
+    
+    // This is a hack.
+    private int getAgIdBasedOnName(String agName) {
+    	if(agName.equalsIgnoreCase("r1")) {
+    		return 0;
+    	} else if(agName.equalsIgnoreCase("r2")) {
+    		return 1;
+    	} else if(agName.equalsIgnoreCase("r3")) {
+    		return 2;
+    	} else {
+    		return 3;
+    	}
+    }
+    
     @Override
     public boolean executeAction(String ag, Structure action) {
         logger.info(ag+" doing: "+ action);
+        
+        // get the agent id based on its name
+        System.out.println(ag);
+        int agId = getAgIdBasedOnName(ag);
+        
         try {
             if (action.equals(ns)) {
                 model.nextSlot();
@@ -54,8 +72,8 @@ public class MarsEnv extends Environment {
             } else if (action.equals(bg)) {
                 model.burnGarb();
 			} else if (action.getFunctor().equals("randMove")) {
-				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-                model.randMove(id);
+				//int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
+                model.randMove(agId);
             } else if (action.equals(poop)) {
                 model.maybePoop();
 			} else if (action.getFunctor().equals("moveWest")) {
@@ -126,14 +144,18 @@ public class MarsEnv extends Environment {
 
             // initial location of agents
             try {
+            	// r1
                 setAgPos(0, 0, 0);
-
+                
+                // r2
                 Location r2Loc = new Location(GSize/2, GSize/2);
                 setAgPos(1, r2Loc);
 
+                // r3
                 Location r3Loc = new Location(0,1);//(GSize-1, GSize-1); //agent 3 starts bottom right
 				setAgPos(2, r3Loc);
 				
+				// r4, also called smarterR1
 				Location smarterR1Loc = new Location(5,5);
 				setAgPos(3, smarterR1Loc);
 				

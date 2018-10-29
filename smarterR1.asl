@@ -10,5 +10,5 @@ at(P) :- pos(P,X,Y) & pos(r4,X,Y).
 /* Plans */
 
 +!explore(slots) : true
-   <- randMove(3);
+   <- randMove;
       !explore(slots).
