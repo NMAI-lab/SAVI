@@ -21,6 +21,10 @@ public class MarsEnv extends Environment {
     public static final Term    bg = Literal.parseLiteral("burn(garb)");
     public static final Literal g1 = Literal.parseLiteral("garbage(r1)");
     public static final Literal g2 = Literal.parseLiteral("garbage(r2)");
+    public static final Literal gN = Literal.parseLiteral("garbage(N)");
+    public static final Literal gS = Literal.parseLiteral("garbage(S)");
+    public static final Literal gE = Literal.parseLiteral("garbage(E)");
+    public static final Literal gW = Literal.parseLiteral("garbage(W)");
 	public static final Term 	poop = Literal.parseLiteral("maybePoop(garb)");
 
     static Logger logger = Logger.getLogger(MarsEnv.class.getName());
@@ -54,17 +58,15 @@ public class MarsEnv extends Environment {
         logger.info(ag+" doing: "+ action);
         
         // get the agent id based on its name
-        System.out.println(ag);
         int agId = getAgIdBasedOnName(ag);
         
         try {
             if (action.equals(ns)) {
                 model.nextSlot();
             } else if (action.getFunctor().equals("move_towards")) {
-                int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-				int x = (int)((NumberTerm)action.getTerm(1)).solve();
-                int y = (int)((NumberTerm)action.getTerm(2)).solve();
-                model.moveTowards(id, x,y);
+				int x = (int)((NumberTerm)action.getTerm(0)).solve();
+                int y = (int)((NumberTerm)action.getTerm(1)).solve();
+                model.moveTowards(agId, x,y);
             } else if (action.equals(pg)) {
                 model.pickGarb();
             } else if (action.equals(dg)) {
@@ -72,22 +74,17 @@ public class MarsEnv extends Environment {
             } else if (action.equals(bg)) {
                 model.burnGarb();
 			} else if (action.getFunctor().equals("randMove")) {
-				//int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
                 model.randMove(agId);
             } else if (action.equals(poop)) {
                 model.maybePoop();
 			} else if (action.getFunctor().equals("moveWest")) {
-				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-				model.moveWest(id);
+				model.moveWest(agId);
 			} else if (action.getFunctor().equals("moveEast")) {
-				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-				model.moveEast(id);
+				model.moveEast(agId);
 			} else if (action.getFunctor().equals("moveNorth")) {
-				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-				model.moveNorth(id);
+				model.moveNorth(agId);
 			} else if (action.getFunctor().equals("moveSouth")) {
-				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-				model.moveSouth(id);
+				model.moveSouth(agId);
             } else {
                 return false;
             }
@@ -129,7 +126,54 @@ public class MarsEnv extends Environment {
         if (model.hasObject(GARB, r2Loc)) {
             addPercept(g2);
         }
+        
+        checkSeeGarbageNorth(3);
     }
+    
+    void checkSeeGarbageNorth(int id) {
+    	Location position = model.getAgPos(id);
+    	for (int locationDim = position.y; model.mapPositionExists(position.x, locationDim); locationDim--) {
+    		Location checkLocation = new Location(position.x, locationDim);
+    		if (model.hasObject(GARB, checkLocation)){
+    			addPercept(gN);
+    			return;
+    		}
+    	}
+    }
+    
+    void checkSeeGarbageSouth(int id) {
+    	Location position = model.getAgPos(id);
+    	for (int locationDim = position.y; model.mapPositionExists(position.x, locationDim); locationDim++) {
+    		Location checkLocation = new Location(position.x, locationDim);
+    		if (model.hasObject(GARB, checkLocation)){
+    			addPercept(gS);
+    			return;
+    		}
+    	}
+    }
+    
+    void checkSeeGarbageEast(int id) {
+    	Location position = model.getAgPos(id);
+    	for (int locationDim = position.x; model.mapPositionExists(locationDim, position.y); locationDim++) {
+    		Location checkLocation = new Location(locationDim, position.y);
+    		if (model.hasObject(GARB, checkLocation)){
+    			addPercept(gE);
+    			return;
+    		}
+    	}
+    }
+    
+    void checkSeeGarbageWest(int id) {
+    	Location position = model.getAgPos(id);
+    	for (int locationDim = position.x; model.mapPositionExists(locationDim, position.y); locationDim--) {
+    		Location checkLocation = new Location(locationDim, position.y);
+    		if (model.hasObject(GARB, checkLocation)){
+    			addPercept(gW);
+    			return;
+    		}
+    	}
+    }
+    
 
     class MarsModel extends GridWorldModel {
 

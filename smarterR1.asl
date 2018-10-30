@@ -5,10 +5,31 @@ at(P) :- pos(P,X,Y) & pos(r4,X,Y).
 
 /* Initial goal */
 
-!explore(slots).
+!findGarbage(slots).
 
 /* Plans */
 
-+!explore(slots) : true
++!findGarbage(slots) 
+	: 	not garbage(N) &
+	  	not garbage(S) &
+	  	not garbage(E) &
+		not garbage(W)
    <- randMove;
-      !explore(slots).
+      !findGarbage(slots).
+
++!findGarbage(slots) : garbage(N)
+	<-	moveNorth;
+		!findGarbage(slots).
+		
++!findGarbage(slots) : garbage(S)
+	<-	moveSouth;
+		!findGarbage(slots).
+		
++!findGarbage(slots) : garbage(E)
+	<-	moveEast;
+		!findGarbage(slots).
+		
++!findGarbage(slots) : garbage(W)
+	<-	moveWest;
+		!findGarbage(slots).
+	
