@@ -25,6 +25,7 @@ public class MarsEnv extends Environment {
     public static final Literal gS = Literal.parseLiteral("garbage(S)");
     public static final Literal gE = Literal.parseLiteral("garbage(E)");
     public static final Literal gW = Literal.parseLiteral("garbage(W)");
+    public static final Literal gH = Literal.parseLiteral("garbage(H)");
 	public static final Term 	poop = Literal.parseLiteral("maybePoop(garb)");
 
     static Logger logger = Logger.getLogger(MarsEnv.class.getName());
@@ -128,6 +129,17 @@ public class MarsEnv extends Environment {
         }
         
         checkSeeGarbageNorth(3);
+        checkSeeGarbageSouth(3);
+        checkSeeGarbageEast(3);
+        checkSeeGarbageWest(3);
+        checkGarbageHere(3);
+    }
+    
+    void checkGarbageHere(int id) {
+    	Location checkLocation = model.getAgPos(id);
+    	if (model.hasObject(GARB, checkLocation)){
+			addPercept(gH);
+		}
     }
     
     void checkSeeGarbageNorth(int id) {

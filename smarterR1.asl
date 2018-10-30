@@ -1,6 +1,6 @@
 /* Initial beliefs */
 
-at(P) :- pos(P,X,Y) & pos(r4,X,Y).
+at(P) :- pos(P,X,Y) & pos(H,X,Y).
 
 
 /* Initial goal */
@@ -13,7 +13,8 @@ at(P) :- pos(P,X,Y) & pos(r4,X,Y).
 	: 	not garbage(N) &
 	  	not garbage(S) &
 	  	not garbage(E) &
-		not garbage(W)
+		not garbage(W) &
+		not garbage(H)
    <- randMove;
       !findGarbage(slots).
 
@@ -33,3 +34,14 @@ at(P) :- pos(P,X,Y) & pos(r4,X,Y).
 	<-	moveWest;
 		!findGarbage(slots).
 	
+@lg[atomic]
++garbage(H) : not .desire(carry_to(r2))
+   <-	!carry_to(r2)
+   		!find(r2).
+   
++!carry_to(R)
+   <- // carry garbage to r2
+      !take(garb,R);
+
+      // goes back and continue to check
+      !findGarbage(slots).
