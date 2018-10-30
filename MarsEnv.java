@@ -333,7 +333,7 @@ public class MarsEnv extends Environment {
 			if ((minX <= x) && (x <= maxX) && (minY <= y) && (y <= maxY)) {
 				return true;
 			} else {
-				System.out.println("Move not possible, no map position there!");
+				logger.info("Move not possible, no map position there!");
 				return false;
 			}
 		}
