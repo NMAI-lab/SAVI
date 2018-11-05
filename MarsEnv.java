@@ -21,11 +21,11 @@ public class MarsEnv extends Environment {
     public static final Term    bg = Literal.parseLiteral("burn(garb)");
     public static final Literal g1 = Literal.parseLiteral("garbage(r1)");
     public static final Literal g2 = Literal.parseLiteral("garbage(r2)");
-    public static final Literal gN = Literal.parseLiteral("garbage(N)");
-    public static final Literal gS = Literal.parseLiteral("garbage(S)");
-    public static final Literal gE = Literal.parseLiteral("garbage(E)");
-    public static final Literal gW = Literal.parseLiteral("garbage(W)");
-    public static final Literal gH = Literal.parseLiteral("garbage(H)");
+    public static final Literal gN = Literal.parseLiteral("garbage(n)");
+    public static final Literal gS = Literal.parseLiteral("garbage(s)");
+    public static final Literal gE = Literal.parseLiteral("garbage(e)");
+    public static final Literal gW = Literal.parseLiteral("garbage(w)");
+    public static final Literal gH = Literal.parseLiteral("garbage(h)");
 	public static final Term 	poop = Literal.parseLiteral("maybePoop(garb)");
 
     static Logger logger = Logger.getLogger(MarsEnv.class.getName());
@@ -86,6 +86,10 @@ public class MarsEnv extends Environment {
 				model.moveNorth(agId);
 			} else if (action.getFunctor().equals("moveSouth")) {
 				model.moveSouth(agId);
+			} else if (action.getFunctor().equals("move")) {
+				Literal directionAsLiteral = (Literal)action.getTerm(0);
+				String direction = directionAsLiteral.getFunctor();
+				model.move(direction, agId);
             } else {
                 return false;
             }
@@ -253,6 +257,25 @@ public class MarsEnv extends Environment {
             else if (position.y > y)
                 moveNorth(id);
         }
+		
+        
+		/**
+		 * Implementation of the moveWest action
+		 */
+		void move(String direction, int id) throws Exception {
+			char directionFirstChar = direction.charAt(0);
+			switch(directionFirstChar) {
+			case 'n': 	moveNorth(id);
+						break;
+			case 's':	moveSouth(id);
+						break;
+			case 'e': 	moveEast(id);
+						break;
+			case 'w': 	moveWest(id);
+						break;
+			}
+		}
+        
 		
 		/**
 		 * Implementation of the moveWest action
