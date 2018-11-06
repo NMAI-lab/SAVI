@@ -16,16 +16,28 @@ public class MarsEnv extends Environment {
     public static final int GARB  = 16; // garbage code in grid model
 
     public static final Term    ns = Literal.parseLiteral("next(slot)");
+    
     public static final Term    pg = Literal.parseLiteral("pick(garb)");
     public static final Term    dg = Literal.parseLiteral("drop(garb)");
+    
     public static final Term    bg = Literal.parseLiteral("burn(garb)");
+    
     public static final Literal g1 = Literal.parseLiteral("garbage(r1)");
     public static final Literal g2 = Literal.parseLiteral("garbage(r2)");
+    
+    public static final Literal gp = Literal.parseLiteral("garbage(p)");
     public static final Literal gN = Literal.parseLiteral("garbage(n)");
     public static final Literal gS = Literal.parseLiteral("garbage(s)");
     public static final Literal gE = Literal.parseLiteral("garbage(e)");
     public static final Literal gW = Literal.parseLiteral("garbage(w)");
     public static final Literal gH = Literal.parseLiteral("garbage(h)");
+    
+    public static final Literal dN = Literal.parseLiteral("disposal(n)");
+    public static final Literal dS = Literal.parseLiteral("disposal(s)");
+    public static final Literal dE = Literal.parseLiteral("disposal(e)");
+    public static final Literal dW = Literal.parseLiteral("disposal(w)");
+    public static final Literal dH = Literal.parseLiteral("disposal(h)");
+        
 	public static final Term 	poop = Literal.parseLiteral("maybePoop(garb)");
 
     static Logger logger = Logger.getLogger(MarsEnv.class.getName());
@@ -69,23 +81,15 @@ public class MarsEnv extends Environment {
                 int y = (int)((NumberTerm)action.getTerm(1)).solve();
                 model.moveTowards(agId, x,y);
             } else if (action.equals(pg)) {
-                model.pickGarb();
+                model.pickGarb(agId);
             } else if (action.equals(dg)) {
-                model.dropGarb();
+                model.dropGarb(agId);
             } else if (action.equals(bg)) {
                 model.burnGarb();
 			} else if (action.getFunctor().equals("randMove")) {
                 model.randMove(agId);
             } else if (action.equals(poop)) {
                 model.maybePoop();
-			} else if (action.getFunctor().equals("moveWest")) {
-				model.moveWest(agId);
-			} else if (action.getFunctor().equals("moveEast")) {
-				model.moveEast(agId);
-			} else if (action.getFunctor().equals("moveNorth")) {
-				model.moveNorth(agId);
-			} else if (action.getFunctor().equals("moveSouth")) {
-				model.moveSouth(agId);
 			} else if (action.getFunctor().equals("move")) {
 				Literal directionAsLiteral = (Literal)action.getTerm(0);
 				String direction = directionAsLiteral.getFunctor();
@@ -131,12 +135,45 @@ public class MarsEnv extends Environment {
         if (model.hasObject(GARB, r2Loc)) {
             addPercept(g2);
         }
+        if (model.hasObject(GARB, smarterR1Loc)) {
+            addPercept(gp);
+        }
         
         checkSeeGarbageNorth(3);
         checkSeeGarbageSouth(3);
         checkSeeGarbageEast(3);
         checkSeeGarbageWest(3);
         checkGarbageHere(3);
+    }
+    
+    void checkSeeDisposal(int id) {
+    	Location myLocation = model.getAgPos(id);
+    	Location disposalLocation = model.getAgPos(1);
+    	
+    	// Check if the disposal is at my location
+    	if ((myLocation.x == disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
+    		addPercept(dH);
+    	}
+    	
+    	// Check if the disposal is North
+    	if ((myLocation.x > disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
+    		addPercept(dN);
+    	}
+    	
+    	// Check if the disposal is South
+    	if ((myLocation.x < disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
+    		addPercept(dS);
+    	}
+    	
+    	// Check if the disposal is East
+    	if ((myLocation.x == disposalLocation.x) && (myLocation.y < disposalLocation.y)) {
+    		addPercept(dE);
+    	}
+    	
+    	// Check if the disposal is West
+    	if ((myLocation.x == disposalLocation.x) && (myLocation.y > disposalLocation.y)) {
+    		addPercept(dW);
+    	}
     }
     
     void checkGarbageHere(int id) {
@@ -373,13 +410,13 @@ public class MarsEnv extends Environment {
 			}
 		}
 
-        void pickGarb() {
+        void pickGarb(int id) {
             // r1 location has garbage
-            if (model.hasObject(GARB, getAgPos(0))) {
+            if (model.hasObject(GARB, getAgPos(id))) {
                 // sometimes the "picking" action doesn't work
                 // but never more than MErr times
                 if (random.nextBoolean() || nerr == MErr) {
-                    remove(GARB, getAgPos(0));
+                    remove(GARB, getAgPos(id));
                     nerr = 0;
                     r1HasGarb = true;
                 } else {
@@ -387,10 +424,11 @@ public class MarsEnv extends Environment {
                 }
             }
         }
-        void dropGarb() {
+        
+        void dropGarb(int id) {
             if (r1HasGarb) {
                 r1HasGarb = false;
-                add(GARB, getAgPos(0));
+                add(GARB, getAgPos(id));
             }
         }
         void burnGarb() {
