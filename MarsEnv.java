@@ -232,7 +232,7 @@ public class MarsEnv extends Environment {
 
         public static final int MErr = 2; // max error in pick garb
         int nerr; // number of tries of pick garb
-        boolean r1HasGarb = false; // whether r1 is carrying garbage or not
+        boolean agHasGarb[] = new boolean[]{false, false, false, false}; // whether agent is carrying garbage or not
 
         Random random = new Random(System.currentTimeMillis());
 
@@ -418,7 +418,7 @@ public class MarsEnv extends Environment {
                 if (random.nextBoolean() || nerr == MErr) {
                     remove(GARB, getAgPos(id));
                     nerr = 0;
-                    r1HasGarb = true;
+                    agHasGarb[id] = true;
                 } else {
                     nerr++;
                 }
@@ -426,8 +426,8 @@ public class MarsEnv extends Environment {
         }
         
         void dropGarb(int id) {
-            if (r1HasGarb) {
-                r1HasGarb = false;
+            if (agHasGarb[id]) {
+                agHasGarb[id] = false;
                 add(GARB, getAgPos(id));
             }
         }
@@ -484,7 +484,7 @@ public class MarsEnv extends Environment {
             c = Color.blue;
             if (id == 0) {
                 c = Color.yellow;
-                if (((MarsModel)model).r1HasGarb) {
+                if (((MarsModel)model).agHasGarb[id]) {
                     label += " - G";
                     c = Color.orange;
                 }
