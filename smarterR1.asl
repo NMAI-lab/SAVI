@@ -29,31 +29,25 @@ at(P) :- pos(P,X,Y) & pos(H,X,Y).
 // Notice garbage at my location, desire to deliver to r2	
 @lg[atomic]
 +garbage(p) : not .desire(carry_to(r2))
-	<- !carry_to(r2).
+	<- 	!carry_to(r2).
 	
 // Add the plan for delivering the garbage to r2
-+!carry_to(R)
-	<- !take(garb,R).	// carry garbage to r2
-	
-// If there is garbage where I am located, pick it up, unless I'm at the disposal (L), then drop it
-+!take(S,L) : true
-   <- !ensure_pick(S);
-      !at(L);
-      drop(S);
-      !findGarbage(slots).
++!carry_to(R) :	garbage(p)
+	<-	pick(garb);		// Pick it up
+		!carry_to(R).	// carry garbage to r2
 
-// Pickup the garbage if it is at my location
-+!ensure_pick(S) : garbage(p)
-   <- pick(garb);
-      !ensure_pick(S).
-+!ensure_pick(_).
-
-// Have garbage, look for the disposal      
-+!take(garb,R) :	not seeDisposal(Y)
-	<- 	randMove
-		!take(garb,R).
+// If carrying and you don't see the disposal, look for it
++!carry_to(R) : not seeDisposal(Y)
+	<- 	randMove;
+		!carry_to(R).
 		
-// Have garbage, see the disposal, move towards it
-+!take(garb,R) :	seeDisposal(Y)
+// If carrying and you don't see the disposal, look for it
++!carry_to(R) : seeDisposal(Y) &
+				Y \== p
 	<- 	move(Y);
-		!take(garb,R).
+		!carry_to(R).
+		
+// If carrying and you are at the disposal, drop. Resume search
++!carry_to(R) : seeDisposal(p)
+	<- 	drop(garb);
+		!findGarbage(slots).

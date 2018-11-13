@@ -35,7 +35,7 @@ public class MarsEnv extends Environment {
     public static final Literal dS = Literal.parseLiteral("disposal(s)");
     public static final Literal dE = Literal.parseLiteral("disposal(e)");
     public static final Literal dW = Literal.parseLiteral("disposal(w)");
-    //public static final Literal dH = Literal.parseLiteral("disposal(h)");
+    public static final Literal dP = Literal.parseLiteral("disposal(p)");
         
 	public static final Term 	poop = Literal.parseLiteral("maybePoop(garb)");
 
@@ -171,6 +171,11 @@ public class MarsEnv extends Environment {
     	// Check if the disposal is West
     	if ((myLocation.x == disposalLocation.x) && (myLocation.y > disposalLocation.y)) {
     		addPercept(dW);
+    	}
+    	
+    	// Check if the disposal is here
+    	if ((myLocation.x == disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
+    		addPercept(dP);
     	}
     }
     
