@@ -142,6 +142,7 @@ public class MarsEnv extends Environment {
         checkSeeGarbageSouth(3);
         checkSeeGarbageEast(3);
         checkSeeGarbageWest(3);
+        checkSeeDisposal(3);
     }
     
     void checkSeeDisposal(int id) {
@@ -154,22 +155,22 @@ public class MarsEnv extends Environment {
     	//}
     	
     	// Check if the disposal is North
-    	if ((myLocation.x > disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
+    	if ((myLocation.x == disposalLocation.x) && (myLocation.y > disposalLocation.y)) {
     		addPercept(dN);
     	}
     	
     	// Check if the disposal is South
-    	if ((myLocation.x < disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
+    	if ((myLocation.x == disposalLocation.x) && (myLocation.y < disposalLocation.y)) {
     		addPercept(dS);
     	}
     	
     	// Check if the disposal is East
-    	if ((myLocation.x == disposalLocation.x) && (myLocation.y < disposalLocation.y)) {
+    	if ((myLocation.x < disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
     		addPercept(dE);
     	}
     	
     	// Check if the disposal is West
-    	if ((myLocation.x == disposalLocation.x) && (myLocation.y > disposalLocation.y)) {
+    	if ((myLocation.x > disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
     		addPercept(dW);
     	}
     	
@@ -411,7 +412,7 @@ public class MarsEnv extends Environment {
             if (model.hasObject(GARB, getAgPos(id))) {
                 // sometimes the "picking" action doesn't work
                 // but never more than MErr times
-                if (random.nextBoolean() || nerr == MErr) {
+                if (random.nextBoolean() || nerr == 0) {//MErr) {	// Disable randomness for now
                     remove(GARB, getAgPos(id));
                     nerr = 0;
                     agHasGarb[id] = true;

@@ -26,28 +26,24 @@ at(P) :- pos(P,X,Y) & pos(H,X,Y).
 	<-	move(X);
 		!findGarbage(slots).
 	
-// Notice garbage at my location, desire to deliver to r2	
+// Notice garbage at my location, pick up and add desire to deliver to r2	
 @lg[atomic]
 +garbage(p) : not .desire(carry_to(r2))
-	<- 	!carry_to(r2).
+	<- 	pick(garb);
+		!carry_to(r2).
 	
-// Add the plan for delivering the garbage to r2
-+!carry_to(R) :	garbage(p)
-	<-	pick(garb);		// Pick it up
-		!carry_to(R).	// carry garbage to r2
-
 // If carrying and you don't see the disposal, look for it
-+!carry_to(R) : not seeDisposal(Y)
++!carry_to(R) : not disposal(Y)
 	<- 	randMove;
 		!carry_to(R).
 		
-// If carrying and you don't see the disposal, look for it
-+!carry_to(R) : seeDisposal(Y) &
+// If carrying and you don't see the disposal, go toward it
++!carry_to(R) : disposal(Y) &
 				Y \== p
 	<- 	move(Y);
 		!carry_to(R).
 		
 // If carrying and you are at the disposal, drop. Resume search
-+!carry_to(R) : seeDisposal(p)
++!carry_to(R) : disposal(p)
 	<- 	drop(garb);
 		!findGarbage(slots).
