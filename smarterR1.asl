@@ -28,7 +28,8 @@ at(P) :- pos(P,X,Y) & pos(H,X,Y).
 	
 // Notice garbage at my location, pick up and add desire to deliver to r2	
 @lg[atomic]
-+garbage(p) : not .desire(carry_to(r2))
++garbage(p) : 	not .desire(carry_to(r2)) &
+				not disposal(p)
 	<- 	pick(garb);
 		!carry_to(r2).
 	
