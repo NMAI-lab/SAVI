@@ -30,13 +30,12 @@ public class MarsEnv extends Environment {
     public static final Literal gS = Literal.parseLiteral("garbage(s)");
     public static final Literal gE = Literal.parseLiteral("garbage(e)");
     public static final Literal gW = Literal.parseLiteral("garbage(w)");
-    public static final Literal gH = Literal.parseLiteral("garbage(h)");
     
     public static final Literal dN = Literal.parseLiteral("disposal(n)");
     public static final Literal dS = Literal.parseLiteral("disposal(s)");
     public static final Literal dE = Literal.parseLiteral("disposal(e)");
     public static final Literal dW = Literal.parseLiteral("disposal(w)");
-    public static final Literal dH = Literal.parseLiteral("disposal(h)");
+    //public static final Literal dH = Literal.parseLiteral("disposal(h)");
         
 	public static final Term 	poop = Literal.parseLiteral("maybePoop(garb)");
 
@@ -143,7 +142,6 @@ public class MarsEnv extends Environment {
         checkSeeGarbageSouth(3);
         checkSeeGarbageEast(3);
         checkSeeGarbageWest(3);
-        checkGarbageHere(3);
     }
     
     void checkSeeDisposal(int id) {
@@ -151,9 +149,9 @@ public class MarsEnv extends Environment {
     	Location disposalLocation = model.getAgPos(1);
     	
     	// Check if the disposal is at my location
-    	if ((myLocation.x == disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
-    		addPercept(dH);
-    	}
+    	//if ((myLocation.x == disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
+    	//	addPercept(dH);
+    	//}
     	
     	// Check if the disposal is North
     	if ((myLocation.x > disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
@@ -174,13 +172,6 @@ public class MarsEnv extends Environment {
     	if ((myLocation.x == disposalLocation.x) && (myLocation.y > disposalLocation.y)) {
     		addPercept(dW);
     	}
-    }
-    
-    void checkGarbageHere(int id) {
-    	Location checkLocation = model.getAgPos(id);
-    	if (model.hasObject(GARB, checkLocation)){
-			addPercept(gH);
-		}
     }
     
     void checkSeeGarbageNorth(int id) {

@@ -11,49 +11,49 @@ at(P) :- pos(P,X,Y) & pos(H,X,Y).
 
 // Don't see any garbage, look for some
 +!findGarbage(slots) 
-	: 	not garbage(X)
+	: 	not garbage(X) |
+		(garbage(Y) &
+			(Y == r1 |
+			 Y == r2))
    <- randMove;
       !findGarbage(slots).
 
 // See garbage, move toward it
 +!findGarbage(slots) : 	garbage(X) &
-						X \== h &
-						X \== p
+						X \== p &
+						X \== r1 &
+						X \== r2
 	<-	move(X);
 		!findGarbage(slots).
-		
-// Pick up garbage at my location, add goals of holding garbage and delivering garbage
-+!findGarbage(slots) : 	garbage(X) &
-						X == h
-	<-	pick(garb);
-		!hold(garb)
-		!deliver(garb).
-		
-// Ensure that agent is holding garbage
-+!hold(garb) :	not garbage(X) |
-				(garbage(X) & X \== p)
-	<-	!findGarbage(slots). 	
+	
+// Notice garbage at my location, desire to deliver to r2	
+@lg[atomic]
++garbage(p) : not .desire(carry_to(r2))
+	<- !carry_to(r2).
+	
+// Add the plan for delivering the garbage to r2
++!carry_to(R)
+	<- !take(garb,R).	// carry garbage to r2
+	
+// If there is garbage where I am located, pick it up, unless I'm at the disposal (L), then drop it
++!take(S,L) : true
+   <- !ensure_pick(S);
+      !at(L);
+      drop(S);
+      !findGarbage(slots).
 
-// Have garbage, look for the disposal
-+!deliver(garb) : 	garbage(X) &
-					X == p &
-					not seeDisposal(Y)
+// Pickup the garbage if it is at my location
++!ensure_pick(S) : garbage(p)
+   <- pick(garb);
+      !ensure_pick(S).
++!ensure_pick(_).
+
+// Have garbage, look for the disposal      
++!take(garb,R) :	not seeDisposal(Y)
 	<- 	randMove
-		!deliver(garb).
+		!take(garb,R).
 		
 // Have garbage, see the disposal, move towards it
-+!deliver(garb) : 	garbage(X) &
-					X == p &
-					seeDisposal(Y) &
-					Y \== h
-	<- 	move(Y)
-		!deliver(garb).
-		
-// Have garbage, at location of the disposal
-+!deliver(garb) : 	garbage(X) &
-					X == p &
-					seeDisposal(Y) &
-					Y == h
-	<- 	drop(garb)
-		!findGarbage(slots).
-		
++!take(garb,R) :	seeDisposal(Y)
+	<- 	move(Y);
+		!take(garb,R).
