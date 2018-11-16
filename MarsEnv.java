@@ -16,12 +16,27 @@ public class MarsEnv extends Environment {
     public static final int GARB  = 16; // garbage code in grid model
 
     public static final Term    ns = Literal.parseLiteral("next(slot)");
+    
     public static final Term    pg = Literal.parseLiteral("pick(garb)");
     public static final Term    dg = Literal.parseLiteral("drop(garb)");
+    
     public static final Term    bg = Literal.parseLiteral("burn(garb)");
+    
     public static final Literal g1 = Literal.parseLiteral("garbage(r1)");
     public static final Literal g2 = Literal.parseLiteral("garbage(r2)");
-	public static final Term    rnd = Literal.parseLiteral("randMove(slot)");
+    
+    public static final Literal gp = Literal.parseLiteral("garbage(p)");
+    public static final Literal gN = Literal.parseLiteral("garbage(n)");
+    public static final Literal gS = Literal.parseLiteral("garbage(s)");
+    public static final Literal gE = Literal.parseLiteral("garbage(e)");
+    public static final Literal gW = Literal.parseLiteral("garbage(w)");
+    
+    public static final Literal dN = Literal.parseLiteral("disposal(n)");
+    public static final Literal dS = Literal.parseLiteral("disposal(s)");
+    public static final Literal dE = Literal.parseLiteral("disposal(e)");
+    public static final Literal dW = Literal.parseLiteral("disposal(w)");
+    public static final Literal dP = Literal.parseLiteral("disposal(p)");
+        
 	public static final Term 	poop = Literal.parseLiteral("maybePoop(garb)");
 
     static Logger logger = Logger.getLogger(MarsEnv.class.getName());
@@ -36,40 +51,60 @@ public class MarsEnv extends Environment {
         model.setView(view);
         updatePercepts();
     }
-
+    
+    // This is a hack.
+    private int getAgIdBasedOnName(String agName) {
+    	if(agName.equalsIgnoreCase("r1")) {
+    		return 0;
+    	} else if(agName.equalsIgnoreCase("r2")) {
+    		return 1;
+    	} else if(agName.equalsIgnoreCase("r3")) {
+    		return 2;
+    	} else {
+    		return 3;
+    	}
+    }
+    
+    private String getAgNameFromID(int id) {
+    	if (id == 0) {
+    		return "r1";
+    	} else if (id == 1) {
+    		return "r2";
+    	} else if (id == 2) {
+    		return "r3";
+    	} else {
+    		return "smarterR1";
+    	}
+    }
+    
     @Override
     public boolean executeAction(String ag, Structure action) {
         logger.info(ag+" doing: "+ action);
+        
+        // get the agent id based on its name
+        int agId = getAgIdBasedOnName(ag);
+        
         try {
             if (action.equals(ns)) {
                 model.nextSlot();
             } else if (action.getFunctor().equals("move_towards")) {
-                int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-				int x = (int)((NumberTerm)action.getTerm(1)).solve();
-                int y = (int)((NumberTerm)action.getTerm(2)).solve();
-                model.moveTowards(id, x,y);
+				int x = (int)((NumberTerm)action.getTerm(0)).solve();
+                int y = (int)((NumberTerm)action.getTerm(1)).solve();
+                model.moveTowards(agId, x,y);
             } else if (action.equals(pg)) {
-                model.pickGarb();
+                model.pickGarb(agId);
             } else if (action.equals(dg)) {
-                model.dropGarb();
+                model.dropGarb(agId);
             } else if (action.equals(bg)) {
                 model.burnGarb();
-			} else if (action.equals(rnd)) {
-                model.randMove();
+			} else if (action.getFunctor().equals("randMove")) {
+                model.randMove(agId);
             } else if (action.equals(poop)) {
                 model.maybePoop();
-			} else if (action.getFunctor().equals("moveWest")) {
-				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-				model.moveWest(id);
-			} else if (action.getFunctor().equals("moveEast")) {
-				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-				model.moveEast(id);
-			} else if (action.getFunctor().equals("moveNorth")) {
-				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-				model.moveNorth(id);
-			} else if (action.getFunctor().equals("moveSouth")) {
-				int id = (int)((NumberTerm)action.getTerm(0)).solve(); //add agent id to action command
-				model.moveSouth(id);
+			} else if (action.getFunctor().equals("move")) {
+				Literal directionAsLiteral = (Literal)action.getTerm(0);
+				String direction = directionAsLiteral.getFunctor();
+				model.move(direction, agId);
             } else {
                 return false;
             }
@@ -89,6 +124,9 @@ public class MarsEnv extends Environment {
     /** creates the agents perception based on the MarsModel */
     void updatePercepts() {
         clearPercepts();
+        for (int id = 0; id < 4; id++) {
+        	clearPercepts(getAgNameFromID(id));
+        }
 
         Location r1Loc = model.getAgPos(0);
         Location r2Loc = model.getAgPos(1);
@@ -111,13 +149,102 @@ public class MarsEnv extends Environment {
         if (model.hasObject(GARB, r2Loc)) {
             addPercept(g2);
         }
+        if (model.hasObject(GARB, smarterR1Loc)) {
+            addPercept(gp);
+        }
+        
+        checkSeeGarbageNorth(3);
+        checkSeeGarbageSouth(3);
+        checkSeeGarbageEast(3);
+        checkSeeGarbageWest(3);
+        checkSeeDisposal(3);
     }
+    
+    void checkSeeDisposal(int id) {
+    	Location myLocation = model.getAgPos(id);
+    	Location disposalLocation = model.getAgPos(1);
+    	String myName = getAgNameFromID(id);
+
+    	// Check if the disposal is North
+    	if ((myLocation.x == disposalLocation.x) && (myLocation.y > disposalLocation.y)) {
+    		addPercept(myName, dN);
+    	}
+    	
+    	// Check if the disposal is South
+    	if ((myLocation.x == disposalLocation.x) && (myLocation.y < disposalLocation.y)) {
+    		addPercept(myName, dS);
+    	}
+    	
+    	// Check if the disposal is East
+    	if ((myLocation.x < disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
+    		addPercept(myName, dE);
+    	}
+    	
+    	// Check if the disposal is West
+    	if ((myLocation.x > disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
+    		addPercept(myName, dW);
+    	}
+    	
+    	// Check if the disposal is here
+    	if ((myLocation.x == disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
+    		addPercept(myName, dP);
+    	}
+    }
+    
+    void checkSeeGarbageNorth(int id) {
+    	Location position = model.getAgPos(id);
+    	for (int locationDim = position.y; model.mapPositionExists(position.x, locationDim); locationDim--) {
+    		Location checkLocation = new Location(position.x, locationDim);
+    		if (model.hasObject(GARB, checkLocation)){
+    			String myName = getAgNameFromID(id);
+    			addPercept(myName, gN);
+    			return;
+    		}
+    	}
+    }
+    
+    void checkSeeGarbageSouth(int id) {
+    	Location position = model.getAgPos(id);
+    	for (int locationDim = position.y; model.mapPositionExists(position.x, locationDim); locationDim++) {
+    		Location checkLocation = new Location(position.x, locationDim);
+    		if (model.hasObject(GARB, checkLocation)){
+    			String myName = getAgNameFromID(id);
+    			addPercept(myName, gS);
+    			return;
+    		}
+    	}
+    }
+    
+    void checkSeeGarbageEast(int id) {
+    	Location position = model.getAgPos(id);
+    	for (int locationDim = position.x; model.mapPositionExists(locationDim, position.y); locationDim++) {
+    		Location checkLocation = new Location(locationDim, position.y);
+    		if (model.hasObject(GARB, checkLocation)){
+    			String myName = getAgNameFromID(id);
+    			addPercept(myName, gE);
+    			return;
+    		}
+    	}
+    }
+    
+    void checkSeeGarbageWest(int id) {
+    	Location position = model.getAgPos(id);
+    	for (int locationDim = position.x; model.mapPositionExists(locationDim, position.y); locationDim--) {
+    		Location checkLocation = new Location(locationDim, position.y);
+    		if (model.hasObject(GARB, checkLocation)){
+    			String myName = getAgNameFromID(id);
+    			addPercept(myName, gW);
+    			return;
+    		}
+    	}
+    }
+    
 
     class MarsModel extends GridWorldModel {
 
         public static final int MErr = 2; // max error in pick garb
         int nerr; // number of tries of pick garb
-        boolean r1HasGarb = false; // whether r1 is carrying garbage or not
+        boolean agHasGarb[] = new boolean[]{false, false, false, false}; // whether agent is carrying garbage or not
 
         Random random = new Random(System.currentTimeMillis());
 
@@ -126,15 +253,19 @@ public class MarsEnv extends Environment {
 
             // initial location of agents
             try {
+            	// r1
                 setAgPos(0, 0, 0);
-
+                
+                // r2
                 Location r2Loc = new Location(GSize/2, GSize/2);
                 setAgPos(1, r2Loc);
 
+                // r3
                 Location r3Loc = new Location(0,1);//(GSize-1, GSize-1); //agent 3 starts bottom right
 				setAgPos(2, r3Loc);
 				
-				Location smarterR1Loc = new Location(3,3);
+				// r4, also called smarterR1
+				Location smarterR1Loc = new Location(5,5);
 				setAgPos(3, smarterR1Loc);
 				
             } catch (Exception e) {
@@ -175,6 +306,25 @@ public class MarsEnv extends Environment {
             else if (position.y > y)
                 moveNorth(id);
         }
+		
+        
+		/**
+		 * Implementation of the move action
+		 */
+		void move(String direction, int id) throws Exception {
+			char directionFirstChar = direction.charAt(0);
+			switch(directionFirstChar) {
+			case 'n': 	moveNorth(id);
+						break;
+			case 's':	moveSouth(id);
+						break;
+			case 'e': 	moveEast(id);
+						break;
+			case 'w': 	moveWest(id);
+						break;
+			}
+		}
+        
 		
 		/**
 		 * Implementation of the moveWest action
@@ -218,7 +368,7 @@ public class MarsEnv extends Environment {
 				Location position = new Location(x,y);
 				setAgPos(id, position);
 				
-				// Redraw agent 1 in case there was an overlap (so it doesn't disapear)
+				// Redraw agent 1 in case there was an overlap (so it doesn't disappear)
 				setAgPos(1, getAgPos(1));
 			}
 		}
@@ -234,27 +384,30 @@ public class MarsEnv extends Environment {
 		 * Returns true if R1 and R3 will collide using proposed new position x and y
 		 */
 		boolean checkCollision(int myID, int x, int y) {
-			// Get the two agent IDs, hard code agent IDs for now
-			int otherID = 0;
-			if (myID == 0) {
-				otherID = 2;
-			} else {
-				otherID = 0;
-			}
-			// Other agent's position
-			Location otherPosition = getAgPos(otherID);
 			
-			// Check for collision and return result
-			if (otherPosition.x == x && otherPosition.y == y) {
-				return true;
-			} else {
-				System.out.println("Move not possible due to collision!");
-				return false;
+			// This would be better to get from the environment class elsewhere (change in the future)
+			int disposalID = 1;				// We are allowed to collide with the disposal
+			int numAgents = 4;
+			
+			// Check all the applicable other agents
+			for (int otherAgID = 0; otherAgID < numAgents; otherAgID++) {
+				if ((otherAgID != disposalID) && (otherAgID != myID)) {		// Collisions allowed with self and disposal
+				
+					// Other agent's position
+					Location otherPosition = getAgPos(otherAgID);
+					
+					// Check for collision and return result
+					if (otherPosition.x == x && otherPosition.y == y) {
+						logger.info("Move not possible due to collision!");
+						return true;
+					}
+				}
 			}
+			return false;
 		}
 		
 		/**
-		 * Checks to make sure that a proposed location is infact on the map.
+		 * Checks to make sure that a proposed location is in fact on the map.
 		 */
 		boolean mapPositionExists(int x, int y) {
 			// Get the max and min values for x and y
@@ -267,29 +420,30 @@ public class MarsEnv extends Environment {
 			if ((minX <= x) && (x <= maxX) && (minY <= y) && (y <= maxY)) {
 				return true;
 			} else {
-				System.out.println("Move not possible, no map position there!");
+				logger.info("Move not possible, no map position there!");
 				return false;
 			}
 		}
 
-        void pickGarb() {
+        void pickGarb(int id) {
             // r1 location has garbage
-            if (model.hasObject(GARB, getAgPos(0))) {
+            if (model.hasObject(GARB, getAgPos(id))) {
                 // sometimes the "picking" action doesn't work
                 // but never more than MErr times
-                if (random.nextBoolean() || nerr == MErr) {
-                    remove(GARB, getAgPos(0));
+                if (random.nextBoolean() || nerr == 0) {//MErr) {	// Disable randomness for now
+                    remove(GARB, getAgPos(id));
                     nerr = 0;
-                    r1HasGarb = true;
+                    agHasGarb[id] = true;
                 } else {
                     nerr++;
                 }
             }
         }
-        void dropGarb() {
-            if (r1HasGarb) {
-                r1HasGarb = false;
-                add(GARB, getAgPos(0));
+        
+        void dropGarb(int id) {
+            if (agHasGarb[id]) {
+                agHasGarb[id] = false;
+                add(GARB, getAgPos(id));
             }
         }
         void burnGarb() {
@@ -299,26 +453,18 @@ public class MarsEnv extends Environment {
             }
         }
 		
-		void randMove() throws Exception{ //agent 3 moving randomly but within bounds
-			int agentID = 2;
+		void randMove(int id) throws Exception{
 			int numDirections = 4;
-			Location r3 = getAgPos(agentID);
-			int newX = r3.x;
-			int newY = r3.y;
 			int direction = random.nextInt(numDirections);
-			switch (direction) {
-            case 0: if (newX < getWidth()-1) newX++;
-                    break;
-            case 1:  if (newY < getHeight()-1) newY++;
-                     break;
-            case 2:  if (newX > 0) newX--;
-                     break;
-            case 3:  if (newY > 0) newY--;
-                     break;
+			if(direction == 0) {
+				moveNorth(id);
+			} else if(direction == 1) {
+				moveSouth(id);
+			} else if(direction == 2) {
+				moveEast(id);
+			} else {
+				moveWest(id);
 			}
-			moveTowards(agentID, newX, newY);
-            //setAgPos(2, r3);
-
 		}
 		
 		void maybePoop(){ //with a probability of .1, agent 3 drops some garbage in its location
@@ -353,7 +499,7 @@ public class MarsEnv extends Environment {
             c = Color.blue;
             if (id == 0) {
                 c = Color.yellow;
-                if (((MarsModel)model).r1HasGarb) {
+                if (((MarsModel)model).agHasGarb[id]) {
                     label += " - G";
                     c = Color.orange;
                 }

@@ -11,7 +11,7 @@ at(P) :- pos(P,X,Y) & pos(r1,X,Y).
 /* Plans */
 
 +!check(slots) : not garbage(r1)
-   <- next(slot);
+   <- //next(slot);
       !check(slots).
 +!check(slots).
 
@@ -44,5 +44,5 @@ at(P) :- pos(P,X,Y) & pos(r1,X,Y).
 
 +!at(L) : at(L).
 +!at(L) <- ?pos(L,X,Y);
-           move_towards(0,X,Y);
+           move_towards(X,Y);
            !at(L).
