@@ -294,7 +294,7 @@ public class MarsEnv extends Environment {
 		
         
 		/**
-		 * Implementation of the moveWest action
+		 * Implementation of the move action
 		 */
 		void move(String direction, int id) throws Exception {
 			char directionFirstChar = direction.charAt(0);

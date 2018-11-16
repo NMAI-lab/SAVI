@@ -38,7 +38,7 @@ at(P) :- pos(P,X,Y) & pos(H,X,Y).
 	<- 	randMove;
 		!carry_to(R).
 		
-// If carrying and you don't see the disposal, go toward it
+// If carrying and you see the disposal, go toward it
 +!carry_to(R) : disposal(Y) &
 				Y \== p
 	<- 	move(Y);
