@@ -353,7 +353,7 @@ public class MarsEnv extends Environment {
 				Location position = new Location(x,y);
 				setAgPos(id, position);
 				
-				// Redraw agent 1 in case there was an overlap (so it doesn't disapear)
+				// Redraw agent 1 in case there was an overlap (so it doesn't disappear)
 				setAgPos(1, getAgPos(1));
 			}
 		}
