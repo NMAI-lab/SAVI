@@ -369,27 +369,30 @@ public class MarsEnv extends Environment {
 		 * Returns true if R1 and R3 will collide using proposed new position x and y
 		 */
 		boolean checkCollision(int myID, int x, int y) {
-			// Get the two agent IDs, hard code agent IDs for now
-			int otherID = 0;
-			if (myID == 0) {
-				otherID = 2;
-			} else {
-				otherID = 0;
-			}
-			// Other agent's position
-			Location otherPosition = getAgPos(otherID);
 			
-			// Check for collision and return result
-			if (otherPosition.x == x && otherPosition.y == y) {
-				return true;
-			} else {
-				System.out.println("Move not possible due to collision!");
-				return false;
+			// This would be better to get from the environment class elsewhere (change in the future)
+			int disposalID = 1;				// We are allowed to collide with the disposal
+			int numAgents = 4;
+			
+			// Check all the applicable other agents
+			for (int otherAgID = 0; otherAgID < numAgents; otherAgID++) {
+				if ((otherAgID != disposalID) && (otherAgID != myID)) {		// Collisions allowed with self and disposal
+				
+					// Other agent's position
+					Location otherPosition = getAgPos(otherAgID);
+					
+					// Check for collision and return result
+					if (otherPosition.x == x && otherPosition.y == y) {
+						logger.info("Move not possible due to collision!");
+						return true;
+					}
+				}
 			}
+			return false;
 		}
 		
 		/**
-		 * Checks to make sure that a proposed location is infact on the map.
+		 * Checks to make sure that a proposed location is in fact on the map.
 		 */
 		boolean mapPositionExists(int x, int y) {
 			// Get the max and min values for x and y
