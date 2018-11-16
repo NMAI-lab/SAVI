@@ -11,7 +11,12 @@ at(P) :- pos(P,X,Y) & pos(H,X,Y).
 
 // Don't see any garbage, look for some
 +!findGarbage(slots) 
-	: 	not garbage(X) |
+	: 	(not garbage(X) &
+			(X \== n |
+			 X \== s |
+			 X \== e |
+			 X \== w)
+			) |
 		(garbage(Y) &
 			(Y == r1 |
 			 Y == r2))
