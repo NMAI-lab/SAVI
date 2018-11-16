@@ -24,12 +24,13 @@ at(P) :- pos(P,X,Y) & pos(H,X,Y).
       !findGarbage(slots).
 
 // See garbage, move toward it
-+!findGarbage(slots) : 	garbage(X) &
++!findGarbage(slots) : 	garbage(X) & not garbage(p) &
 						X \== p &
 						X \== r1 &
 						X \== r2
 	<-	move(X);
 		!findGarbage(slots).
++!findgarbage(slots).
 	
 // Notice garbage at my location, pick up and add desire to deliver to r2	
 @lg[atomic]
