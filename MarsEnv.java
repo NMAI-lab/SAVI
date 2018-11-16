@@ -65,6 +65,18 @@ public class MarsEnv extends Environment {
     	}
     }
     
+    private String getAgNameFromID(int id) {
+    	if (id == 0) {
+    		return "r1";
+    	} else if (id == 1) {
+    		return "r2";
+    	} else if (id == 2) {
+    		return "r3";
+    	} else {
+    		return "smarterR1";
+    	}
+    }
+    
     @Override
     public boolean executeAction(String ag, Structure action) {
         logger.info(ag+" doing: "+ action);
@@ -112,6 +124,9 @@ public class MarsEnv extends Environment {
     /** creates the agents perception based on the MarsModel */
     void updatePercepts() {
         clearPercepts();
+        for (int id = 0; id < 4; id++) {
+        	clearPercepts(getAgNameFromID(id));
+        }
 
         Location r1Loc = model.getAgPos(0);
         Location r2Loc = model.getAgPos(1);
@@ -148,35 +163,31 @@ public class MarsEnv extends Environment {
     void checkSeeDisposal(int id) {
     	Location myLocation = model.getAgPos(id);
     	Location disposalLocation = model.getAgPos(1);
-    	
-    	// Check if the disposal is at my location
-    	//if ((myLocation.x == disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
-    	//	addPercept(dH);
-    	//}
-    	
+    	String myName = getAgNameFromID(id);
+
     	// Check if the disposal is North
     	if ((myLocation.x == disposalLocation.x) && (myLocation.y > disposalLocation.y)) {
-    		addPercept(dN);
+    		addPercept(myName, dN);
     	}
     	
     	// Check if the disposal is South
     	if ((myLocation.x == disposalLocation.x) && (myLocation.y < disposalLocation.y)) {
-    		addPercept(dS);
+    		addPercept(myName, dS);
     	}
     	
     	// Check if the disposal is East
     	if ((myLocation.x < disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
-    		addPercept(dE);
+    		addPercept(myName, dE);
     	}
     	
     	// Check if the disposal is West
     	if ((myLocation.x > disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
-    		addPercept(dW);
+    		addPercept(myName, dW);
     	}
     	
     	// Check if the disposal is here
     	if ((myLocation.x == disposalLocation.x) && (myLocation.y == disposalLocation.y)) {
-    		addPercept(dP);
+    		addPercept(myName, dP);
     	}
     }
     
@@ -185,7 +196,8 @@ public class MarsEnv extends Environment {
     	for (int locationDim = position.y; model.mapPositionExists(position.x, locationDim); locationDim--) {
     		Location checkLocation = new Location(position.x, locationDim);
     		if (model.hasObject(GARB, checkLocation)){
-    			addPercept(gN);
+    			String myName = getAgNameFromID(id);
+    			addPercept(myName, gN);
     			return;
     		}
     	}
@@ -196,7 +208,8 @@ public class MarsEnv extends Environment {
     	for (int locationDim = position.y; model.mapPositionExists(position.x, locationDim); locationDim++) {
     		Location checkLocation = new Location(position.x, locationDim);
     		if (model.hasObject(GARB, checkLocation)){
-    			addPercept(gS);
+    			String myName = getAgNameFromID(id);
+    			addPercept(myName, gS);
     			return;
     		}
     	}
@@ -207,7 +220,8 @@ public class MarsEnv extends Environment {
     	for (int locationDim = position.x; model.mapPositionExists(locationDim, position.y); locationDim++) {
     		Location checkLocation = new Location(locationDim, position.y);
     		if (model.hasObject(GARB, checkLocation)){
-    			addPercept(gE);
+    			String myName = getAgNameFromID(id);
+    			addPercept(myName, gE);
     			return;
     		}
     	}
@@ -218,7 +232,8 @@ public class MarsEnv extends Environment {
     	for (int locationDim = position.x; model.mapPositionExists(locationDim, position.y); locationDim--) {
     		Location checkLocation = new Location(locationDim, position.y);
     		if (model.hasObject(GARB, checkLocation)){
-    			addPercept(gW);
+    			String myName = getAgNameFromID(id);
+    			addPercept(myName, gW);
     			return;
     		}
     	}
