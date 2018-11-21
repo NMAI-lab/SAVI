@@ -39,9 +39,8 @@ public class UAS extends AgentModel {
 	    agentState.setPosition(position); //value type is PVector
 	    agentState.setSpeedAngle(0.0); //TODO: calculate velocity angle + magnitude
 	    agentState.setSpeedValue(0.0); //TODO
-	    //agentState.setCompassAngle(Math.PI); //TODO calculate direction we're facing
-	    agentState.setCompassAngle(0);
-	    
+	    agentState.setCompassAngle(Math.PI); //TODO calculate direction we're facing
+
 	    agentState.setCameraInfo(new ArrayList<VisibleItem>()); //TODO: calculate what we can see
 	    
 	    
@@ -86,14 +85,10 @@ public class UAS extends AgentModel {
 		        else if (action.equals( "thrust(on)")) 
 		        	speedValue = SPEED;
 		        else if (action.equals("thrust(off)")) 
-		        	speedValue = 0;  
+		        	speedValue = 0;
+ 
 		  }
-*/		  
-		  PVector position = (PVector) agentState.getPosition();
-		  double speedValue = agentState.getSpeedValue();
-		  double movingAngle = agentState.getCompassAngle()+agentState.getSpeedAngle(); //TODO for now speedAngle is always zero 
 		  
-		  List<String> toexec = agentState.getAllActions();
 		  
 		  double movingAngle = compassAngle+agentState.getSpeedAngle();
 		  
@@ -135,7 +130,6 @@ public class UAS extends AgentModel {
 		  
 		  agentState.setCameraInfo(things); 
 	  }
-	  
 	  
 	  
 	  

@@ -175,13 +175,12 @@ public void draw(){
 
 
 // Visualize
-public void drawUAS(PVector uasposition, double compassAngle){
+public void drawUAS(PVector uasposition){
   // Draw collision detection radius
   noStroke();
   fill(220,140,220,40);
   ellipse(uasposition.x, uasposition.y, collisionRadius, collisionRadius);
- 
-    
+  
   // Draw UAS
   stroke(0);
   fill(250,250,0);
