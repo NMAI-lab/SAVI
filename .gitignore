@@ -1,4 +1,8 @@
 bin/
 *.java~
+*.class
 *.asl~
 *.mas2j~
+*.classpath
+*.project
+saviSimulation/mas.log
