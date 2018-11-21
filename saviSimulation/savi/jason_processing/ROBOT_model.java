@@ -79,8 +79,8 @@ public void setup() {
   
   aircraft = new Aircraft(0, "AircraftFlightData.csv");  // Aircraft's constructor is called
   aircraft2 = new Aircraft(2, "AircraftFlightData2.csv"); 
-  //uas = new UAS(0, new PVector(2*width/3,height/3));            // UAS's constructor is called
-  uas = new UAS(0, new PVector(width/2,height/2)); 
+  uas = new UAS(0, new PVector(2*width/3,height/3));            // UAS's constructor is called
+  
   
   backgroundMap = loadImage("OttawaAirport_v1.PNG"); // load image file
   
@@ -148,11 +148,11 @@ public void draw(){
   background(240); // white background
   image(backgroundMap,0,0); // sat map
   
-  //aircraft.drawPath("curve");
-  //aircraft.drawAircraft();
-  //aircraft2.drawPath("curve");
-  //aircraft2.drawAircraft();
-  drawUAS(uas.getPosition(), uas.getCompassAngle());
+  aircraft.drawPath("curve");
+  aircraft.drawAircraft();
+   aircraft2.drawPath("curve");
+  aircraft2.drawAircraft();
+  drawUAS(uas.getPosition());
   
   // 4. Debugging/Output data
   displayDebugText(collided);
@@ -172,35 +172,17 @@ public void draw(){
 
 
 // Visualize
-public void drawUAS(PVector uasposition, double compassAngle){
+public void drawUAS(PVector uasposition){
   // Draw collision detection radius
   noStroke();
   fill(220,140,220,40);
   ellipse(uasposition.x, uasposition.y, collisionRadius, collisionRadius);
- 
-    
+  
   // Draw UAS
   stroke(0);
-  //fill(255,255,255);
-  //ellipse(uasposition.x, uasposition.y, 13, 13);
-  
-  PShape s;
-  
-  //triangle(uasposition.x+10, uasposition.y,uasposition.x,uasposition.y+10,uasposition.x+20,uasposition.y+10);
-  s = loadShape("airplane.svg");
-  
-  //s.scale((float) 0.1);
-  //rotate to CompassAngle
-  s.rotate((float) ((float) compassAngle+(float)Math.PI/2.0));
-  //s.rotate((float) compassAngle);
-  //shape(s);
-  shape(s, uasposition.x, uasposition.y, 26, 26);
-  //triangle(uasposition.x+10, uasposition.y,uasposition.x,uasposition.y+10,uasposition.x+20,uasposition.y+10);
-  
+  fill(250,250,0);
+  ellipse(uasposition.x, uasposition.y, 13, 13);
   System.out.println("UAS at"+ uasposition.x +","+ uasposition.y);
-  
-  
-  
   
 }
 
