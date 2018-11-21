@@ -148,20 +148,29 @@ public void draw(){
   
   // 3. VISUALIZATION
   //------------------
-  background(240); // white background 
-  drawUAS(uas.getPosition(), uas.getCompassAngle());
-  for(int i = 0; i < NUMBER_TREES; i++) //Makes all trees on screen.
-  {
-    trees.get(i).drawTree();
-  }
-  for(int i = 0; i < NUMBER_HOUSES; i++) //Makes all trees on screen.
-  {
-    houses.get(i).drawHouse();
-  }
-  for(int i = 0; i < NUMBER_THREATS; i++) //Makes all trees on screen.
-  {
-    threats.get(i).drawThreat();
-  }    
+  background(240); // white background
+  image(backgroundMap,0,0); // sat map
+  
+  aircraft.drawPath("curve");
+  aircraft.drawAircraft();
+   aircraft2.drawPath("curve");
+  aircraft2.drawAircraft();
+  drawUAS(uas.getPosition());
+  
+  // 4. Debugging/Output data
+  displayDebugText(collided);
+  
+  //stop simulation when the aircraft reaches the end of the path
+  //We don't care about the UAS because it will go on forever (it doesnt have a destination but is random walking) 
+ 
+    //When aircraft.timeIndex > aircraft.flightPath.length-2, this means that we have simulated the last data point of the aircraft path
+    //i.e the data point at flightTime.length - 1 (recall we simulate flightPath[timeIndex+1] when timeIndex = flightTime.length - 2
+    
+   if((aircraft.timeIndex > aircraft.flightPath.length-3) && (aircraft2.timeIndex > aircraft2.flightPath.length-3)){
+      noLoop();
+      jasonAgents.stopAgents(); 
+   }
+   
 }
 
 
@@ -171,19 +180,14 @@ public void drawUAS(PVector uasposition, double compassAngle){
   noStroke();
   fill(220,140,220,40);
   ellipse(uasposition.x, uasposition.y, collisionRadius, collisionRadius);
-  
+ 
+    
   // Draw UAS
-  stroke(0); 
-  PShape s;
-  s = loadShape("robot.svg");
+  stroke(0);
+  fill(250,250,0);
+  ellipse(uasposition.x, uasposition.y, 13, 13);
+  System.out.println("UAS at"+ uasposition.x +","+ uasposition.y);
   
-  //s.scale((float) 0.1);
-  //rotate to CompassAngle
-  s.rotate((float) ((float) compassAngle+(float)Math.PI/2.0));
-  //s.rotate((float) compassAngle);
-  //shape(s);
-  shape(s, uasposition.x, uasposition.y, 26, 26);  
-  System.out.println("UAS at"+ uasposition.x +","+ uasposition.y);  
 }
 
 //************ UTILITY FUNCTIONS *****************/

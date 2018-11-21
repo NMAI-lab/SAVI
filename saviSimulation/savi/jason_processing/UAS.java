@@ -88,7 +88,12 @@ public class UAS extends AgentModel {
 		        else if (action.equals("thrust(off)")) 
 		        	speedValue = 0;  
 		  }
+*/		  
+		  PVector position = (PVector) agentState.getPosition();
+		  double speedValue = agentState.getSpeedValue();
+		  double movingAngle = agentState.getCompassAngle()+agentState.getSpeedAngle(); //TODO for now speedAngle is always zero 
 		  
+		  List<String> toexec = agentState.getAllActions();
 		  
 		  double movingAngle = compassAngle+agentState.getSpeedAngle();
 		  
