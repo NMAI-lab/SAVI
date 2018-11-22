@@ -37,11 +37,13 @@ int simTime;      // stores simulation time (in seconds)
 int simTimeDelta; // discrete-time step (in seconds)
 boolean simPaused;// simulation paused or not
 float collisionRadius; // collision detection radius (km)
-PImage backgroundMap; // satellite image of the area
+//PImage backgroundMap; // satellite image of the area
 
 Aircraft aircraft;  // single aircraft
 Aircraft aircraft2;  // single aircraft
 UAS uas;  // single UAS
+Tree[] trees = new Tree[60];
+House[] houses = new House[15];
 
 JasonMAS jasonAgents; // the BDI agent
 
@@ -81,8 +83,23 @@ public void setup() {
   aircraft2 = new Aircraft(2, "AircraftFlightData2.csv"); 
   //uas = new UAS(0, new PVector(2*width/3,height/3));            // UAS's constructor is called
   uas = new UAS(0, new PVector(width/2,height/2)); 
+
+  for(int i = 0; i < trees.length; i++) //Put trees
+  { 
+	  int a = (int)(random (991));
+	 int b = (int)(random (740));
+    trees[i] = new Tree(i, a, b);
+  }
   
-  backgroundMap = loadImage("OttawaAirport_v1.PNG"); // load image file
+  for(int i = 0; i < houses.length; i++) //Put trees
+  { 
+	  int a = (int)(random (991));
+	 int b = (int)(random (740));
+    houses[i] = new House(i, a, b);
+  }
+  
+  
+  //backgroundMap = loadImage("OttawaAirport_v1.PNG"); // load image file
   
         // smoother rendering (optional)
   frameRate(20); // max 60 draw() calls per real second. (Can make it a larger value for the simulation to go faster)
@@ -146,14 +163,21 @@ public void draw(){
   // 3. VISUALIZATION
   //------------------
   background(240); // white background
-  image(backgroundMap,0,0); // sat map
+ // image(backgroundMap,0,0); // sat map
   
   //aircraft.drawPath("curve");
   //aircraft.drawAircraft();
   //aircraft2.drawPath("curve");
   //aircraft2.drawAircraft();
   drawUAS(uas.getPosition(), uas.getCompassAngle());
-  
+  for(int i = 0; i < trees.length; i++) //Makes all trees on screen.
+  {
+    trees[i].drawTree();
+  }
+  for(int i = 0; i < houses.length; i++) //Makes all trees on screen.
+  {
+    houses[i].drawHouse();
+  }
   // 4. Debugging/Output data
   displayDebugText(collided);
   
@@ -511,5 +535,88 @@ class Aircraft {
     ellipse(position.x, position.y, 13, 13); // draw radius = 10
   }
 }
+
+class Tree {
+	  //-----------------------------------------
+	  // DATA (or state variables)
+	  //-----------------------------------------
+	  
+	  int ID;
+	  int X;
+	  int Y;
+	  //PVector position; // 2D: (longitude, latitude)  
+	  
+	  //-----------------------------------------
+	  // METHODS (functions that act on the data)
+	  //-----------------------------------------
+	  // Constructor: called when an object is created using
+	  //              the "new" keyword. It's the only method
+	  //              that doesn't have a type (not even void).
+	  Tree(int id, int x, int y) {
+	    // Initialize data values
+	    ID = id;
+	   X = x;
+	   Y = y;
+	    //position = new PVector(x,y);
+	    
+	  }	  
+	    
+	  // Visualize
+	  public void drawTree(){	      
+	    // Draw Tree
+		  PShape s;
+		  stroke(0);
+		  //triangle(uasposition.x+10, uasposition.y,uasposition.x,uasposition.y+10,uasposition.x+20,uasposition.y+10);
+		  s = loadShape("tree.svg");
+		  shape(s, X, Y,15,15);
+	    
+	    //fill(0,225,0);
+	    //rect(X, Y, 5, 5);	    
+	  }
+	  
+	}
+class House {
+	  //-----------------------------------------
+	  // DATA (or state variables)
+	  //-----------------------------------------
+	  
+	  int ID;
+	  int X;
+	  int Y;
+	  //PVector position; // 2D: (longitude, latitude)  
+	  
+	  //-----------------------------------------
+	  // METHODS (functions that act on the data)
+	  //-----------------------------------------
+	  // Constructor: called when an object is created using
+	  //              the "new" keyword. It's the only method
+	  //              that doesn't have a type (not even void).
+	  House(int id, int x, int y) {
+	    // Initialize data values
+	    ID = id;
+	   X = x;
+	   Y = y;
+	    //position = new PVector(x,y);
+	    
+	  }	  
+	    
+	  // Visualize
+	  public void drawHouse(){	      
+	    // Draw Tree
+		  PShape s;
+		  stroke(0);
+		  //triangle(uasposition.x+10, uasposition.y,uasposition.x,uasposition.y+10,uasposition.x+20,uasposition.y+10);
+		  s = loadShape("home.svg");
+		  shape(s, X, Y,25,25);
+	    
+	    //fill(0,225,0);
+	    //rect(X, Y, 5, 5);	    
+	  }
+	  
+	}
+
 }
+
+
+
 
