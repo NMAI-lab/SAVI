@@ -68,28 +68,10 @@ public class UAS extends AgentModel {
 	  // also includes coordinates of threat.
 	  public void update(PVector threat){
 
-/*		  
+
 		  PVector position = (PVector) agentState.getPosition();
 		  double speedValue = agentState.getSpeedValue();
-		  double movingAngle = agentState.getCompassAngle()+agentState.getSpeedAngle(); //TODO for now speedAngle is always zero 
-		  
-		  List<String> toexec = agentState.getAllActions();
-		  
-		  for (String action : toexec) {
-			  System.out.println("UAS doing:"+ action);
-			    if (action.equals("turn(left)")) //TODO: make these MOD 2 pi ? 
-		        	movingAngle += Math.PI/2.0;
-		        else if (action.equals("turn(right)")) 
-		        	movingAngle -= Math.PI/2.0;
-		        else if (action.equals( "thrust(on)")) 
-		        	speedValue = SPEED;
-		        else if (action.equals("thrust(off)")) 
-		        	speedValue = 0;  
-		  }
-*/		  
-		  PVector position = (PVector) agentState.getPosition();
-		  double speedValue = agentState.getSpeedValue();
-		  double movingAngle = agentState.getCompassAngle()+agentState.getSpeedAngle(); //TODO for now speedAngle is always zero 
+		  double compassAngle = agentState.getCompassAngle(); //TODO for now speedAngle is always zero 
 		  
 		  List<String> toexec = agentState.getAllActions();
 		  
@@ -98,9 +80,9 @@ public class UAS extends AgentModel {
 		  for (String action : toexec) {
 			  System.out.println("UAS doing:"+ action);
 			    if (action.equals("turn(left)")) //TODO: make these MOD 2 pi ? 
-		        	movingAngle += Math.PI/16.0;
+		        	compassAngle += Math.PI/16.0;
 		        else if (action.equals("turn(right)")) 
-		        	movingAngle -= Math.PI/16.0;
+		        	compassAngle -= Math.PI/16.0;
 		        else if (action.equals( "thrust(on)")) 
 		        	speedValue = SPEED;
 		        else if (action.equals("thrust(off)")) 
@@ -108,18 +90,22 @@ public class UAS extends AgentModel {
 		  }
 		  
 		  
+		  double movingAngle = compassAngle+agentState.getSpeedAngle();
+		  
+		  
 		  double cosv = Math.cos(movingAngle);
 		  double sinv = Math.sin(movingAngle);
 		  
-		  //double cosv = Math.cos(agentState.getCompassAngle());
-		  //double sinv = Math.sin(agentState.getCompassAngle());
 		  
 		  //	TODO: calculate new position
 		  PVector temp = new PVector(Math.round(cosv*speedValue), Math.round(sinv*speedValue));
 		  position.add(temp);
 		  
+		  //put info back into agentstate
 		  agentState.setPosition(position);
-		  //agentState.setCompassAngle(movingAngle);
+		  agentState.setCompassAngle(compassAngle);
+		  agentState.setSpeedValue(speedValue);
+		  
 		  //		  
 		  //}
 		  //TODO: calculate what we can see
