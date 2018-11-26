@@ -114,6 +114,12 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
         	System.out.println(vi.toPercept());
         }
         	
+        // Perceive agent's speed and speed direction
+        double speed = agentState.getSpeedValue();
+        double speedAngle = agentState.getSpeedAngle();
+        String speedDataPercept = "speedData("+speedAngle+","+speed+")";
+        l.add(Literal.parseLiteral(speedDataPercept));
+        System.out.println(speedDataPercept);
         
         return l;
     }
