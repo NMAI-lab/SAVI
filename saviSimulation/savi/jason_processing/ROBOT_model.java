@@ -152,16 +152,17 @@ public void draw(){
   drawUAS(uas.getPosition(), uas.getCompassAngle());
   for(int i = 0; i < NUMBER_TREES; i++) //Makes all trees on screen.
   {
-    trees.get(i).drawTree();
+    //trees.get(i).drawTree();
   }
   for(int i = 0; i < NUMBER_HOUSES; i++) //Makes all trees on screen.
   {
-    houses.get(i).drawHouse();
+    //houses.get(i).drawHouse();
   }
-  for(int i = 0; i < NUMBER_THREATS; i++) //Makes all trees on screen.
-  {
-    threats.get(i).drawThreat();
-  }    
+  //for(int i = 0; i < NUMBER_THREATS; i++) //Makes all trees on screen.
+  //{
+  //  threats.get(i).drawThreat();
+  threats.get(0).drawThreat();
+  //}    
 }
 
 
