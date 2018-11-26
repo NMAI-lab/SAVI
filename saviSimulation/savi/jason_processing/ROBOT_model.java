@@ -175,7 +175,7 @@ public void drawUAS(PVector uasposition, double compassAngle){
   // Draw UAS
   stroke(0); 
   PShape s;
-  s = loadShape("airplane.svg");
+  s = loadShape("robot.svg");
   
   //s.scale((float) 0.1);
   //rotate to CompassAngle

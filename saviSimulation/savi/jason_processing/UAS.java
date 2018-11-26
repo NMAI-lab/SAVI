@@ -93,7 +93,7 @@ public class UAS extends AgentModel {
 		  
 		  List<String> toexec = agentState.getAllActions();
 		  
-		  //System.out.print(agentState.getAllActions().size());
+		  System.out.print(agentState.getAllActions().size());
 		  
 		  for (String action : toexec) {
 			  System.out.println("UAS doing:"+ action);
@@ -105,7 +105,7 @@ public class UAS extends AgentModel {
 		        	speedValue = SPEED;
 		        else if (action.equals("thrust(off)")) 
 		        	speedValue = 0;  
-		  //}
+		  }
 		  
 		  
 		  double cosv = Math.cos(movingAngle);
@@ -119,9 +119,9 @@ public class UAS extends AgentModel {
 		  position.add(temp);
 		  
 		  agentState.setPosition(position);
-		  agentState.setCompassAngle(movingAngle);
+		  //agentState.setCompassAngle(movingAngle);
 		  //		  
-		  }
+		  //}
 		  //TODO: calculate what we can see
 		  
 		//get relative position of aircraft to UAS:
