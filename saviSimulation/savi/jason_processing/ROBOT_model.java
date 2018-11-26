@@ -42,9 +42,9 @@ boolean simPaused;// simulation paused or not
 float collisionRadius; // collision detection radius (km)
 
 UAS uas;  // single UAS
-List<Tree> trees = new ArrayList<>(); //List of trees
-List<House> houses = new ArrayList<>(); //List of houses
-List<Threat> threats = new ArrayList<>(); //List of threats
+List<Tree> trees = new ArrayList<Tree>(); //List of trees
+List<House> houses = new ArrayList<House>(); //List of houses
+List<Threat> threats = new ArrayList<Threat>(); //List of threats
 
 JasonMAS jasonAgents; // the BDI agent
 
@@ -237,6 +237,7 @@ class Threat {
 	  PVector position;
 	  PVector velocity;     
 	  float maxSpeed; 
+	  Random rand;
 
 	  //-----------------------------------------
 	  // METHODS (functions that act on the data)
@@ -250,6 +251,7 @@ class Threat {
 	    position = new PVector(x,y);
 	    velocity = new PVector(x_v, y_v); 
 	    maxSpeed = MS;// the max speed 
+	    rand = new Random();
 	  }
   
   // State Update: Randomly move up, down, left, right, or stay in one place
@@ -259,7 +261,6 @@ class Threat {
     // The size of the neighborhood depends on the range in this line 
     // -1 = left/down, 0 = stay at your spot, 1 = right/up
     // To obtain -1, 0 or 1 use int(random(-2,2))
-    Random rand = new Random();
     while (temp.mag() == 0){
       temp = new PVector(stepsize * (rand.nextInt(2) + -2), stepsize * (rand.nextInt(2) + -2));
     }
