@@ -95,6 +95,7 @@ public class UAS extends AgentModel {
 		  position.add(temp);
 		  
 		  agentState.setPosition(position);
+		  agentState.setSpeedValue(speedValue);
 		  
 		  //TODO: calculate what we can see
 		  
