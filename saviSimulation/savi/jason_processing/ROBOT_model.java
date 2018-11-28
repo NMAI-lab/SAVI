@@ -25,9 +25,6 @@ import java.io.IOException;
 public class ROBOT_model extends PApplet {
 
 /********** CONSTANTS **********/
-int	NUMBER_TREES = 60;
-int NUMBER_HOUSES =15;
-int NUMBER_THREATS =10; 
 int X_PIXELS = 991;
 int Y_PIXELS = 740;
 int FRAME_RATE = 20;
@@ -42,9 +39,7 @@ boolean simPaused;// simulation paused or not
 float collisionRadius; // collision detection radius (km)
 
 UAS uas;  // single UAS
-List<Tree> trees = new ArrayList<Tree>(); //List of trees
-List<House> houses = new ArrayList<House>(); //List of houses
-List<Threat> threats = new ArrayList<Threat>(); //List of threats
+Threat threats;
 
 JasonMAS jasonAgents; // the BDI agent
 
@@ -79,18 +74,10 @@ public void setup() {
     
   Random rand = new Random();
     
-  for(int i = 0; i < NUMBER_TREES; i++) //Put trees
-  { //_PIXELS is the maximum and the 1 is our minimum.
-    trees.add(new Tree(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1));
-  }
-  for(int i = 0; i < NUMBER_HOUSES; i++) //Put houses
-  { //_PIXELS is the maximum and the 1 is our minimum.
-    houses.add(new House(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1));
-  }
-  for(int i = 0; i < NUMBER_THREATS; i++) //Put threats
-  { //_PIXELS is the maximum and the 1 is our minimum.
-    threats.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, rand.nextInt(MAX_IN_X_VEL_THREAT) + 1, rand.nextInt(MAX_IN_Y_VEL_THREAT) + 1, 1 + rand.nextFloat() * (MAX_SPEED - 1)));
-  }
+
+
+    threats = new Threat(0, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, rand.nextInt(MAX_IN_X_VEL_THREAT) + 1, rand.nextInt(MAX_IN_Y_VEL_THREAT) + 1, 1 + rand.nextFloat() * (MAX_SPEED - 1));
+  
   
         // smoother rendering (optional)
   frameRate(FRAME_RATE); // max 60 draw() calls per real second. (Can make it a larger value for the simulation to go faster)
@@ -122,47 +109,20 @@ public void draw(){
   
   // 2. STATE UPDATE (SIMULATION)
   //----------------------------- 
-  /*
-  String dir ="";
-  if (abs(deltax)>abs(deltay)){
-	 if (deltax>0) 
-		 dir = "west";  
-	 else
-		 dir = "east";
-  } else {
-	  if (deltay>0) 
-			 dir = "north"; 
-		 else
-			 dir = "south";
-	  }
-	  
-  String percept= "seeaircraft("+dir+")";*/
+  
   
   //  2.3 UAS & THREATS position
-  uas.update(threats.get(1).position); //CRIS: TO PROPERLY DEFINE, JUST TO MAKE SURE IT COMPILE MY CHANGES
+  uas.update(threats.position); //CRIS: TO PROPERLY DEFINE, JUST TO MAKE SURE IT COMPILE MY CHANGES
   
-  for(int i = 0; i < NUMBER_THREATS; i++) //Put threats
-  { //_PIXELS is the maximum and the 1 is our minimum.
-    threats.get(i).update();
-  }  
+
+    threats.update();
+ 
   
   // 3. VISUALIZATION
   //------------------
   background(240); // white background 
   drawUAS(uas.getPosition(), uas.getCompassAngle());
-  for(int i = 0; i < NUMBER_TREES; i++) //Makes all trees on screen.
-  {
-    //trees.get(i).drawTree();
-  }
-  for(int i = 0; i < NUMBER_HOUSES; i++) //Makes all trees on screen.
-  {
-    //houses.get(i).drawHouse();
-  }
-  //for(int i = 0; i < NUMBER_THREATS; i++) //Makes all trees on screen.
-  //{
-  //  threats.get(i).drawThreat();
-  threats.get(0).drawThreat();
-  //}    
+  threats.drawThreat();  
 }
 
 
@@ -200,11 +160,7 @@ public void resetSimulation (){
   uas.reset(); 
               
   
-  //Reset threats
-  for(int i = 0; i < NUMBER_THREATS; i++) //Makes all trees on screen.
-  {
-    threats.get(i).reset();
-  } 
+ 
                
   // Unpause the simualtion
   simPaused = false;
@@ -287,65 +243,8 @@ class Threat {
 	  s = loadShape("warning.svg");
 	  shape(s, position.x, position.y,10,10);      
   }
-  
-}
+ }
 
-class Tree {
-	  //-----------------------------------------
-	  // DATA (or state variables)
-	  //-----------------------------------------
-	  int ID;
-	  int X;
-	  int Y;	  
-	  //-----------------------------------------
-	  // METHODS (functions that act on the data)
-	  //-----------------------------------------
-	  // Constructor: called when an object is created using
-	  //              the "new" keyword. It's the only method
-	  //              that doesn't have a type (not even void).
-	  Tree(int id, int x, int y) {
-	    // Initialize data values
-	    ID = id;
-	    X = x;
-	    Y = y;    
-	  }	     
-	  // Visualize
-	  public void drawTree(){	      
-	    // Draw Tree
-		  PShape s;
-		  stroke(0);
-		  s = loadShape("tree.svg");
-		  shape(s, X, Y,15,15);    
-	  }	  
-	}
 
-class House {
-	  //-----------------------------------------
-	  // DATA (or state variables)
-	  //-----------------------------------------	  
-	  int ID;
-	  int X;
-	  int Y;
-	  //-----------------------------------------
-	  // METHODS (functions that act on the data)
-	  //-----------------------------------------
-	  // Constructor: called when an object is created using
-	  //              the "new" keyword. It's the only method
-	  //              that doesn't have a type (not even void).
-	  House(int id, int x, int y) {
-	    // Initialize data values
-	    ID = id;
-	    X = x;
-	    Y = y;
-	  }	  
-	  // Visualize
-	  public void drawHouse(){	      
-	    // Draw House
-		  PShape s;
-		  stroke(0);
-		  s = loadShape("home.svg");
-		  shape(s, X, Y,25,25);  
-	  }	  
-	}
 
 }
