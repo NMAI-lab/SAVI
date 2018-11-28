@@ -5,6 +5,7 @@ import jason.asSemantics.ActionExec;
 import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Literal;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.infra.centralised.BaseCentralisedMAS;
 import processing.core.PVector;
@@ -97,7 +98,10 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
         return name;
     }
 
-    // this method just add some perception for the agent
+    
+    /**
+     * This method just add some perception for the agent
+     */
     @Override
     public List<Literal> perceive() {
     	System.out.println("Perceiving");
@@ -124,56 +128,46 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
         return l;
     }
 
-    // this method get the agent actions //this is called back by the agent code 
+
+    /**
+     * This method gets the agent actions. This is called back by the agent code
+     */ 
     @Override
     public void act(ActionExec action) {
-    	//System.out.println("MYAgent " + getAgName() + " is doing: " + action.getActionTerm());
+    	// Get the action term
+    	Structure actionTerm = action.getActionTerm();
     	
-        getTS().getLogger().info("Agent " + getAgName() + " is doing: " + action.getActionTerm());
-        System.out.println("MYAgent " + getAgName() + " is doing: " + action.getActionTerm());
+    	// Log the action
+    	getTS().getLogger().info("Agent " + getAgName() + " is doing: " + actionTerm);
+        System.out.println("MYAgent " + getAgName() + " is doing: " + actionTerm);
         
-        //pass changes to model
-        //myModel.updateModel(action.getActionTerm());
-       
+        // Define the action string
         String actionString = "";
 
+        // Define terms for possible actions (should move these to private class parameters)
         Term left = Literal.parseLiteral("turn(left)");
         Term right = Literal.parseLiteral("turn(right)");
         Term go = Literal.parseLiteral("thrust(on)");
         Term stop = Literal.parseLiteral("thrust(off)");
-
         
-        
-        if (action.equals(left)) 
+        // Check what action is being performed, update actionString accordingly.
+        if (actionTerm.equals(left)) 
         	actionString = "turn(left)";
-        else if (action.equals(right)) 
+        else if (actionTerm.equals(right)) 
         	actionString = "turn(right)";
-        else if (action.equals(go)) 
+        else if (actionTerm.equals(go)) 
         	actionString = "thrust(on)";
-        else if (action.equals(stop))
+        else if (actionTerm.equals(stop))
         	actionString = "thrust(off)";
-        
-        
-        // === hack: for now act randomly
-        if (rand.nextBoolean()) 
-        	actionString = "thrust(on)";
-        else if (rand.nextBoolean())
-        	actionString = "thrust(off)";
-        else if (rand.nextBoolean())
-        	if (rand.nextBoolean())
-            	actionString = "turn(right)";
-        	else
-        		actionString = "turn(left)";
-        System.out.println("MYAgent " + getAgName() + " changed this to: " + actionString);
-        // TODO: remove the above block once agent is coded (via Jason agentspeak) to do something useful 
 
+        // Add the action to agentState
         agentState.addAction(actionString);
 
-        // set that the execution was ok
+        // Set that the execution was OK and flag it as complete.
         action.setResult(true);
         actionExecuted(action);
-        
     }
+    
 
     @Override
     public boolean canSleep() {
