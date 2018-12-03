@@ -32,13 +32,13 @@
 // Turn to face a threat to the left
 +!face(threat) :	(aircraft(DIR, DIST) &
 					DIR < -PI/4)
-	<- 	turn(left);
+	<- 	turn(right);
 		!face(threat).
 
 // Turn to face a threat to the right
 +!face(threat) :	(aircraft(DIR, DIST) &
 					DIR > PI/4)
-	<- 	turn(right);
+	<- 	turn(left);
 		!face(threat).
 
 // Facing the threat, follow it
