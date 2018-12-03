@@ -14,7 +14,6 @@
   */
 // Should be to find a threat
 !follow(threat). 
-//!follow(threat).	// Follow threats
 
 /*
  * Plans
