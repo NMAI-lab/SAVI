@@ -75,7 +75,7 @@ public class UAS extends AgentModel {
 		  
 		  List<String> toexec = agentState.getAllActions();
 		  
-		  System.out.print(agentState.getAllActions().size());
+		  System.out.print("---------number of agent actions: "+agentState.getAllActions().size());
 		  
 		  for (String action : toexec) {
 			  System.out.println("UAS doing:"+ action);
@@ -109,6 +109,8 @@ public class UAS extends AgentModel {
 		  //		  
 		  //}
 		  //TODO: calculate what we can see
+		 
+		  System.out.println("Threat coordinates: ("+threat.x+", "+threat.y+")");
 		  
 		//get relative position of aircraft to UAS:
 		  float deltax = threat.x - getPosition().x;
