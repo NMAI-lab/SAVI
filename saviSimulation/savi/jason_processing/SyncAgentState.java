@@ -1,12 +1,14 @@
 package savi.jason_processing;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import processing.core.PVector;
 
 public class SyncAgentState {
+	
+	// Hash map of the perception parameters
+	private Map<String,Double> perceptionData;
+	private long counter;
 	
 	private PVector position;
 	private double speedAngle;
@@ -19,6 +21,40 @@ public class SyncAgentState {
 	private ArrayList<VisibleItem> cameraInfo;
 	
 	private LinkedList<String> actions;
+	
+	/**
+	 *  Constructor for the SyncAgentState class.
+	 */
+	public SyncAgentState() {
+		this.counter = 0;
+		this.perceptionData = new HashMap();
+		this.cameraInfo = new ArrayList<VisibleItem>(); 
+		this.actions = new LinkedList<String>();
+		this.pauseSignal = false;
+	}
+	
+	private synchronized void incrementCounter() {
+		// Increment the counter to identify that the perception data was refreshed.
+		this.counter++;
+		if (this.counter == (Long.MAX_VALUE - 1)) {
+			this.counter = 0;
+		}
+	}
+	
+	public synchronized double getPerceptionDataItem(String itemKey) {
+		return perceptionData.get(itemKey);
+	}
+	
+	public synchronized long getCounter() {
+		return this.counter;
+	}
+	
+	public synchronized void setPerceptionDataItem(String itemKey, double item) {
+		this.incrementCounter();
+		this.perceptionData.put(itemKey, item);
+	}
+	
+	
 	
 	public synchronized double getSpeedValue() {
 		return speedValue;
@@ -95,10 +131,4 @@ public class SyncAgentState {
 		pauseSignal = !pauseSignal;
 	}
 	
-	public SyncAgentState() {
-	  cameraInfo = new ArrayList<VisibleItem>(); 
-	  actions = new LinkedList<String>();
-	  pauseSignal = false;
-	  
-	}
 }
