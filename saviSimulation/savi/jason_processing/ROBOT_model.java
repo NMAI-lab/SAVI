@@ -12,6 +12,7 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.infra.centralised.BaseCentralisedMAS;
+import javafx.scene.transform.Rotate;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -34,6 +35,9 @@ int FRAME_RATE = 20;
 int MAX_IN_X_VEL_THREAT = 20;
 int MAX_IN_Y_VEL_THREAT = 20;
 float MAX_SPEED = 60;
+
+int VISION_DISTANCE = 300;
+
 
 /************* Global Variables *******************/
 int simTime;      // stores simulation time (in seconds) 
@@ -75,8 +79,8 @@ public void setup() {
   
   //ag.run();
   
-  uas = new UAS(0, new PVector(X_PIXELS/2,Y_PIXELS/2)); 
-    
+  uas = new UAS(0, new PVector(X_PIXELS/2,Y_PIXELS/2));
+  
   Random rand = new Random();
     
   for(int i = 0; i < NUMBER_TREES; i++) //Put trees
@@ -139,7 +143,11 @@ public void draw(){
   String percept= "seeaircraft("+dir+")";*/
   
   //  2.3 UAS & THREATS position
-  uas.update(threats.get(1).position); //CRIS: TO PROPERLY DEFINE, JUST TO MAKE SURE IT COMPILE MY CHANGES
+  //uas.update(threats.get(1).position);
+  uas.update(VISION_DISTANCE,threats,trees,houses);
+  //CRIS: TO PROPERLY DEFINE, JUST TO MAKE SURE IT COMPILE MY CHANGES
+  //GUILLERMO: MODIFIED THIS TO PERCEPT treats, trees and houses within the vision angle
+  //and a vision distance
   
   for(int i = 0; i < NUMBER_THREATS; i++) //Put threats
   { //_PIXELS is the maximum and the 1 is our minimum.
@@ -148,8 +156,10 @@ public void draw(){
   
   // 3. VISUALIZATION
   //------------------
-  background(240); // white background 
-  drawUAS(uas.getPosition(), uas.getCompassAngle());
+  background(240); // white background
+  
+  drawUAS(uas);
+  
   for(int i = 0; i < NUMBER_TREES; i++) //Makes all trees on screen.
   {
     trees.get(i).drawTree();
@@ -166,24 +176,50 @@ public void draw(){
 
 
 // Visualize
-public void drawUAS(PVector uasposition, double compassAngle){
-  // Draw collision detection radius
-  noStroke();
-  fill(220,140,220,40);
-  ellipse(uasposition.x, uasposition.y, collisionRadius, collisionRadius);
-  
+public void drawUAS(UAS uas){
+	
+  //PVector uasposition, double compassAngle	
+  PVector p1;
+	
   // Draw UAS
   stroke(0); 
   PShape s;
-  s = loadShape("robot.svg");
   
-  //s.scale((float) 0.1);
-  //rotate to CompassAngle
-  s.rotate((float) ((float) compassAngle+(float)Math.PI/2.0));
-  //s.rotate((float) compassAngle);
-  //shape(s);
-  shape(s, uasposition.x, uasposition.y, 26, 26);  
-  System.out.println("UAS at"+ uasposition.x +","+ uasposition.y);  
+  s=loadShape("robot.svg");
+  //shapeMode(CENTER);
+  
+  // translate to center image on uasposition.x, uasposition.y
+  s.translate(-s.width/2,-s.height/2);
+  
+  s.rotate((float) ((float)uas.getCompassAngle()+Math.PI/2));
+  
+  shape(s, uas.getPosition().x, uas.getPosition().y, 26, 26);
+  
+  //draw vision		  
+  noFill();
+  
+  arc(uas.getPosition().x, uas.getPosition().y, VISION_DISTANCE*2, VISION_DISTANCE*2,(float)uas.getCompassAngle()-(float)Math.PI/2, (float)uas.getCompassAngle()+(float)Math.PI/2);
+  
+  ArrayList<VisibleItem> items = new ArrayList<VisibleItem>();
+  
+  items = uas.agentState.getCameraInfo(); 
+  
+  for(int i=0; i< items.size(); i++) {
+	  
+	  double angle = (uas.getCompassAngle()+items.get(i).getAngle());// % 2* Math.PI;
+	  
+	  //angle = A.get(i).getAngle();
+	  
+	  double cosv = Math.cos(angle);
+	  double sinv = Math.sin(angle);
+  
+	  p1 = new PVector(Math.round(cosv*items.get(i).getDistance())+uas.getPosition().x, Math.round(sinv*items.get(i).getDistance())+uas.getPosition().y);
+	  
+	  ellipse(p1.x,p1.y, 26, 26);
+	  
+  }
+  
+  
 }
 
 //************ UTILITY FUNCTIONS *****************/
@@ -284,6 +320,10 @@ class Threat {
 	  PShape s;
 	  stroke(0);
 	  s = loadShape("warning.svg");
+	  
+	// translate to center image on sposition.x, position.y
+	  s.translate(-s.width/2,-s.height/2);
+	  
 	  shape(s, position.x, position.y,10,10);      
   }
   
@@ -314,6 +354,10 @@ class Tree {
 		  PShape s;
 		  stroke(0);
 		  s = loadShape("tree.svg");
+		  
+		// translate to center image on sposition.x, position.y
+		  s.translate(-s.width/2,-s.height/2);
+		  
 		  shape(s, X, Y,15,15);    
 	  }	  
 	}
@@ -343,6 +387,10 @@ class House {
 		  PShape s;
 		  stroke(0);
 		  s = loadShape("home.svg");
+		  
+		// translate to center image on sposition.x, position.y
+		  s.translate(-s.width/2,-s.height/2);
+		  
 		  shape(s, X, Y,25,25);  
 	  }	  
 	}
