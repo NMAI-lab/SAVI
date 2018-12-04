@@ -72,14 +72,14 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
     	
     	
           try {
-        	  Thread.sleep(1000);
+        	  //Thread.sleep(1000);
         	  running= true;
 
             while (isRunning()) {
                 // calls the Jason engine to perform one reasoning cycle
                 logger.fine("Reasoning....");
                 getTS().reasoningCycle();// sense();//reasoningCycle();
-                Thread.sleep(100);
+                //Thread.sleep(100);
                 
                 if (getTS().canSleep())
                 	
