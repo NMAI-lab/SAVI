@@ -118,7 +118,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
     @Override
     public List<Literal> perceive() {
     	  	    	
-    	while(this.checkForFreshPerception() == false) {}	// Busy wait for a fresh perception. TODO: is there a way to do this more elegantly?
+    	while(!this.checkForFreshPerception()) {}	// Busy wait for a fresh perception. TODO: is there a way to do this more elegantly? Better to suspend the thread if possible.
     	
     	System.out.println("Perceiving perception "+ this.lastPerceptionId);
     	
