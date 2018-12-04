@@ -27,20 +27,13 @@ import java.util.logging.Logger;
 public class SimpleJasonAgent extends AgArch implements Runnable {
 	
 	private String name;
-	//private AgentModel myModel;
 	private SyncAgentState agentState;
-	
 	private boolean running; 
-
     private static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
-    
     private Random rand;
+    private long lastPerceptionId;		// ID of the last perception received
+    private boolean firstPerception;	// Flag for noting if any perceptions have ever been received (deal with the first ID issue)
 
-    //public static void main(String[] a) {
-        //BaseCentralisedMAS.getRunner().setupLogger();
-        //SimpleJasonAgent ag = new SimpleJasonAgent();
-        //ag.run();
-    //}
 
     public SimpleJasonAgent(String id, SyncAgentState modelAgentState) { //need to make the UAS class public so that the AgArch can refer back to it
     	try {
@@ -48,6 +41,10 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
         } catch (Exception e) {
             System.err.println("Error setting up logger:" + e);
         }
+    	
+    	// Set parameters for the first perception ID
+    	this.lastPerceptionId = 0;
+    	this.firstPerception = true;
     	
     	rand= new Random(100L); //the agent will act randomly but always the same way across executions 
     	
@@ -97,11 +94,33 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
         return name;
     }
 
+    
+    /**
+     * Check if there is fresh data to perceive. Don't want to read the same perception data more than once
+     * @return
+     */
+    boolean checkForFreshPerception() {
+    	boolean freshData = false;		// Return flag - default is false (perception is not fresh)
+    	long currentPerceptId = agentState.getCounter();
+    	
+    	// Is this the first time perceiving? Is the perception ID different from the last perception?
+    	if ((this.firstPerception) || (currentPerceptId != this.lastPerceptionId)) {
+    		this.firstPerception = false;	// No longer the first perception
+    		freshData = true;				// There is fresh data
+    		this.lastPerceptionId = currentPerceptId;	// Update the perception ID
+    	}
+
+    	// Return the result    	
+    	return freshData;
+    }
+    
     // this method just add some perception for the agent
     @Override
     public List<Literal> perceive() {
-    	System.out.println("Perceiving");
-    	//TODO: prepare perception from current state of the world rather than just having the latest one here.
+    	  	    	
+    	while(this.checkForFreshPerception() == false) {}	// Busy wait for a fresh perception. TODO: is there a way to do this more elegantly?
+    	
+    	System.out.println("Perceiving perception "+ this.lastPerceptionId);
     	
         List<Literal> l = new ArrayList<Literal>();
         
