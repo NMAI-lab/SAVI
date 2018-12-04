@@ -7,66 +7,94 @@
 /*
  * Set initial beliefs
  */
-  // None for now
+//pi :- 3.14159265359.
+ //TURN_ANGLE :- PI/16.
+//threat(aircraft(DIR, DIST))	// Aircraft are threats
+//followable(threat(X))	// Threats are folowable
+//facable(followable(X))	// Followable objects are faceable
+//findable(faceable(X))	// Faceable objects are findable
  
  /*
   * Initial goals
   */
 // Should be to find a threat
-!follow(threat). 
+//!see(threat).
+//!face(threat).
+!follow(threat).
 
 /*
  * Plans
  */
 
-// Implement the finding of a threat
- +!find(threat) :	(not aircraft(X, Y))
-	<-	turn(left);
-		!find(threat).
+// !see threat -> agent should not be moving
++!see(threat) : speedData(HEADDING, SPEED) &
+				~SPEED == 0
+	<- 	thrust(off);
+		!see(threat).
 
-// Finding threat successded. Swicth to facing the threat
- +!find(threat):	(aircraft(DIR, DIST))
-	<-	!face(threat).
- 
+// Implement the finding of a threat
++!see(threat) :	(not aircraft(DIR, DIST))
+	<-	turn(left);
+		!see(threat).
+
++!see(threat) :	true
+	<-	!see(threat).
+
+// code duplication from the see threat plans
++!face(threat) :	(not aircraft(DIR, DIST))
+	<-	turn(left);
+		!face(threat).
+	
 // Turn to face a threat to the left
 +!face(threat) :	(aircraft(DIR, DIST) &
-					DIR < -PI/4)
-	<- 	turn(right);
+					DIR < (-3.1459/16))
+	<- 	turn(left);
 		!face(threat).
 
 // Turn to face a threat to the right
 +!face(threat) :	(aircraft(DIR, DIST) &
-					DIR > PI/4)
-	<- 	turn(left);
+					DIR > (3.1459/16))
+	<- 	turn(right);
 		!face(threat).
 
-// Facing the threat, follow it
-+!face(threat) :	(aircraft(DIR, DIST) &
-					-PI/4 < DIR &
-					DIR < PI/4)
-	<- 	!follow(threat).
++!face(threat) :	true
+	<- !face(threat).
 
-// Trying to face a threat, can't see one
-+!face(threat) :	(not aircraft(DIR, DIST))
-	<- !find(threat).
+// Chase threat
+
+// !see threat -> agent should not be moving, turn to find the threat
++!follow(threat) :	(not aircraft(DIR, DIST))
+	<-	thrust(off);
+		turn(left);
+		!follow(threat).
 	
- // Follow the threat if one has been found
+// Turn to face a threat to the left
++!follow(threat) :	(aircraft(DIR, DIST) &
+					DIR < (-3.1459/16))
+	<- 	turn(left);
+		!follow(threat).
+
+// Turn to face a threat to the right
++!follow(threat) :	(aircraft(DIR, DIST) &
+					DIR > (3.1459/16))
+	<- 	turn(right);
+		!follow(threat).
+
+// Follow the threat if one has been found
 +!follow(threat) :	aircraft(DIR, DIST) &
-					-PI/4 < DIR &
-					DIR < PI/4 //&
-					//speedData(HEADDING, SPEED) &
-					//SPEED == 0
+					-3.1459/16 < DIR &
+					DIR < 3.1459/16 &
+					speedData(HEADDING, SPEED) &
+					SPEED == 0
    <- thrust(on);
       !follow(threat).
 	  
-// Can't see the threat anymore, try to find it again
-+!follow(threat) :	not(aircraft(DIR, DIST)) |
-					(aircraft(DIR, DIST) &
-					not(-PI/4 < DIR &
-					DIR < PI/4))
-	<- 	thrust(off);
-		!face(threat).
++!follow(threat) :	true
+	<- !follow(threat).
 
-// Default goal - find a threat.
+		
+// Default plans.
++!see(threat).
++!face(threat).
 +!follow(threat).
 
