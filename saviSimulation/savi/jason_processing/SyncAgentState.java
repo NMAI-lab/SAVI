@@ -6,19 +6,12 @@ import processing.core.PVector;
 
 public class SyncAgentState {
 	
-	// Hash map of the perception parameters
-	private Map<String,Double> perceptionData;
-	private long counter;
 	
-	private PVector position;
-	private double speedAngle;
-	private double speedValue;
-	
-	private boolean pauseSignal;
-	
-	private double compassAngle;
-	
-	private ArrayList<VisibleItem> cameraInfo;
+	private Map<String,Double> perceptionData;		// Hash map of the perception parameters
+	private long counter;							// Counter used for tracking changes to state data
+	private PVector position;						// Vector for the agent's position. TODO: incorporate this into the map somehow
+	private boolean pauseSignal;					// For tracking the pause signal
+	private ArrayList<VisibleItem> cameraInfo;		// List of camera info
 	
 	private LinkedList<String> actions;
 	
@@ -27,12 +20,15 @@ public class SyncAgentState {
 	 */
 	public SyncAgentState() {
 		this.counter = 0;
-		this.perceptionData = new HashMap();
+		this.perceptionData = new HashMap<String,Double>();
 		this.cameraInfo = new ArrayList<VisibleItem>(); 
 		this.actions = new LinkedList<String>();
 		this.pauseSignal = false;
 	}
 	
+	/**
+	 * Increment the counter - to be done whenever the perception data is updated
+	 */
 	private synchronized void incrementCounter() {
 		// Increment the counter to identify that the perception data was refreshed.
 		this.counter++;
@@ -41,39 +37,54 @@ public class SyncAgentState {
 		}
 	}
 	
+	/**
+	 * Get the perception data item that corresponds to the itemKey
+	 * @param itemKey	key for the perception data that is sought
+	 * @return corresponding perception data
+	 */
 	public synchronized double getPerceptionDataItem(String itemKey) {
 		return perceptionData.get(itemKey);
 	}
 	
+	/**
+	 * Get the current counter value
+	 * @return	int counter
+	 */
 	public synchronized long getCounter() {
 		return this.counter;
 	}
 	
+	
+	/**
+	 * Set the perception data item type
+	 * @param itemKey
+	 * @param item
+	 */
 	public synchronized void setPerceptionDataItem(String itemKey, double item) {
 		this.incrementCounter();
 		this.perceptionData.put(itemKey, item);
 	}
 	
 	
-	
 	public synchronized double getSpeedValue() {
-		return speedValue;
+		return this.getPerceptionDataItem("speedValue");
 	}
 
 	public synchronized double getCompassAngle() {
-		return compassAngle;
+		return this.getPerceptionDataItem("compassAngle");
 	}
 
 	public synchronized void setSpeedValue(double speedValue) {
-		this.speedValue = speedValue;
+		this.setPerceptionDataItem("speedValue", speedValue);
 	}
 	
 	public synchronized void setCompassAngle(double compassAngle) {
-		this.compassAngle = compassAngle;
+		this.setPerceptionDataItem("compassAngle", compassAngle);
 	}
 	
 	/**
 	 * returns a shallow copy of the list of visible items that are seen
+	 * TODO: Should this be a deep copy?
 	 * @return
 	 */
 	public synchronized ArrayList<VisibleItem> getCameraInfo() {
@@ -83,6 +94,7 @@ public class SyncAgentState {
 	}
 
 	public synchronized void setCameraInfo(List<VisibleItem> cameraInfo) {
+		this.incrementCounter();
 		this.cameraInfo.clear();
 		this.cameraInfo.addAll(cameraInfo);
 	}
@@ -115,15 +127,16 @@ public class SyncAgentState {
 	}
 	
 	public synchronized void setPosition(PVector position) {
+		this.incrementCounter();
 		this.position = position;
 	}
 	
-	public synchronized void setSpeedAngle(double angle) {
-		this.speedAngle = angle;
+	public synchronized void setSpeedAngle(double speedAngle) {
+		this.setPerceptionDataItem("speedAngle", speedAngle);
 	}
 	
 	public synchronized double getSpeedAngle() {
-		return speedAngle;
+		return this.getPerceptionDataItem("speedAngle");
 	}
 
 	//TODO: use this to pause the agents [not working yet]
