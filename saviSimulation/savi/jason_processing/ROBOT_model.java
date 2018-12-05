@@ -12,7 +12,6 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.infra.centralised.BaseCentralisedMAS;
-import javafx.scene.transform.Rotate;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -36,7 +35,7 @@ int MAX_IN_X_VEL_THREAT = 20;
 int MAX_IN_Y_VEL_THREAT = 20;
 float MAX_SPEED = 60;
 
-int VISION_DISTANCE = 300;
+int PERCEPTION_DISTANCE = 300;
 
 
 /************* Global Variables *******************/
@@ -144,7 +143,7 @@ public void draw(){
   
   //  2.3 UAS & THREATS position
   //uas.update(threats.get(1).position);
-  uas.update(VISION_DISTANCE,threats,trees,houses);
+  uas.update(PERCEPTION_DISTANCE,threats,trees,houses);
   //CRIS: TO PROPERLY DEFINE, JUST TO MAKE SURE IT COMPILE MY CHANGES
   //GUILLERMO: MODIFIED THIS TO PERCEPT treats, trees and houses within the vision angle
   //and a vision distance
@@ -194,12 +193,13 @@ public void drawUAS(UAS uas){
   s.rotate((float) ((float)uas.getCompassAngle()+Math.PI/2));
   
   shape(s, uas.getPosition().x, uas.getPosition().y, 26, 26);
-  
-  //draw vision		  
+  	  
   noFill();
   
-  arc(uas.getPosition().x, uas.getPosition().y, VISION_DISTANCE*2, VISION_DISTANCE*2,(float)uas.getCompassAngle()-(float)Math.PI/2, (float)uas.getCompassAngle()+(float)Math.PI/2);
+  //draw perception area
+  arc(uas.getPosition().x, uas.getPosition().y, PERCEPTION_DISTANCE*2, PERCEPTION_DISTANCE*2,(float)uas.getCompassAngle()-(float)Math.PI/2, (float)uas.getCompassAngle()+(float)Math.PI/2);
   
+  //draw objects percepted
   ArrayList<VisibleItem> items = new ArrayList<VisibleItem>();
   
   items = uas.agentState.getCameraInfo(); 
@@ -208,13 +208,14 @@ public void drawUAS(UAS uas){
 	  
 	  double angle = (uas.getCompassAngle()+items.get(i).getAngle());// % 2* Math.PI;
 	  
-	  //angle = A.get(i).getAngle();
+	  //angle = items.get(i).getAngle();
 	  
 	  double cosv = Math.cos(angle);
 	  double sinv = Math.sin(angle);
   
 	  p1 = new PVector(Math.round(cosv*items.get(i).getDistance())+uas.getPosition().x, Math.round(sinv*items.get(i).getDistance())+uas.getPosition().y);
 	  
+	  // draw circle over items visualized
 	  ellipse(p1.x,p1.y, 26, 26);
 	  
   }
