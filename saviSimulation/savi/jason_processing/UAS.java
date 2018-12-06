@@ -1,10 +1,19 @@
 package savi.jason_processing;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
-//import processing.core.PApplet;
+import processing.core.PApplet;
+import processing.core.PShape;
 import processing.core.PVector;
+import savi.jason_processing.ROBOT_model.House;
+import savi.jason_processing.ROBOT_model.Threat;
+import savi.jason_processing.ROBOT_model.Tree;
+
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*;
 
 
 public class UAS extends AgentModel {
@@ -19,8 +28,7 @@ public class UAS extends AgentModel {
 	  //SyncAgentState agentState; // contains all relevant info = It's in the superclass!
 	  
 	  PVector initialPosition; // to be able to reset
-	  
-	  
+	 
 	  //-----------------------------------------
 	  // METHODS (functions that act on the data)
 	  //-----------------------------------------
@@ -39,8 +47,7 @@ public class UAS extends AgentModel {
 	    agentState.setPosition(position); //value type is PVector
 	    agentState.setSpeedAngle(0.0); //TODO: calculate velocity angle + magnitude
 	    agentState.setSpeedValue(0.0); //TODO
-	    //agentState.setCompassAngle(Math.PI); //TODO calculate direction we're facing
-	    agentState.setCompassAngle(0);
+	    agentState.setCompassAngle(-Math.PI/2); //TODO calculate direction we're facing
 	    
 	    agentState.setCameraInfo(new ArrayList<VisibleItem>()); //TODO: calculate what we can see
 	    
@@ -55,8 +62,8 @@ public class UAS extends AgentModel {
 	    
 	    
 	  }
-	 
-	  public PVector getPosition() {
+
+	public PVector getPosition() {
 		  return agentState.getPosition();
 	  }
 	  
@@ -66,8 +73,7 @@ public class UAS extends AgentModel {
 	  
 	  //// State Update: Read actions from queue, execute them
 	  // also includes coordinates of threat.
-	  public void update(PVector threat){
-
+	  public void update(int perceptionDistance, List<Threat> threats, List<Tree> trees, List<House> houses){
 
 		  PVector position = (PVector) agentState.getPosition();
 		  double speedValue = agentState.getSpeedValue();
@@ -75,7 +81,7 @@ public class UAS extends AgentModel {
 		  
 		  List<String> toexec = agentState.getAllActions();
 		  
-		  System.out.print(agentState.getAllActions().size());
+		  //System.out.print(agentState.getAllActions().size());
 		  
 		  for (String action : toexec) {
 			  System.out.println("UAS doing:"+ action);
@@ -90,46 +96,115 @@ public class UAS extends AgentModel {
 		  }
 		  
 		  
-		  double movingAngle = compassAngle+agentState.getSpeedAngle();
-		  
+		  double movingAngle = compassAngle+agentState.getSpeedAngle();	  
 		  
 		  double cosv = Math.cos(movingAngle);
 		  double sinv = Math.sin(movingAngle);
 		  
 		  
-		  //	TODO: calculate new position
+		  //calculate new position
 		  PVector temp = new PVector(Math.round(cosv*speedValue), Math.round(sinv*speedValue));
 		  position.add(temp);
 		  
-		  //put info back into agentstate
+		  //put info back into Agentstate
 		  agentState.setPosition(position);
+		  
+		  //Normalize angle between 0 and 2 Pi
+		  compassAngle = compassAngle % 2* Math.PI;
+		  
 		  agentState.setCompassAngle(compassAngle);
 		  agentState.setSpeedValue(speedValue);
 		  
-		  //		  
-		  //}
-		  //TODO: calculate what we can see
 		  
-		//get relative position of aircraft to UAS:
-		  float deltax = threat.x - getPosition().x;
-		  float deltay = threat.y - getPosition().y;
-		  
-		  //convert to polar
-		  double dist     = Math.sqrt(deltax*deltax + deltay*deltay);
-		  double theta = Math.atan2(deltay, deltax);
-		  double angle = (theta - getCompassAngle()) % 2* Math.PI; //(adjust to 0, 2pi) interval
-		  
+		  //calculate what we can see
 		  
 		  List<VisibleItem> things = new ArrayList<VisibleItem>();
+		  		  
+		  //Calculate threats detected
 		  
-		  if (angle < Math.PI/2. || angle > 3* Math.PI/2.) { 
-			//it's visible
-			things.add(new VisibleItem("aircraft", angle, dist));  
+		 for(int i=0; i<threats.size(); i++) { 
+		  
+			 //get relative position of aircraft to UAS:
+			 float deltax = threats.get(i).position.x - getPosition().x;
+			 float deltay = threats.get(i).position.y - getPosition().y;
+		  
+			 //calculate distance
+			 double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
+		  
+			 if(dist<perceptionDistance) {
+		  
+				 double theta = Math.atan2(deltay, deltax);
+				 double angle = (theta - getCompassAngle());// % 2* Math.PI; //(adjust to 0, 2pi) interval
+		  
+				 // to normalize between 0 to 2 Pi
+				 if(angle<0) angle+=2*Math.PI;
+				 if(angle>2*Math.PI) angle-=2*Math.PI;
+				
+				 
+				 if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
+		  			//it's visible 
+					 things.add(new VisibleItem("tree", angle, dist)); 	
+		  		}
+		    }		
+		 }
+			 	
+		  //calculate trees detected
+		 
+		  for(int i=0; i<trees.size(); i++) { 
+				 
+			  //get relative position of aircraft to object:
+			  float deltax = trees.get(i).X - getPosition().x;
+			  float deltay = trees.get(i).Y - getPosition().y;
 			  
-		  }
+			  //calculate distance
+			  double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
+			  
+			  if(dist<perceptionDistance) {
+				  
+				  double theta = Math.atan2(deltay, deltax);
+				  double angle = (theta - getCompassAngle());// % 2* Math.PI; //(adjust to 0, 2pi) interval
+		
+				  // to normalize between 0 to 2 Pi
+				  if(angle<0) angle+=2*Math.PI;
+				  if(angle>2*Math.PI) angle-=2*Math.PI;
+				  
+				  if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
+					  //it's visible 
+					  things.add(new VisibleItem("tree", angle, dist));  
+				  }
+			  }	 
+		  } 
+			 
 		  
+		   for(int i=0; i<houses.size(); i++) { 
+				  
+			   //get relative position of aircraft to object:
+			   float deltax = houses.get(i).X - getPosition().x;
+			   float deltay = houses.get(i).Y - getPosition().y;
+				  
+			   //calculate distance
+			   double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
+				  
+			   if(dist<perceptionDistance) {
+				  
+				   double theta = Math.atan2(deltay, deltax);
+				   double angle = (theta - getCompassAngle());// % 2* Math.PI; //(adjust to 0, 2pi) interval
+				  
+				   // to normalize between 0 to 2 Pi
+				   if(angle<0) angle+=2*Math.PI;
+				   if(angle>2*Math.PI) angle-=2*Math.PI;
+				   
+				   if (angle < Math.PI/2. || angle > 3* Math.PI/2.) { 
+					   //it's visible
+					   things.add(new VisibleItem("house", angle, dist));  
+				   }	  
+			}  
+			  
+			  
+	   }		 
+		 
 		  agentState.setCameraInfo(things); 
-	  }
+ }
 	  
 	  
 	  
@@ -146,5 +221,5 @@ public class UAS extends AgentModel {
 	 
 	  
 	
-	 
-	}
+	  
+}
