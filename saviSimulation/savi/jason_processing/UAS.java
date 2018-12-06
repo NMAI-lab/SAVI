@@ -48,7 +48,6 @@ public class UAS extends AgentModel {
 	    agentState.setSpeedAngle(0.0); //TODO: calculate velocity angle + magnitude
 	    agentState.setSpeedValue(0.0); //TODO
 	    agentState.setCompassAngle(-Math.PI/2); //TODO calculate direction we're facing
-	    //agentState.setCompassAngle(0);
 	    
 	    agentState.setCameraInfo(new ArrayList<VisibleItem>()); //TODO: calculate what we can see
 	    
@@ -75,7 +74,6 @@ public class UAS extends AgentModel {
 	  //// State Update: Read actions from queue, execute them
 	  // also includes coordinates of threat.
 	  public void update(int perceptionDistance, List<Threat> threats, List<Tree> trees, List<House> houses){
-
 
 		  PVector position = (PVector) agentState.getPosition();
 		  double speedValue = agentState.getSpeedValue();
@@ -223,5 +221,5 @@ public class UAS extends AgentModel {
 	 
 	  
 	
-	 
+	  
 }

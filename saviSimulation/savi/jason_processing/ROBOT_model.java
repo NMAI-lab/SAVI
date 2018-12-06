@@ -49,6 +49,7 @@ List<Tree> trees = new ArrayList<Tree>(); //List of trees
 List<House> houses = new ArrayList<House>(); //List of houses
 List<Threat> threats = new ArrayList<Threat>(); //List of threats
 
+
 JasonMAS jasonAgents; // the BDI agent
 
 public void settings() { size(X_PIXELS,Y_PIXELS, P2D);  smooth(8); } // let's assume a 2D environment
@@ -182,16 +183,17 @@ public void drawUAS(UAS uas){
 	
   // Draw UAS
   stroke(0); 
-  PShape s;
   
+  PShape s;
   s=loadShape("robot.svg");
-  //shapeMode(CENTER);
   
   // translate to center image on uasposition.x, uasposition.y
   s.translate(-s.width/2,-s.height/2);
   
+  // to adjust compassAngle to the image
   s.rotate((float) ((float)uas.getCompassAngle()+Math.PI/2));
   
+  //draw image
   shape(s, uas.getPosition().x, uas.getPosition().y, 26, 26);
   	  
   noFill();
@@ -199,7 +201,7 @@ public void drawUAS(UAS uas){
   //draw perception area
   arc(uas.getPosition().x, uas.getPosition().y, PERCEPTION_DISTANCE*2, PERCEPTION_DISTANCE*2,(float)uas.getCompassAngle()-(float)Math.PI/2, (float)uas.getCompassAngle()+(float)Math.PI/2);
   
-  //draw objects percepted
+  //draw circle on objects percepted
   ArrayList<VisibleItem> items = new ArrayList<VisibleItem>();
   
   items = uas.agentState.getCameraInfo(); 
@@ -207,8 +209,6 @@ public void drawUAS(UAS uas){
   for(int i=0; i< items.size(); i++) {
 	  
 	  double angle = (uas.getCompassAngle()+items.get(i).getAngle());// % 2* Math.PI;
-	  
-	  //angle = items.get(i).getAngle();
 	  
 	  double cosv = Math.cos(angle);
 	  double sinv = Math.sin(angle);
