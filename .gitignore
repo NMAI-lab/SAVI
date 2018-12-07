@@ -5,4 +5,5 @@ bin/
 *.mas2j~
 *.classpath
 *.project
-saviSimulation/mas.log
+*.log
+saviSimulation/*.log
