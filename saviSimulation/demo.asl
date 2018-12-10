@@ -7,7 +7,7 @@
 /*
  * Set initial beliefs
  */
-//pi :- 3.14159265359.
+//PI :- 3.14159265359.
  //TURN_ANGLE :- PI/16.
 //threat(aircraft(DIR, DIST))	// Aircraft are threats
 //followable(threat(X))	// Threats are folowable
@@ -62,6 +62,15 @@
 
 // Chase threat
 
+// Follow the threat if one has been found
++!follow(threat) :	aircraft(DIR, DIST) &
+					-3.1459/16 < DIR &
+					DIR < 3.1459/16 &
+					speedData(HEADDING, SPEED) &
+					SPEED == 0
+   <- thrust(on);
+      !follow(threat).
+
 // !see threat -> agent should not be moving, turn to find the threat
 +!follow(threat) :	(not aircraft(DIR, DIST))
 	<-	thrust(off);
@@ -80,15 +89,6 @@
 	<- 	turn(right);
 		!follow(threat).
 
-// Follow the threat if one has been found
-+!follow(threat) :	aircraft(DIR, DIST) &
-					-3.1459/16 < DIR &
-					DIR < 3.1459/16 &
-					speedData(HEADDING, SPEED) &
-					SPEED == 0
-   <- thrust(on);
-      !follow(threat).
-	  
 +!follow(threat) :	true
 	<- !follow(threat).
 
