@@ -33,7 +33,7 @@ int Y_PIXELS = 740;
 int FRAME_RATE = 20;
 int MAX_IN_X_VEL_THREAT = 20;
 int MAX_IN_Y_VEL_THREAT = 20;
-float MAX_SPEED = 60;
+float MAX_SPEED = 20;
 
 int PERCEPTION_DISTANCE = 300;
 

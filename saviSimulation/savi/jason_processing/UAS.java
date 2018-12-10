@@ -80,15 +80,13 @@ public class UAS extends AgentModel {
 		  double compassAngle = agentState.getCompassAngle(); //TODO for now speedAngle is always zero 
 		  
 		  List<String> toexec = agentState.getAllActions();
-		  
-		  //System.out.print(agentState.getAllActions().size());
-		  
+		   
 		  for (String action : toexec) {
 			  System.out.println("UAS doing:"+ action);
 			    if (action.equals("turn(left)")) //TODO: make these MOD 2 pi ? 
-		        	compassAngle += Math.PI/16.0;
-		        else if (action.equals("turn(right)")) 
 		        	compassAngle -= Math.PI/16.0;
+		        else if (action.equals("turn(right)")) 
+		        	compassAngle += Math.PI/16.0;
 		        else if (action.equals( "thrust(on)")) 
 		        	speedValue = SPEED;
 		        else if (action.equals("thrust(off)")) 
