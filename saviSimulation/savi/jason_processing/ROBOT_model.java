@@ -34,8 +34,9 @@ int FRAME_RATE = 20;
 int MAX_IN_X_VEL_THREAT = 20;
 int MAX_IN_Y_VEL_THREAT = 20;
 float MAX_SPEED = 20;
-
 int PERCEPTION_DISTANCE = 300;
+int WIFI_PERCEPTION_DISTANCE = 500;
+int NUMBER_UAS = 10;
 
 
 /************* Global Variables *******************/
@@ -48,6 +49,7 @@ UAS uas;  // single UAS
 List<Tree> trees = new ArrayList<Tree>(); //List of trees
 List<House> houses = new ArrayList<House>(); //List of houses
 List<Threat> threats = new ArrayList<Threat>(); //List of threats
+List <UAS> amountUAS = new ArrayList<UAS>(); //List of UAS
 
 
 JasonMAS jasonAgents; // the BDI agent
@@ -82,7 +84,12 @@ public void setup() {
   uas = new UAS(0, new PVector(X_PIXELS/2,Y_PIXELS/2));
   
   Random rand = new Random();
-    
+  for(int i = 0; i < NUMBER_UAS; i++) //Put UAS
+  { //_PIXELS is the maximum and the 1 is our minimum.
+    amountUAS.add(new UAS(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1)));
+  }
+  
+  
   for(int i = 0; i < NUMBER_TREES; i++) //Put trees
   { //_PIXELS is the maximum and the 1 is our minimum.
     trees.add(new Tree(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1));
@@ -144,7 +151,7 @@ public void draw(){
   
   //  2.3 UAS & THREATS position
   //uas.update(threats.get(1).position);
-  uas.update(PERCEPTION_DISTANCE,threats,trees,houses);
+  uas.update(PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,trees,houses,amountUAS);
   //CRIS: TO PROPERLY DEFINE, JUST TO MAKE SURE IT COMPILE MY CHANGES
   //GUILLERMO: MODIFIED THIS TO PERCEPT treats, trees and houses within the vision angle
   //and a vision distance

@@ -44,12 +44,18 @@ public class UAS extends AgentModel {
 	  
 	    PVector position = initialPosition.copy(); //Assume that the initial position is at the center of the display window
 	    
+	    agentState.setWifi(100); //TODO: "break the wifi during simulation time
 	    agentState.setPosition(position); //value type is PVector
 	    agentState.setSpeedAngle(0.0); //TODO: calculate velocity angle + magnitude
 	    agentState.setSpeedValue(0.0); //TODO
 	    agentState.setCompassAngle(-Math.PI/2); //TODO calculate direction we're facing
 	    
 	    agentState.setCameraInfo(new ArrayList<VisibleItem>()); //TODO: calculate what we can see
+	    ArrayList<String> mes2share = new ArrayList<String>();
+	    mes2share.add(("Hello I'am agent " + ID));
+	    agentState.setMessages2Share(mes2share);
+	    agentState.setMessagesRead( new ArrayList<String>());
+	    
 	    
 	    
 	    //maxSpeed = 0.051f; //  km/s  i.e 100 knots
@@ -73,7 +79,7 @@ public class UAS extends AgentModel {
 	  
 	  //// State Update: Read actions from queue, execute them
 	  // also includes coordinates of threat.
-	  public void update(int perceptionDistance, List<Threat> threats, List<Tree> trees, List<House> houses){
+	  public void update(int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<Threat> threats, List<Tree> trees, List<House> houses, List<UAS> amountUAS){
 
 		  PVector position = (PVector) agentState.getPosition();
 		  double speedValue = agentState.getSpeedValue();
@@ -117,6 +123,7 @@ public class UAS extends AgentModel {
 		  //calculate what we can see
 		  
 		  List<VisibleItem> things = new ArrayList<VisibleItem>();
+		  List<String> messages = new ArrayList<String>();
 		  		  
 		  //Calculate threats detected
 		  
@@ -143,6 +150,25 @@ public class UAS extends AgentModel {
 		  			//it's visible 
 					 things.add(new VisibleItem("tree", angle, dist)); 	
 		  		}
+		    }		
+		 }
+		 
+		//Calculate UAS detected for wifi communication
+		  
+		 for(int i=0; i<amountUAS.size(); i++) { 
+		  
+			 //get relative position of UAS to UAS:
+			 float deltax = amountUAS.get(i).getPosition().x - getPosition().x;
+			 float deltay = amountUAS.get(i).getPosition().x - getPosition().y;
+		  
+			 //calculate distance
+			 double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
+		  
+			 if(dist<WIFI_PERCEPTION_DISTANCE) {
+				 for(int j=0; i<amountUAS.get(i).agentState.getMessages2Share().size(); j++) { 
+				 messages.add(amountUAS.get(i).agentState.getMessages2Share().get(j));
+				 }			 
+				 
 		    }		
 		 }
 			 	
@@ -202,6 +228,7 @@ public class UAS extends AgentModel {
 	   }		 
 		 
 		  agentState.setCameraInfo(things); 
+		  agentState.setMessagesRead(messages);
  }
 	  
 	  

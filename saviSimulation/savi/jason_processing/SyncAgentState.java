@@ -6,12 +6,14 @@ import processing.core.PVector;
 
 public class SyncAgentState {
 	
-	
+	private double wifi; // Probability of having the wifi working 0-100
 	private Map<String,Double> perceptionData;		// Hash map of the perception parameters
 	private long counter;							// Counter used for tracking changes to state data
 	private PVector position;						// Vector for the agent's position. TODO: incorporate this into the map somehow
 	private boolean pauseSignal;					// For tracking the pause signal
 	private ArrayList<VisibleItem> cameraInfo;		// List of camera info
+	private ArrayList<String> messages2Share;		// List of camera info
+	private ArrayList<String> messagesRead;		// List of camera info
 	
 	private LinkedList<String> actions;
 	
@@ -24,6 +26,9 @@ public class SyncAgentState {
 		this.cameraInfo = new ArrayList<VisibleItem>(); 
 		this.actions = new LinkedList<String>();
 		this.pauseSignal = false;
+		this.messages2Share = new ArrayList<String>();
+		this.messagesRead = new ArrayList<String>();
+		
 	}
 	
 	/**
@@ -44,6 +49,13 @@ public class SyncAgentState {
 	 */
 	public synchronized double getPerceptionDataItem(String itemKey) {
 		return perceptionData.get(itemKey);
+	}
+	/**
+	 * Get the current wifi value
+	 * @return	double wifi
+	 */
+	public synchronized double getWifi() {
+		return this.wifi;
 	}
 	
 	/**
@@ -92,11 +104,35 @@ public class SyncAgentState {
 		myCopy.addAll(cameraInfo);
 		return myCopy;
 	}
+	
+	public synchronized ArrayList<String> getMessages2Share() {
+		ArrayList<String> myCopy = new ArrayList<String>();
+		myCopy.addAll(messages2Share);
+		return myCopy;
+	}
+	
+	public synchronized ArrayList<String> getMessagesRead() {
+		ArrayList<String> myCopy = new ArrayList<String>();
+		myCopy.addAll(messagesRead);
+		return myCopy;
+	}
 
 	public synchronized void setCameraInfo(List<VisibleItem> cameraInfo) {
 		this.incrementCounter();
 		this.cameraInfo.clear();
 		this.cameraInfo.addAll(cameraInfo);
+	}
+	
+	public synchronized void setMessages2Share(List<String> messages2Share) {
+		this.incrementCounter();
+		this.messages2Share.clear();
+		this.messages2Share.addAll(messages2Share);
+	}
+	
+	public synchronized void setMessagesRead(List<String> messagesRead) {
+		this.incrementCounter();
+		this.messagesRead.clear();
+		this.messagesRead.addAll(messagesRead);
 	}
 	
 	public synchronized void addAction(String action) {
@@ -124,6 +160,11 @@ public class SyncAgentState {
 	
 	public synchronized PVector getPosition() {
 		return position.copy();
+	}
+	
+	public synchronized void setWifi(double wifi) {
+		this.incrementCounter();
+		this.wifi = wifi;
 	}
 	
 	public synchronized void setPosition(PVector position) {
