@@ -43,14 +43,11 @@ int NUMBER_UAS = 10;
 int simTime;      // stores simulation time (in seconds) 
 int simTimeDelta; // discrete-time step (in seconds)
 boolean simPaused;// simulation paused or not
-float collisionRadius; // collision detection radius (km)
 
-UAS uas;  // single UAS
 List<Tree> trees = new ArrayList<Tree>(); //List of trees
 List<House> houses = new ArrayList<House>(); //List of houses
 List<Threat> threats = new ArrayList<Threat>(); //List of threats
-List <UAS> amountUAS = new ArrayList<UAS>(); //List of UAS
-
+List <UAS> UAS_list = new ArrayList<UAS>(); //List of UAS 
 
 JasonMAS jasonAgents; // the BDI agent
 
@@ -77,19 +74,13 @@ public void setup() {
   simTime = 0;      // seconds
   simTimeDelta = 1; // seconds
   simPaused = false;// not paused by default  
-  collisionRadius = 9.26f; // km (9.26 km or 5 knots) ----- We tried 6 km or 3.24 knots but it caused not collisions at all
-  
-  //ag.run();
-  
-  uas = new UAS(0, new PVector(X_PIXELS/2,Y_PIXELS/2));
-  
+       
+ 
   Random rand = new Random();
   for(int i = 0; i < NUMBER_UAS; i++) //Put UAS
   { //_PIXELS is the maximum and the 1 is our minimum.
-    amountUAS.add(new UAS(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1)));
-  }
-  
-  
+    UAS_list.add(new UAS(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1)));
+  }    
   for(int i = 0; i < NUMBER_TREES; i++) //Put trees
   { //_PIXELS is the maximum and the 1 is our minimum.
     trees.add(new Tree(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1));
@@ -103,15 +94,19 @@ public void setup() {
     threats.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, rand.nextInt(MAX_IN_X_VEL_THREAT) + 1, rand.nextInt(MAX_IN_Y_VEL_THREAT) + 1, 1 + rand.nextFloat() * (MAX_SPEED - 1)));
   }
   
-        // smoother rendering (optional)
+  // smoother rendering (optional)
   frameRate(FRAME_RATE); // max 60 draw() calls per real second. (Can make it a larger value for the simulation to go faster)
                   // At simTimeDelta=1 this means 1 second
                   // of real time = 1 minute of sim time.
                   //If the processor is not fast enough to maintain the specified rate, the frame rate will not be achieved 
   
-  //	set up Jason BDI agents ================
+  //======= set up Jason BDI agents ================
   Map<String,AgentModel> agentList = new HashMap<String,AgentModel>();
-  agentList.put("demo", uas);
+  
+  for(int i = 0; i < NUMBER_UAS; i++) //Create UAS agents
+  { 
+	  agentList.put(Integer.toString(i), UAS_list.get(i));
+  }  
   
   jasonAgents = new JasonMAS(agentList);
   
@@ -145,37 +140,41 @@ public void draw(){
 			 dir = "north"; 
 		 else
 			 dir = "south";
-	  }
-	  
-  String percept= "seeaircraft("+dir+")";*/
+	  }	  
+*/
   
-  //  2.3 UAS & THREATS position
-  //uas.update(threats.get(1).position);
-  uas.update(PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,trees,houses,amountUAS);
+  //2.3 UAS & THREATS position
+  for(int i = 0; i < NUMBER_UAS; i++) //Create UAS agents
+  { 
+	  UAS_list.get(i).update(PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,trees,houses,UAS_list);
+  }  
+  
   //CRIS: TO PROPERLY DEFINE, JUST TO MAKE SURE IT COMPILE MY CHANGES
   //GUILLERMO: MODIFIED THIS TO PERCEPT treats, trees and houses within the vision angle
   //and a vision distance
   
   for(int i = 0; i < NUMBER_THREATS; i++) //Put threats
-  { //_PIXELS is the maximum and the 1 is our minimum.
+  { 
     threats.get(i).update();
   }  
   
   // 3. VISUALIZATION
   //------------------
   background(240); // white background
-  
-  drawUAS(uas);
-  
-  for(int i = 0; i < NUMBER_TREES; i++) //Makes all trees on screen.
+    
+  for(int i = 0; i < NUMBER_UAS; i++) //Draw UAS agents
+  { 
+	  drawUAS(UAS_list.get(i));	
+  }  
+    for(int i = 0; i < NUMBER_TREES; i++) //Draw trees.
   {
     trees.get(i).drawTree();
   }
-  for(int i = 0; i < NUMBER_HOUSES; i++) //Makes all trees on screen.
+  for(int i = 0; i < NUMBER_HOUSES; i++) //Draw houses.
   {
     houses.get(i).drawHouse();
   }
-  for(int i = 0; i < NUMBER_THREATS; i++) //Makes all trees on screen.
+  for(int i = 0; i < NUMBER_THREATS; i++) //Draw Threats.
   {
     threats.get(i).drawThreat();
   }    
@@ -240,8 +239,11 @@ public void resetSimulation (){
   simTime = 0;
   
   // Set all UAS positions to initial
-  uas.reset(); 
-              
+  for(int i = 0; i < NUMBER_UAS; i++) //Create UAS agents
+  { 
+	  UAS_list.get(i).reset();	
+  }  
+                
   
   //Reset threats
   for(int i = 0; i < NUMBER_THREATS; i++) //Makes all trees on screen.

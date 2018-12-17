@@ -6,14 +6,14 @@ import processing.core.PVector;
 
 public class SyncAgentState {
 	
-	private double wifi; // Probability of having the wifi working 0-100
+	 
 	private Map<String,Double> perceptionData;		// Hash map of the perception parameters
 	private long counter;							// Counter used for tracking changes to state data
 	private PVector position;						// Vector for the agent's position. TODO: incorporate this into the map somehow
 	private boolean pauseSignal;					// For tracking the pause signal
 	private ArrayList<VisibleItem> cameraInfo;		// List of camera info
 	private ArrayList<String> messages2Share;		// List of camera info
-	private ArrayList<String> messagesRead;		// List of camera info
+	private ArrayList<String> messagesRead;		// TODO: ID & message
 	
 	private LinkedList<String> actions;
 	
@@ -54,9 +54,6 @@ public class SyncAgentState {
 	 * Get the current wifi value
 	 * @return	double wifi
 	 */
-	public synchronized double getWifi() {
-		return this.wifi;
-	}
 	
 	/**
 	 * Get the current counter value
@@ -160,11 +157,6 @@ public class SyncAgentState {
 	
 	public synchronized PVector getPosition() {
 		return position.copy();
-	}
-	
-	public synchronized void setWifi(double wifi) {
-		this.incrementCounter();
-		this.wifi = wifi;
 	}
 	
 	public synchronized void setPosition(PVector position) {

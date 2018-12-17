@@ -43,8 +43,8 @@ public class UAS extends AgentModel {
 	    this.initialPosition = initialPosition;
 	  
 	    PVector position = initialPosition.copy(); //Assume that the initial position is at the center of the display window
-	    
-	    agentState.setWifi(100); //TODO: "break the wifi during simulation time
+	    double wifi = 100; //Probability of having the wifi working 0-100
+	    //TODO: "break the wifi during simulation time
 	    agentState.setPosition(position); //value type is PVector
 	    agentState.setSpeedAngle(0.0); //TODO: calculate velocity angle + magnitude
 	    agentState.setSpeedValue(0.0); //TODO
@@ -52,7 +52,7 @@ public class UAS extends AgentModel {
 	    
 	    agentState.setCameraInfo(new ArrayList<VisibleItem>()); //TODO: calculate what we can see
 	    ArrayList<String> mes2share = new ArrayList<String>();
-	    mes2share.add(("Hello I'am agent " + ID));
+	    mes2share.add(("WIFI: Hello I'am agent " + ID));
 	    agentState.setMessages2Share(mes2share);
 	    agentState.setMessagesRead( new ArrayList<String>());
 	    
@@ -165,7 +165,7 @@ public class UAS extends AgentModel {
 			 double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
 		  
 			 if(dist<WIFI_PERCEPTION_DISTANCE) {
-				 for(int j=0; i<amountUAS.get(i).agentState.getMessages2Share().size(); j++) { 
+				 for(int j=0; j<amountUAS.get(i).agentState.getMessages2Share().size(); j++) { 
 				 messages.add(amountUAS.get(i).agentState.getMessages2Share().get(j));
 				 }			 
 				 
