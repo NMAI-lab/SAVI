@@ -7,8 +7,8 @@
 /*
  * Set initial beliefs
  */
-//PI(3.14159265359).
-//TURN_ANGLE(3.14159265359/16).
+PI(3.14159265359).
+TURN_ANGLE(A/16) & PI(A).
 //threat(aircraft(DIR, DIST))	// Aircraft are threats
 //followable(threat(X))	// Threats are folowable
 //facable(followable(X))	// Followable objects are faceable
@@ -24,53 +24,56 @@
 //				PERCEIVE_TYPE == aircraft.
 
 // See a threat to the right
-threatRight() :-	(aircraft(DIR, DIST) &
-					DIR > (3.1459/16)).
+threatRight(T) :-	(aircraft(DIR, DIST) &
+					DIR > ANGLE &
+					TURN_ANGLE(ANGLE)).
 
 // See a threat to the left
-threatLeft() :-	(aircraft(DIR, DIST) &
-				DIR < (-3.1459/16)).
+threatLeft(T) :-	(aircraft(DIR, DIST) &
+					DIR < -ANGLE &
+					TURN_ANGLE(ANGLE)).
 
 // See a threat ahead				
-threatAhead() :-	(aircraft(DIR, DIST) &
-					-3.1459/16 < DIR &
-					DIR < 3.1459/16).
+threatAhead(T) :-	(aircraft(DIR, DIST) &
+					-ANGLE <= DIR &
+					DIR <= ANGLE &
+					TURN_ANGLE(ANGLE)).
 
 // No threat seen
-noThreatSeen() :-	(not aircraft(DIR, DIST)).
+noThreatSeen(T) :-	(not aircraft(DIR, DIST)).
 
 // Agent is moving
-agentMoving :- speedData(HEADDING, SPEED) & ~SPEED == 0.
+agentMoving(A) :- speedData(HEADDING, SPEED) & ~SPEED == 0.
 
 // Agent is not moving
-agentStationary :- speedData(HEADDING, SPEED) & SPEED == 0.
+agentStationary(A) :- speedData(HEADDING, SPEED) & SPEED == 0.
 
  /*
   * Initial goals
   */
 // Should be to find a threat
-!see(threat).
+//!see(threat).
 //!face(threat).
-//!follow(threat).
+!follow(threat).
 
 /*
  * Plans
  */
-
+/*
 // !see threat -> agent should not be moving
-+!see(threat) : agentMoving
++!see(threat) : agentMoving(A)
 	<- 	thrust(off);
 		!see(threat).
 
 // Implement the finding of a threat
-+!see(threat) :	noThreatSeen()
++!see(threat) :	noThreatSeen(T)
 	<-	turn(left);
 		!see(threat).
 
 +!see(threat) :	true
 	<-	!see(threat).
 
-/*
+
 // code duplication from the see threat plans
 +!face(threat) :	(not aircraft(DIR, DIST))
 	<-	turn(left);
@@ -90,40 +93,39 @@ agentStationary :- speedData(HEADDING, SPEED) & SPEED == 0.
 
 +!face(threat) :	true
 	<- !face(threat).
-
+*/
 // Chase threat
 
 // Follow the threat if one has been found
-+!follow(threat) :	aircraft(DIR, DIST) &
-					-3.1459/16 < DIR &
-					DIR < 3.1459/16 &
-					speedData(HEADDING, SPEED) &
-					SPEED == 0
-   <- thrust(on);
-      !follow(threat).
++!follow(threat)
+	:	threatAhead(T) &
+		agentStationary
+	<-	thrust(on);
+		!follow(threat).
 
 // !see threat -> agent should not be moving, turn to find the threat
-+!follow(threat) :	(not aircraft(DIR, DIST))
++!follow(threat)
+	:	noThreatSeen(T)
 	<-	thrust(off);
 		turn(left);
 		!follow(threat).
 	
 // Turn to face a threat to the left
-+!follow(threat) :	(aircraft(DIR, DIST) &
-					DIR < (-3.1459/16))
++!follow(threat)
+	:	threatLeft(T)
 	<- 	turn(left);
 		!follow(threat).
 
 // Turn to face a threat to the right
-+!follow(threat) :	(aircraft(DIR, DIST) &
-					DIR > (3.1459/16))
-	<- 	turn(right);
++!follow(threat)
+	:	threatRight(T)
+	<-	turn(right);
 		!follow(threat).
 
-+!follow(threat) :	true
-	<- !follow(threat).
+//+!follow(threat) :	true
+//	<- !follow(threat).
 
-*/		
+		
 // Default plans.
 //+!see(threat).
 //+!face(threat).
