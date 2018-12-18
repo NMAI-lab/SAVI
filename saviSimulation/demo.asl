@@ -1,133 +1,129 @@
 /*
  * Simple agent behaviour for the SAVI project
  * @author	Patrick Gavigan
- * @date	28 November 2018
+ * @date	18 December 2018
  */
 
-/*
- * Set initial beliefs
- */
-PI(3.14159265359).
-TURN_ANGLE(A/16) & PI(A).
-//threat(aircraft(DIR, DIST))	// Aircraft are threats
-//followable(threat(X))	// Threats are folowable
-//facable(followable(X))	// Followable objects are faceable
-//findable(faceable(X))	// Faceable objects are findable
+/* Set initial beliefs */
+noThreat.
+velocity(0,0).
+//pi(3.14159265359).
+turnAngle(3.14159265359/16).
 
-/*
- * Rules
- */
- 
-// Identify if perception is a therat, extract information
-//perceivedParameter(DIR,DIST) =.. [PERCEIVE_TYPE, [DIR,DIST]].
-//threat(T) :-	[PERCEIVE_TYPE, [DIR,DIST]] &
-//				PERCEIVE_TYPE == aircraft.
-
+/* Rules */
 // See a threat to the right
-threatRight(T) :-	(aircraft(DIR, DIST) &
-					DIR > ANGLE &
-					TURN_ANGLE(ANGLE)).
+threatRight(T) :-	(threat(T,DIR,DIST) &
+					(DIR > ANGLE) &
+					turnAngle(ANGLE)).
 
 // See a threat to the left
-threatLeft(T) :-	(aircraft(DIR, DIST) &
-					DIR < -ANGLE &
-					TURN_ANGLE(ANGLE)).
+threatLeft(T) :-	(threat(T,DIR,DIST) &
+					(DIR < -ANGLE) &
+					turnAngle(ANGLE)).
 
 // See a threat ahead				
-threatAhead(T) :-	(aircraft(DIR, DIST) &
-					-ANGLE <= DIR &
-					DIR <= ANGLE &
-					TURN_ANGLE(ANGLE)).
+threatAhead(T) :-	(threat(T,DIR,DIST) &
+					(-ANGLE <= DIR) &
+					(DIR <= ANGLE) &
+					turnAngle(ANGLE)).
 
-// No threat seen
-noThreatSeen(T) :-	(not aircraft(DIR, DIST)).
+/* Initial goals */
+!seeThreat.				// Find a threat
+//!observeThreat		// Keep a threat visible (recursive seeThreat)
+//!faceThreat.			// Turn to face a threat head on
+//!watchThreat			// Face a threat and keep facing it recursively
+//!followThreat.		// Follow a threat
 
-// Agent is moving
-agentMoving(A) :- speedData(HEADDING, SPEED) & ~SPEED == 0.
+/* Plans */
 
-// Agent is not moving
-agentStationary(A) :- speedData(HEADDING, SPEED) & SPEED == 0.
+/* Update beliefes of observing threat aircraft */
++aircraft(DIR,DIST)
+	:	noThreat
+	<- 	-noThreat;
+		+threat(aircraft,DIR,DIST).
 
- /*
-  * Initial goals
-  */
-// Should be to find a threat
-//!see(threat).
-//!face(threat).
-!follow(threat).
+/* Update threat beliefs due to relative movement */
++aircraft(DIR,DIST)
+	:	(not aircraft(OLD_DIR,OLD_DIST)) &
+		threat(aircraft,OLD_DIR,OLD_DIST) &
+		((DIR \== OLD_DIR) | (DIST \== OLD_DIST))
+	<- 	-threat(aircraft,OLD_DIR,old_DIST);
+		+threat(aircraft,DIR,DIST).
+		
+/* Update belief of not seeing threat aircraft */
+-aircraft(_,_)
+	: 	threat(aircraft,OLD_DIR,OLD_DIST) &
+		(not aircraft(OLD_DIR,OLD_DIST))
+	<-	-threat(aircraft,OLD_DIR,OLD_DIST);
+		+noThreat.
 
-/*
- * Plans
- */
-/*
-// !see threat -> agent should not be moving
-+!see(threat) : agentMoving(A)
-	<- 	thrust(off);
-		!see(threat).
-
-// Implement the finding of a threat
-+!see(threat) :	noThreatSeen(T)
+/* Manage beliefs associated with agent velocity */
++velocity(HEADDING,SPEED)
+	:	speedData(NEW_HEADDING,NEW_SPEED) &
+		(HEADDING \== NEW_HEADDING | SPEED \== NEW_SPEED)
+	<-	-velocity(HEADDING,SPEED);
+		+velocity(NEW_HEADDING,NEW_SPEED).
+		
+/* Plan for trying to see threat */
++!seeThreat
+	:	noThreat
 	<-	turn(left);
-		!see(threat).
+		!seeThreat.
 
-+!see(threat) :	true
-	<-	!see(threat).
+/* See a threat, seeThreat achieved */
++!seeThreat
+	:	(not noThreat) | threat(_,_,_).
 
-
-// code duplication from the see threat plans
-+!face(threat) :	(not aircraft(DIR, DIST))
-	<-	turn(left);
-		!face(threat).
-	
-// Turn to face a threat to the left
-+!face(threat) :	(aircraft(DIR, DIST) &
-					DIR < (-3.1459/16))
-	<- 	turn(left);
-		!face(threat).
-
-// Turn to face a threat to the right
-+!face(threat) :	(aircraft(DIR, DIST) &
-					DIR > (3.1459/16))
-	<- 	turn(right);
-		!face(threat).
-
-+!face(threat) :	true
-	<- !face(threat).
-*/
-// Chase threat
-
-// Follow the threat if one has been found
-+!follow(threat)
-	:	threatAhead(T) &
-		agentStationary
-	<-	thrust(on);
-		!follow(threat).
-
-// !see threat -> agent should not be moving, turn to find the threat
-+!follow(threat)
-	:	noThreatSeen(T)
+/* Stop the agent if it is moving */
++!seeThreat
+	:	noThreat &
+		velocity(_,SPEED) &
+		SPEED \== 0
 	<-	thrust(off);
-		turn(left);
-		!follow(threat).
+		!seeThreat.
 	
-// Turn to face a threat to the left
-+!follow(threat)
-	:	threatLeft(T)
-	<- 	turn(left);
-		!follow(threat).
+/* Implementation of observeThreat (recursive seeThreat) */
++!observeThreat
+	:	true
+	<-	!seeThreat.
 
-// Turn to face a threat to the right
-+!follow(threat)
+/* Plan for facing the threat if none is seen */
++!faceThreat
+	:	noThreat
+	<-	!seeThreat;
+		!faceThreat.
+
+/* Face a threat to the right */
++!faceThreat
 	:	threatRight(T)
 	<-	turn(right);
-		!follow(threat).
-
-//+!follow(threat) :	true
-//	<- !follow(threat).
-
+		!faceThreat.
 		
-// Default plans.
-//+!see(threat).
-//+!face(threat).
-//+!follow(threat).
+/* Face a threat to the right */
++!faceThreat
+	:	threatLeft(T)
+	<-	turn(left);
+		!faceThreat.
+		
+/* Face a threat, goal achieved */
++!faceThreat:	threatAhead(T).
+
+/* watchThreat - recursive faceThreat */
++!watchThreat
+	:	true
+	<-	!watchThreat.
+
+/* Follow a threat - case where threat not ahead */	
++!followThreat
+	:	(not threatAhead(_,_,_))
+	<-	!faceThreat;
+		!followThreat.
+
+/* Follow a threat that is ahead */
++!followThreat
+	:	threatAhead(_,_,_) &
+		velocity(_,SPEED) &
+		SPEED == 0
+	<-	thrust(on);
+		!followThreat.
 
