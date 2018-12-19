@@ -28,9 +28,9 @@ threatAhead(T) :-	(threat(T,DIR,DIST) &
 					turnAngle(ANGLE)).
 
 /* Initial goals */
-!seeThreat.				// Find a threat
+//!seeThreat.				// Find a threat
 //!observeThreat		// Keep a threat visible (recursive seeThreat)
-//!faceThreat.			// Turn to face a threat head on
+!faceThreat.			// Turn to face a threat head on
 //!watchThreat			// Face a threat and keep facing it recursively
 //!followThreat.		// Follow a threat
 
