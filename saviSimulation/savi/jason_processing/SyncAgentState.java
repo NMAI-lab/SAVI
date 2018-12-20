@@ -5,8 +5,8 @@ import java.util.*;
 import processing.core.PVector;
 
 public class SyncAgentState {
-	
-	 
+
+
 	private Map<String,Double> perceptionData;		// Hash map of the perception parameters
 	private long counter;							// Counter used for tracking changes to state data
 	private PVector position;						// Vector for the agent's position. TODO: incorporate this into the map somehow
@@ -14,9 +14,9 @@ public class SyncAgentState {
 	private ArrayList<VisibleItem> cameraInfo;		// List of camera info
 	private ArrayList<String> messages2Share;		// List of camera info
 	private ArrayList<String> messagesRead;		// TODO: ID & message
-	
+
 	private LinkedList<String> actions;
-	
+
 	/**
 	 *  Constructor for the SyncAgentState class.
 	 */
@@ -28,9 +28,9 @@ public class SyncAgentState {
 		this.pauseSignal = false;
 		this.messages2Share = new ArrayList<String>();
 		this.messagesRead = new ArrayList<String>();
-		
+
 	}
-	
+
 	/**
 	 * Increment the counter - to be done whenever the perception data is updated
 	 */
@@ -41,7 +41,7 @@ public class SyncAgentState {
 			this.counter = 0;
 		}
 	}
-	
+
 	/**
 	 * Get the perception data item that corresponds to the itemKey
 	 * @param itemKey	key for the perception data that is sought
@@ -54,7 +54,7 @@ public class SyncAgentState {
 	 * Get the current wifi value
 	 * @return	double wifi
 	 */
-	
+
 	/**
 	 * Get the current counter value
 	 * @return	int counter
@@ -62,8 +62,8 @@ public class SyncAgentState {
 	public synchronized long getCounter() {
 		return this.counter;
 	}
-	
-	
+
+
 	/**
 	 * Set the perception data item type
 	 * @param itemKey
@@ -73,8 +73,8 @@ public class SyncAgentState {
 		this.incrementCounter();
 		this.perceptionData.put(itemKey, item);
 	}
-	
-	
+
+
 	public synchronized double getSpeedValue() {
 		return this.getPerceptionDataItem("speedValue");
 	}
@@ -86,11 +86,11 @@ public class SyncAgentState {
 	public synchronized void setSpeedValue(double speedValue) {
 		this.setPerceptionDataItem("speedValue", speedValue);
 	}
-	
+
 	public synchronized void setCompassAngle(double compassAngle) {
 		this.setPerceptionDataItem("compassAngle", compassAngle);
 	}
-	
+
 	/**
 	 * returns a shallow copy of the list of visible items that are seen
 	 * TODO: Should this be a deep copy?
@@ -101,13 +101,13 @@ public class SyncAgentState {
 		myCopy.addAll(cameraInfo);
 		return myCopy;
 	}
-	
+
 	public synchronized ArrayList<String> getMessages2Share() {
 		ArrayList<String> myCopy = new ArrayList<String>();
 		myCopy.addAll(messages2Share);
 		return myCopy;
 	}
-	
+
 	public synchronized ArrayList<String> getMessagesRead() {
 		ArrayList<String> myCopy = new ArrayList<String>();
 		myCopy.addAll(messagesRead);
@@ -119,23 +119,23 @@ public class SyncAgentState {
 		this.cameraInfo.clear();
 		this.cameraInfo.addAll(cameraInfo);
 	}
-	
+
 	public synchronized void setMessages2Share(List<String> messages2Share) {
 		this.incrementCounter();
 		this.messages2Share.clear();
 		this.messages2Share.addAll(messages2Share);
 	}
-	
+
 	public synchronized void setMessagesRead(List<String> messagesRead) {
 		this.incrementCounter();
 		this.messagesRead.clear();
 		this.messagesRead.addAll(messagesRead);
 	}
-	
+
 	public synchronized void addAction(String action) {
 		this.actions.add(action);
 	}
-	
+
 	/**
 	 * get next action
 	 * @return the next action in the queue (which is removed from the queue)
@@ -143,7 +143,7 @@ public class SyncAgentState {
 	public synchronized String getAction() {
 		return this.actions.poll();
 	}
-	
+
 	/**gets all the actions in the queue (assumption is that all will be processed in single simulation step) 
 	 * in future they could have an associated timestamp
 	 * */
@@ -154,20 +154,20 @@ public class SyncAgentState {
 		return myCopy;
 	}
 
-	
+
 	public synchronized PVector getPosition() {
 		return position.copy();
 	}
-	
+
 	public synchronized void setPosition(PVector position) {
 		this.incrementCounter();
 		this.position = position;
 	}
-	
+
 	public synchronized void setSpeedAngle(double speedAngle) {
 		this.setPerceptionDataItem("speedAngle", speedAngle);
 	}
-	
+
 	public synchronized double getSpeedAngle() {
 		return this.getPerceptionDataItem("speedAngle");
 	}
@@ -176,5 +176,5 @@ public class SyncAgentState {
 	public synchronized void pause() {
 		pauseSignal = !pauseSignal;
 	}
-	
+
 }
