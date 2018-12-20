@@ -5,57 +5,57 @@
  */
 
 /* Set initial beliefs */
-noThreat.
+noTarget.
 velocity(0,0).
 //pi(3.14159265359).
 turnAngle(3.14159265359/16).
 
 /* Rules */
-// See a threat to the right
-threatRight(T) :-	(threat(T,DIR,DIST) &
+// See a target to the right
+targetRight(T) :-	(target(T,DIR,DIST) &
 					(DIR > ANGLE) &
 					turnAngle(ANGLE)).
 
-// See a threat to the left
-threatLeft(T) :-	(threat(T,DIR,DIST) &
+// See a target to the left
+targettLeft(T) :-	(target(T,DIR,DIST) &
 					(DIR < -ANGLE) &
 					turnAngle(ANGLE)).
 
-// See a threat ahead				
-threatAhead(T) :-	(threat(T,DIR,DIST) &
+// See a target ahead				
+targetAhead(T) :-	(target(T,DIR,DIST) &
 					(-ANGLE <= DIR) &
 					(DIR <= ANGLE) &
 					turnAngle(ANGLE)).
 
 /* Initial goals */
-//!seeThreat.			// Find a threat
-//!observeThreat		// Keep a threat visible (recursive seeThreat)
-//!faceThreat.			// Turn to face a threat head on
-//!watchThreat			// Face a threat and keep facing it recursively
-!followThreat.			// Follow a threat
+//!seeTarget.			// Find a target
+//!observeTarget		// Keep a target visible (recursive seeTarget)
+//!faceTarget.			// Turn to face a target head on
+//!watchTarget			// Face a target and keep facing it recursively
+!followTarget.			// Follow a target
 
 /* Plans */
 
-/* Update beliefes of observing threat aircraft */
-+aircraft(DIR,DIST)
-	:	noThreat
-	<- 	-noThreat;
-		+threat(aircraft,DIR,DIST).
+/* Update beliefes of observing target */
++threat(DIR,DIST)
+	:	noTarget
+	<- 	-noTarget;
+		+target(threat,DIR,DIST).
 
-/* Update threat beliefs due to relative movement */
-+aircraft(DIR,DIST)
-	:	(not aircraft(OLD_DIR,OLD_DIST)) &
-		threat(aircraft,OLD_DIR,OLD_DIST) &
+/* Update target beliefs due to relative movement */
++threat(DIR,DIST)
+	:	(not threat(OLD_DIR,OLD_DIST)) &
+		target(threat,OLD_DIR,OLD_DIST) &
 		((DIR \== OLD_DIR) | (DIST \== OLD_DIST))
-	<- 	-threat(aircraft,OLD_DIR,old_DIST);
-		+threat(aircraft,DIR,DIST).
+	<- 	-target(threat,OLD_DIR,old_DIST);
+		+target(threat,DIR,DIST).
 		
-/* Update belief of not seeing threat aircraft */
--aircraft(_,_)
-	: 	threat(aircraft,OLD_DIR,OLD_DIST) &
-		(not aircraft(OLD_DIR,OLD_DIST))
-	<-	-threat(aircraft,OLD_DIR,OLD_DIST);
-		+noThreat.
+/* Update belief of not seeing target */
+-threat(_,_)
+	: 	target(threat,OLD_DIR,OLD_DIST) &
+		(not threat(OLD_DIR,OLD_DIST))
+	<-	-target(threat,OLD_DIR,OLD_DIST);
+		+noTarget.
 
 /* Manage beliefs associated with agent velocity */
 +velocity(HEADDING,SPEED)
@@ -64,66 +64,66 @@ threatAhead(T) :-	(threat(T,DIR,DIST) &
 	<-	-velocity(HEADDING,SPEED);
 		+velocity(NEW_HEADDING,NEW_SPEED).
 		
-/* Plan for trying to see threat */
-+!seeThreat
-	:	noThreat
+/* Plan for trying to see target */
++!seeTarget
+	:	noTarget
 	<-	turn(left);
-		!seeThreat.
+		!seeTarget.
 
-/* See a threat, seeThreat achieved */
-+!seeThreat
-	:	(not noThreat) | threat(_,_,_).
+/* See a target, seeTarget achieved */
++!seeTarget
+	:	(not noTarget) | target(_,_,_).
 
 /* Stop the agent if it is moving */
-+!seeThreat
-	:	noThreat &
++!seeTarget
+	:	noTarget &
 		velocity(_,SPEED) &
 		SPEED \== 0
 	<-	thrust(off);
-		!seeThreat.
+		!seeTarget.
 	
-/* Implementation of observeThreat (recursive seeThreat) */
-+!observeThreat
+/* Implementation of observeTarget (recursive seeTarget) */
++!observeTarget
 	:	true
-	<-	!seeThreat.
+	<-	!seeTarget.
 
-/* Plan for facing the threat if none is seen */
-+!faceThreat
-	:	noThreat
-	<-	!seeThreat;
-		!faceThreat.
+/* Plan for facing the target if none is seen */
++!faceTarget
+	:	noTarget
+	<-	!seeTarget;
+		!faceTarget.
 
-/* Face a threat to the right */
-+!faceThreat
-	:	threatRight(T)
+/* Face a target to the right */
++!faceTarget
+	:	targetRight(T)
 	<-	turn(right);
-		!faceThreat.
+		!faceTarget.
 		
-/* Face a threat to the right */
-+!faceThreat
-	:	threatLeft(T)
+/* Face a target to the right */
++!faceTarget
+	:	targetLeft(T)
 	<-	turn(left);
-		!faceThreat.
+		!faceTarget.
 		
-/* Face a threat, goal achieved */
-+!faceThreat:	threatAhead(T).
+/* Face a target, goal achieved */
++!faceTarget:	targetAhead(T).
 
-/* watchThreat - recursive faceThreat */
-+!watchThreat
+/* watchTarget - recursive faceTarget */
++!watchTarget
 	:	true
-	<-	!watchThreat.
+	<-	!watchTarget.
 
-/* Follow a threat - case where threat not ahead */	
-+!followThreat
-	:	(not threatAhead(_,_,_))
-	<-	!faceThreat;
-		!followThreat.
+/* Follow a target - case where target not ahead */	
++!followTarget
+	:	(not targetAhead(_,_,_))
+	<-	!faceTarget;
+		!followTarget.
 
-/* Follow a threat that is ahead */
-+!followThreat
-	:	threatAhead(_,_,_) &
+/* Follow a target that is ahead */
++!followTarget
+	:	targetAhead(_,_,_) &
 		velocity(_,SPEED) &
 		SPEED == 0
 	<-	thrust(on);
-		!followThreat.
+		!followTarget.
 
