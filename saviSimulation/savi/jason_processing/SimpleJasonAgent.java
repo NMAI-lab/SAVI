@@ -129,14 +129,14 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
         	System.out.println("(I see nothing)");
         	
         for (VisibleItem vi: agentState.getCameraInfo()) {
-        	//TODO: Fix percept
-        	//l.add(Literal.parseLiteral(vi.toPercept()));
+        	
+        	l.add(Literal.parseLiteral(vi.toPercept()));
         	System.out.println(vi.toPercept());
         }
         
        for (String ms: agentState.getMessagesRead()) {
-        	
-        	l.add(Literal.parseLiteral(ms));
+    	 //TODO: Fix percept
+        	//l.add(Literal.parseLiteral(ms));
         	System.out.println(ms);
         }
         	

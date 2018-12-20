@@ -79,7 +79,7 @@ public class UAS extends AgentModel {
 	  
 	  //// State Update: Read actions from queue, execute them
 	  // also includes coordinates of threat.
-	  public void update(int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<Threat> threats, List<Tree> trees, List<House> houses, List<UAS> amountUAS){
+	  public void update(int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<Threat> threats, List<Tree> trees, List<House> houses, List<UAS> uas_list){
 
 		  PVector position = (PVector) agentState.getPosition();
 		  double speedValue = agentState.getSpeedValue();
@@ -155,18 +155,18 @@ public class UAS extends AgentModel {
 		 
 		//Calculate UAS detected for wifi communication
 		  
-		 for(int i=0; i<amountUAS.size(); i++) { 
+		 for(int i=0; i<uas_list.size(); i++) { 
 		  
 			 //get relative position of UAS to UAS:
-			 float deltax = amountUAS.get(i).getPosition().x - getPosition().x;
-			 float deltay = amountUAS.get(i).getPosition().x - getPosition().y;
+			 float deltax = uas_list.get(i).getPosition().x - getPosition().x;
+			 float deltay = uas_list.get(i).getPosition().x - getPosition().y;
 		  
 			 //calculate distance
 			 double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
 		  
 			 if(dist<WIFI_PERCEPTION_DISTANCE) {
-				 for(int j=0; j<amountUAS.get(i).agentState.getMessages2Share().size(); j++) { 
-				 messages.add(amountUAS.get(i).agentState.getMessages2Share().get(j));
+				 for(int j=0; j<uas_list.get(i).agentState.getMessages2Share().size(); j++) { 
+				 messages.add(uas_list.get(i).agentState.getMessages2Share().get(j));
 				 }			 
 				 
 		    }		
