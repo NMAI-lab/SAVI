@@ -3,6 +3,8 @@ package savi.jason_processing;
 import jason.architecture.AgArch;
 import jason.asSemantics.ActionExec;
 import jason.asSemantics.Agent;
+import jason.asSemantics.Circumstance;
+import jason.asSemantics.Message;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
@@ -26,6 +28,8 @@ import java.util.logging.Logger;
  * The class must extend AgArch class to be used by the Jason engine.
  */
 public class SimpleJasonAgent extends AgArch implements Runnable {
+	private static final String broadcastID = "BROADCAST";
+	
 	private String name;
 	//private String type; don't actually need to hold on to this beyond initialisation
 	private SyncAgentState agentState;
@@ -166,8 +170,15 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		Term stop = Literal.parseLiteral("thrust(off)");
         
 		// Check what action is being performed, update actionString accordingly.
-		if (actionTerm.equals(left)) 
+		if (actionTerm.equals(left)) {
 			actionString = "turn(left)";
+			/*try {
+				this.sendMsg(new Message("tell",));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
+		}
 		else if (actionTerm.equals(right)) 
 			actionString = "turn(right)";
 		else if (actionTerm.equals(go)) 
@@ -206,14 +217,47 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		} catch (InterruptedException e) {}
 	}
 	
-	// Not used methods
-	// This simple agent does not need messages/control/...
+	/**
+	 * Send message to another agent (via simulated wifi).
+	 */
+	// .send(r,tell,open(door)); // Test message for an asl file
 	@Override
-	public void sendMsg(jason.asSemantics.Message m) throws Exception {}
+	public void sendMsg(jason.asSemantics.Message m) throws Exception {
+		// Make sure sender parameter is set
+        if (m.getSender() == null)  m.setSender(getAgName());
+		
+        // Put the message in the wifi queue
+        List<String> messages2Share = new ArrayList<String>();
+        messages2Share.add(m.toString());
+        this.agentState.setMessages2Share(messages2Share);
+	}
+	
+	/**
+	 * in case agent is sleeping
+	 * TODO: in case we get problems of agents not waking up on messages, this is what to use!!
+	 * */
+	public void wakeAgent() {
+        wakeUpSense();
+    }
 
 	@Override
-	public void broadcast(jason.asSemantics.Message m) throws Exception {}
+	public void broadcast(jason.asSemantics.Message m) throws Exception {
+		m.setReceiver(broadcastID);
+		this.sendMsg(m);
+	}
 	
 	@Override
-	public void checkMail() {}
+	public void checkMail() {
+		Circumstance circ = getTS().getC();
+		List<String> messages = this.agentState.getMessagesRead();
+		for(String messageString:messages) {
+			try {
+				 Message currentMessage = Message.parseMsg(messageString);
+				 if (currentMessage.getReceiver().equals(broadcastID) || currentMessage.getReceiver().equals(this.getAgName()))
+					 circ.addMsg(currentMessage);
+			} catch(Exception e) {
+				e.printStackTrace(System.out);
+			}
+		}
+	}
 }

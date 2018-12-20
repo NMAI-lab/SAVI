@@ -47,8 +47,8 @@ public class UAS extends AgentModel {
 
 		agentState.setCameraInfo(new ArrayList<VisibleItem>()); //TODO: calculate what we can see
 		ArrayList<String> mes2share = new ArrayList<String>();
-		mes2share.add(("HelloIAm(" + ID+")")); //TODO: messages cannot be arbitrary strings, they need to be well-formed agentspeak
-		agentState.setMessages2Share(mes2share);
+		//mes2share.add(("HelloIAm(" + ID+")")); //TODO: messages cannot be arbitrary strings, they need to be well-formed agentspeak
+		//agentState.setMessages2Share(mes2share);
 		agentState.setMessagesRead( new ArrayList<String>());	    
 	}
 
@@ -120,8 +120,8 @@ public class UAS extends AgentModel {
 			//calculate distance
 			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
 			if(dist<WIFI_PERCEPTION_DISTANCE) {
-				for(int j=0; j<uas_list.get(i).agentState.getMessages2Share().size(); j++) { 
-					messages.add(uas_list.get(i).agentState.getMessages2Share().get(j));
+				for(String message:uas_list.get(i).agentState.getMessages2Share()) { 
+					messages.add(message);
 				}	 
 			}		
 		}
