@@ -36,7 +36,7 @@ int MAX_IN_Y_VEL_THREAT = 20;
 float MAX_SPEED = 20;
 int PERCEPTION_DISTANCE = 300;
 int WIFI_PERCEPTION_DISTANCE = 500;
-int NUMBER_UAS = 10;
+int NUMBER_UAS = 3;
 
 
 /************* Global Variables *******************/
@@ -77,7 +77,8 @@ public void setup() {
 	Random rand = new Random();
 	for(int i = 0; i < NUMBER_UAS; i++)  { //Put UAS
 		//_PIXELS is the maximum and the 1 is our minimum
-		UAS_list.add(new UAS(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1)));
+		//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
+		UAS_list.add(new UAS(Integer.toString(i), "demo", new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1)));
 	}    
 	for(int i = 0; i < NUMBER_TREES; i++) { //Put trees
 		//_PIXELS is the maximum and the 1 is our minimum.
@@ -100,8 +101,8 @@ public void setup() {
   
 	//======= set up Jason BDI agents ================
 	Map<String,AgentModel> agentList = new HashMap<String,AgentModel>();
-	for(int i = 0; i < NUMBER_UAS; i++) {//Create UAS agents
-		agentList.put(Integer.toString(i), UAS_list.get(i));
+	for(UAS uas: UAS_list) {//Create UAS agents
+		agentList.put(uas.getID(), uas);
 	}  
     jasonAgents = new JasonMAS(agentList);
     jasonAgents.startAgents();

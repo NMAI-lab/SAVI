@@ -27,6 +27,7 @@ import java.util.logging.Logger;
  */
 public class SimpleJasonAgent extends AgArch implements Runnable {
 	private String name;
+	//private String type; don't actually need to hold on to this beyond initialisation
 	private SyncAgentState agentState;
 	private boolean running;
 	private static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
@@ -34,7 +35,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	private long lastPerceptionId;		// ID of the last perception received
 	private boolean firstPerception;	// Flag for noting if any perceptions have ever been received (deal with the first ID issue)
 	
-	public SimpleJasonAgent(String id, SyncAgentState modelAgentState) { //need to make the UAS class public so that the AgArch can refer back to it
+	public SimpleJasonAgent(String id, String type, SyncAgentState modelAgentState) { //need to make the UAS class public so that the AgArch can refer back to it
 		try {
 			LogManager.getLogManager().readConfiguration(new FileInputStream("logging.properties"));
 		} catch (Exception e) {
@@ -58,7 +59,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 			Agent ag = new Agent();
 			new TransitionSystem(ag, null, null, this);
 			this.name = id;
-            ag.initAg(id+".asl");
+            ag.initAg(type+".asl");
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Init error", e);
 		}

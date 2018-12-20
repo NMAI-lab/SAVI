@@ -20,8 +20,10 @@ public class JasonMAS {
 	 */
 	public JasonMAS(Map<String, AgentModel> agents) {
 		theJasonAgents = new HashMap<String, SimpleJasonAgent>();
+		AgentModel am;
 		for (String AgId: agents.keySet()) {
-			theJasonAgents.put(AgId, new SimpleJasonAgent(AgId,agents.get(AgId).getAgentState()));
+			am = agents.get(AgId);
+			theJasonAgents.put(AgId, new SimpleJasonAgent(AgId,am.getType(), am.getAgentState()));
 		}
 
 	}

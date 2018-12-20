@@ -22,17 +22,19 @@ public class UAS extends AgentModel {
 	//-----------------------------------------
 	// DATA (or state variables)
 	//-----------------------------------------  
-	int ID; 
+	//String ID; -- Note: moved to superclass 
+	//String type; -- same
 	PVector initialPosition; // to be able to reset
-	SyncAgentState agentState; // contains all relevant info = It's in the superclass!
+	//SyncAgentState agentState; // contains all relevant info = It's in the superclass!
 	//-----------------------------------------
 	// METHODS (functions that act on the data)
 	//-----------------------------------------
 	// Constructor: called when an object is created using the "new" keyword. It's the only method
 	//              that doesn't have a type (not even void).
-	UAS(int id, PVector initialPosition) {	
+	UAS(String id, String type, PVector initialPosition) {	
 		// Initialize data values
-		ID = id;
+		this.ID = id;
+		this.type = type;
 		agentState = new SyncAgentState();
 		this.initialPosition = initialPosition;
 		PVector position = initialPosition.copy(); //Assume that the initial position is at the center of the display window
@@ -45,7 +47,7 @@ public class UAS extends AgentModel {
 
 		agentState.setCameraInfo(new ArrayList<VisibleItem>()); //TODO: calculate what we can see
 		ArrayList<String> mes2share = new ArrayList<String>();
-		mes2share.add(("WIFI: Hello I'am agent " + ID));
+		mes2share.add(("HelloIAm(" + ID+")")); //TODO: messages cannot be arbitrary strings, they need to be well-formed agentspeak
 		agentState.setMessages2Share(mes2share);
 		agentState.setMessagesRead( new ArrayList<String>());	    
 	}
@@ -178,6 +180,11 @@ public class UAS extends AgentModel {
 		agentState.setPosition(position);
 		agentState.setSpeedValue(0.0);
 		agentState.setCameraInfo(new ArrayList<VisibleItem>());
+	}
+
+	public String getID() {
+		
+		return ID;
 	}
 
 
