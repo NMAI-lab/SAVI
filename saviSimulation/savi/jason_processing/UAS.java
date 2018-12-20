@@ -109,6 +109,8 @@ public class UAS extends AgentModel {
 				if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
 					//it's visible 
 					things.add(new VisibleItem("tree", angle, dist)); 	
+				} else {
+					System.out.println("threat " + i + " not visible.");
 				}
 			}		
 		}
