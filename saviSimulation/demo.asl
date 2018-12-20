@@ -9,6 +9,7 @@ noTarget.
 velocity(0,0).
 //pi(3.14159265359).
 turnAngle(3.14159265359/16).
+margin(0.2).
 
 /* Rules */
 // See a target to the right
@@ -26,6 +27,18 @@ targetAhead(T) :-	(target(T,DIR,DIST) &
 					(-ANGLE <= DIR) &
 					(DIR <= ANGLE) &
 					turnAngle(ANGLE)).
+
+// X is the absolute value of Y					
+abs(X,Y) :- 	((X > 0 | X == 0) &
+				((X == Y) | (X == -Y))).
+				
+// Check if X is positive or 0 
+positive(X) :-	X > 0 | X == 0.
+				
+// Check if the similarity of X and Y are within a margin of error.
+withinMargin(X, Y) :-	margin(MARGIN) &
+						(positive(X - Y) & (X - Y < MARGIN * Y)) |
+						(positive(Y - X) & (Y - X < MARGIN * Y)).
 
 /* Initial goals */
 //!seeTarget.			// Find a target
@@ -46,7 +59,7 @@ targetAhead(T) :-	(target(T,DIR,DIST) &
 +threat(DIR,DIST)
 	:	(not threat(OLD_DIR,OLD_DIST)) &
 		target(threat,OLD_DIR,OLD_DIST) &
-		((DIR \== OLD_DIR) | (DIST \== OLD_DIST))
+		(withinMargin(DIR,OLD_DIR) | withinMargin(DIST,OLD_DIST))
 	<- 	-target(threat,OLD_DIR,old_DIST);
 		+target(threat,DIR,DIST).
 		
