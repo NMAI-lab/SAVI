@@ -94,6 +94,7 @@ public class UAS extends AgentModel {
 		List<VisibleItem> things = new ArrayList<VisibleItem>();
 		List<String> messages = new ArrayList<String>();
 		//Calculate threats detected
+		//System.out.println("UAS perception ---- threat number:"+threats.size());
 		for(int i=0; i<threats.size(); i++) {   
 			//get relative position of aircraft to UAS:
 			float deltax = threats.get(i).position.x - getPosition().x;
@@ -108,10 +109,10 @@ public class UAS extends AgentModel {
 				if(angle>2*Math.PI) angle-=2*Math.PI;
 				if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
 					//it's visible 
-					things.add(new VisibleItem("tree", angle, dist)); 	
-				} else {
-					System.out.println("threat " + i + " not visible.");
-				}
+					things.add(new VisibleItem("threat", angle, dist)); 	
+				} //else {
+				//	System.out.println("threat " + i + " not visible.");
+				//}
 			}		
 		}
 		//Calculate UAS detected for wifi communication 

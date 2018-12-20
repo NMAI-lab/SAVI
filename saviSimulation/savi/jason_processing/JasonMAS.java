@@ -15,7 +15,7 @@ public class JasonMAS {
 	/**
 	 * Creates the Jason MAS Builder
 	 * For now there's only one type of Jason agent in the sense of its capabilities towards the environment (go, stop, turn right, turn left)
-	 * but each agent can have its plans. The plans should be in a file name.asl where name is the agent identifier.
+	 * but each agent can have its plans. The plans should be in a file type.asl where type is the agent attribute "type".
 	 * @param agents
 	 */
 	public JasonMAS(Map<String, AgentModel> agents) {
