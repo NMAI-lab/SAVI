@@ -12,8 +12,8 @@ public class SyncAgentState {
 	private PVector position;						// Vector for the agent's position. TODO: incorporate this into the map somehow
 	private boolean pauseSignal;					// For tracking the pause signal
 	private ArrayList<VisibleItem> cameraInfo;		// List of camera info
-	private ArrayList<String> messages2Share;		// List of camera info
-	private ArrayList<String> messagesRead;		// TODO: ID & message
+	private Queue<String> msgOut;		// List of camera info
+	private Queue<String> msgIn;		// TODO: ID & message
 
 	private LinkedList<String> actions;
 
@@ -26,8 +26,8 @@ public class SyncAgentState {
 		this.cameraInfo = new ArrayList<VisibleItem>(); 
 		this.actions = new LinkedList<String>();
 		this.pauseSignal = false;
-		this.messages2Share = new ArrayList<String>();
-		this.messagesRead = new ArrayList<String>();
+		this.msgOut = new LinkedList<String>();
+		this.msgIn = new LinkedList<String>();
 
 	}
 
@@ -102,15 +102,20 @@ public class SyncAgentState {
 		return myCopy;
 	}
 
-	public synchronized ArrayList<String> getMessages2Share() {
-		ArrayList<String> myCopy = new ArrayList<String>();
-		myCopy.addAll(messages2Share);
+	public synchronized String getMsgOut() {
+		String msg;
+		msg = msgOut.poll();
+		return msg;
+	}
+	public synchronized Queue<String> getMsgOutAll() {
+		Queue<String> myCopy = new LinkedList<String>();
+		myCopy.addAll(msgOut);
+		msgOut.clear();
 		return myCopy;
 	}
-
-	public synchronized ArrayList<String> getMessagesRead() {
-		ArrayList<String> myCopy = new ArrayList<String>();
-		myCopy.addAll(messagesRead);
+	public synchronized Queue<String> getMsgIn() {
+		Queue<String> myCopy = new LinkedList<String>();
+		myCopy.addAll(msgIn);
 		return myCopy;
 	}
 
@@ -120,16 +125,14 @@ public class SyncAgentState {
 		this.cameraInfo.addAll(cameraInfo);
 	}
 
-	public synchronized void setMessages2Share(List<String> messages2Share) {
+	public synchronized void setMsgOut(String msgOut) {
 		this.incrementCounter();
-		this.messages2Share.clear();
-		this.messages2Share.addAll(messages2Share);
+		this.msgOut.add(msgOut);
 	}
 
-	public synchronized void setMessagesRead(List<String> messagesRead) {
+	public synchronized void setMsgIn(String msgIn) {
 		this.incrementCounter();
-		this.messagesRead.clear();
-		this.messagesRead.addAll(messagesRead);
+		this.msgIn.add(msgIn);
 	}
 
 	public synchronized void addAction(String action) {

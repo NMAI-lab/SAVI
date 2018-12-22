@@ -1,8 +1,9 @@
 package savi.jason_processing;
 
 import java.util.ArrayList;
-
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import processing.core.PApplet;
 import processing.core.PShape;
@@ -25,6 +26,7 @@ public class UAS extends AgentModel {
 	//String ID; -- Note: moved to superclass 
 	//String type; -- same
 	PVector initialPosition; // to be able to reset
+	double wifi;
 	//SyncAgentState agentState; // contains all relevant info = It's in the superclass!
 	//-----------------------------------------
 	// METHODS (functions that act on the data)
@@ -38,7 +40,7 @@ public class UAS extends AgentModel {
 		agentState = new SyncAgentState();
 		this.initialPosition = initialPosition;
 		PVector position = initialPosition.copy(); //Assume that the initial position is at the center of the display window
-		double wifi = 100; //Probability of having the wifi working 0-100
+		wifi = 100; //Probability of having the wifi working 0-100
 		//TODO: "break the wifi during simulation time
 		agentState.setPosition(position); //value type is PVector
 		agentState.setSpeedAngle(0.0); //TODO: calculate velocity angle + magnitude
@@ -46,10 +48,10 @@ public class UAS extends AgentModel {
 		agentState.setCompassAngle(-Math.PI/2); //TODO calculate direction we're facing
 
 		agentState.setCameraInfo(new ArrayList<VisibleItem>()); //TODO: calculate what we can see
-		ArrayList<String> mes2share = new ArrayList<String>();
+		//ArrayList<String> mes2share = new ArrayList<String>();
 		//mes2share.add(("HelloIAm(" + ID+")")); //TODO: messages cannot be arbitrary strings, they need to be well-formed agentspeak
 		//agentState.setMessages2Share(mes2share);
-		agentState.setMessagesRead( new ArrayList<String>());	    
+		//agentState.setMsgIn( new Queue<String>());	    
 	}
 
 	public PVector getPosition() {
@@ -92,7 +94,6 @@ public class UAS extends AgentModel {
 		agentState.setSpeedValue(speedValue);   
 		//calculate what we can see  
 		List<VisibleItem> things = new ArrayList<VisibleItem>();
-		List<String> messages = new ArrayList<String>();
 		//Calculate threats detected
 		//System.out.println("UAS perception ---- threat number:"+threats.size());
 		for(int i=0; i<threats.size(); i++) {   
@@ -115,20 +116,26 @@ public class UAS extends AgentModel {
 				//}
 			}		
 		}
-		//Calculate UAS detected for wifi communication 
+		//Calculate UAS detected for wifi communication
+		Queue<String> myMsgOutCopy = new LinkedList<String>();
+		myMsgOutCopy = this.agentState.getMsgOutAll();
 		for(int i=0; i<uas_list.size(); i++) { 
 			//get relative position of UAS to UAS:
 			float deltax = uas_list.get(i).getPosition().x - getPosition().x;
 			float deltay = uas_list.get(i).getPosition().x - getPosition().y;
 			//calculate distance
 			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
-			if(dist<WIFI_PERCEPTION_DISTANCE) {
-				for(String message:uas_list.get(i).agentState.getMessages2Share()) { 
-					messages.add(message);
-				}	 
+			if(dist < WIFI_PERCEPTION_DISTANCE & wifi > 0) {
+				Queue<String> msg = new LinkedList<String>();
+				msg = myMsgOutCopy;
+				if(this.ID != uas_list.get(i).ID & uas_list.get(i).wifi > 0 ) {
+					while(!msg.isEmpty()) {
+						uas_list.get(i).agentState.setMsgIn(msg.poll());			
+					}
+				}				
 			}		
 		}
-
+		
 		//calculate trees detected
 
 		for(int i=0; i<trees.size(); i++) { 
@@ -174,7 +181,6 @@ public class UAS extends AgentModel {
 			}  
 		}		 
 		agentState.setCameraInfo(things); 
-		agentState.setMessagesRead(messages);
 	}
 	// State reset
 	public void reset(){

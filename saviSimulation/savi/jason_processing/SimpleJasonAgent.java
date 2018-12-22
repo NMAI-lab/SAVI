@@ -14,7 +14,9 @@ import processing.core.PVector;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -132,7 +134,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 			System.out.println(vi.toPercept());
 		}
 		
-		for (String ms: agentState.getMessagesRead()) {
+		for (String ms: agentState.getMsgIn()) {
 			//TODO: Fix percept
 			//l.add(Literal.parseLiteral(ms));
 			System.out.println(ms);
@@ -227,9 +229,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
         if (m.getSender() == null)  m.setSender(getAgName());
 		
         // Put the message in the wifi queue
-        List<String> messages2Share = new ArrayList<String>();
-        messages2Share.add(m.toString());
-        this.agentState.setMessages2Share(messages2Share);
+        this.agentState.setMsgOut(m.toString());
 	}
 	
 	/**
@@ -249,7 +249,8 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	@Override
 	public void checkMail() {
 		Circumstance circ = getTS().getC();
-		List<String> messages = this.agentState.getMessagesRead();
+		Queue<String> messages = new LinkedList<String>();
+		messages = this.agentState.getMsgIn();
 		for(String messageString:messages) {
 			try {
 				 Message currentMessage = Message.parseMsg(messageString);
