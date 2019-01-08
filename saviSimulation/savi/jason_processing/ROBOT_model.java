@@ -26,9 +26,9 @@ import java.io.IOException;
 public class ROBOT_model extends PApplet {
 
 /********** CONSTANTS **********/
-int	NUMBER_TREES = 60;
-int NUMBER_HOUSES =15;
-int NUMBER_THREATS =10; 
+int	NUMBER_TREES = 0;
+int NUMBER_HOUSES =0;
+int NUMBER_THREATS =1; 
 int X_PIXELS = 991;
 int Y_PIXELS = 740;
 int FRAME_RATE = 20;
@@ -37,7 +37,7 @@ int MAX_IN_Y_VEL_THREAT = 20;
 float MAX_SPEED = 20;
 int PERCEPTION_DISTANCE = 300;
 int WIFI_PERCEPTION_DISTANCE = 500;
-int NUMBER_UAS = 3;
+int NUMBER_UAS = 1;
 
 
 /************* Global Variables *******************/

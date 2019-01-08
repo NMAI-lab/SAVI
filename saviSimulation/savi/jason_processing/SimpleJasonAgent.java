@@ -120,33 +120,32 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	// this method just add some perception for the agent
 	@Override
 	public List<Literal> perceive() {
-		// Busy wait for a fresh perception. TODO: is there a way to do this more elegantly? Better to suspend the thread if possible.
-		while(!this.checkForFreshPerception()) {}
-
-		System.out.println("Perceiving perception "+ this.lastPerceptionId);
 		List<Literal> l = new ArrayList<Literal>();
 		
-		if (agentState.getCameraInfo().isEmpty())
-			System.out.println("(I see nothing)");
+		if (this.checkForFreshPerception()) {
+			System.out.println("Agent " + getAgName() + " Perceiving perception "+ this.lastPerceptionId);
 		
-		for (VisibleItem vi: agentState.getCameraInfo()) {
-			l.add(Literal.parseLiteral(vi.toPercept()));
-			System.out.println(vi.toPercept());
+			if (agentState.getCameraInfo().isEmpty())
+				System.out.println("(I see nothing)");
+
+			for (VisibleItem vi: agentState.getCameraInfo()) {
+				l.add(Literal.parseLiteral(vi.toPercept()));
+				System.out.println(vi.toPercept());
+			}
+
+			for (String ms: agentState.getMsgIn()) {
+				//TODO: Fix percept
+				//l.add(Literal.parseLiteral(ms));
+				System.out.println(ms);
+			}
+
+			// Perceive agent's speed and speed direction
+			double speed = agentState.getSpeedValue();
+			double speedAngle = agentState.getSpeedAngle();
+			String speedDataPercept = "speedData("+speedAngle+","+speed+")";
+			l.add(Literal.parseLiteral(speedDataPercept));
+			System.out.println(speedDataPercept);
 		}
-		
-		for (String ms: agentState.getMsgIn()) {
-			//TODO: Fix percept
-			//l.add(Literal.parseLiteral(ms));
-			System.out.println(ms);
-		}
-		
-		// Perceive agent's speed and speed direction
-		double speed = agentState.getSpeedValue();
-		double speedAngle = agentState.getSpeedAngle();
-		String speedDataPercept = "speedData("+speedAngle+","+speed+")";
-		l.add(Literal.parseLiteral(speedDataPercept));
-		System.out.println(speedDataPercept);
-		
 		return l;
 	}
 	
@@ -194,6 +193,9 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		// Set that the execution was OK and flag it as complete.
 		action.setResult(true);
 		actionExecuted(action);
+		
+		// Busy wait for a fresh perception. TODO: is there a way to do this more elegantly? Better to suspend the thread if possible.
+		while(!this.checkForFreshPerception()) {}
 	}
 	
 	@Override
