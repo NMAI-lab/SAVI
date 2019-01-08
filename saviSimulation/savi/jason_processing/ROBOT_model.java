@@ -127,12 +127,13 @@ public void setup() {
 // called by Processing in an infinite loop
 //************************************************/
 public void draw(){
-	if(simPaused){ 
+	if(simPaused){
 		
 		background(240); // white background
 		
 		for(int i = 0; i < NUMBER_UAS; i++){ //Draw UAS agents
-			drawUAS(UAS_list.get(i));	
+			drawUAS(UAS_list.get(i));
+			UAS_list.get(i).getAgentState().pause();
 		}
 
 		for(int i = 0; i < NUMBER_TREES; i++){ //Makes all trees on screen.
