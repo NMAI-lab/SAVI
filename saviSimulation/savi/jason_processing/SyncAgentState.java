@@ -177,7 +177,15 @@ public class SyncAgentState {
 
 	//TODO: use this to pause the agents [not working yet]
 	public synchronized void pause() {
-		pauseSignal = !pauseSignal;
+		pauseSignal = true;
+	}
+	
+	public synchronized void run() {
+		pauseSignal = false;
+	}
+	
+	public synchronized boolean checkPause() {
+		return this.pauseSignal;
 	}
 
 }

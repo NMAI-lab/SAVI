@@ -89,7 +89,9 @@ public class UAS extends AgentModel {
 		//put info back into Agentstate
 		agentState.setPosition(position);  
 		//Normalize angle between 0 and 2 Pi
-		compassAngle = compassAngle % 2* Math.PI;  
+		//compassAngle = compassAngle % 2* Math.PI;
+		if(compassAngle<0) compassAngle+=2*Math.PI;
+		if(compassAngle>2*Math.PI) compassAngle-=2*Math.PI;
 		agentState.setCompassAngle(compassAngle);
 		agentState.setSpeedValue(speedValue);   
 		//calculate what we can see  

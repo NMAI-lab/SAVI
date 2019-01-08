@@ -3,6 +3,7 @@ import processing.core.*;
 import processing.data.*; 
 import processing.event.*; 
 import processing.opengl.*;
+import savi.jason_processing.ROBOT_model.Button;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,9 @@ List <UAS> UAS_list = new ArrayList<UAS>(); //List of UAS
 
 JasonMAS jasonAgents; // the BDI agent
 
+Button playButton,stopButton,pauseButton;
+PShape play,pause,restart;
+
 public void settings() { size(X_PIXELS,Y_PIXELS, P2D);  smooth(8); } // let's assume a 2D environment
 
 public static void main(String[] passedArgs) {
@@ -74,6 +78,14 @@ public void setup() {
 	simTimeDelta = 1; // seconds
 	simPaused = false;// not paused by default  
    
+	playButton = new Button("play", width/2-20, 10, 40, 40);
+	pauseButton = new Button("pause", width/2-20, 10, 40, 40);
+	stopButton = new Button("restart", width/2+20, 10, 40, 40);
+	
+	play=loadShape("play.svg");
+	pause=loadShape("pause.svg");
+	restart=loadShape("replay.svg");
+	
 	Random rand = new Random();
 	for(int i = 0; i < NUMBER_UAS; i++)  { //Put UAS
 		//_PIXELS is the maximum and the 1 is our minimum
@@ -115,14 +127,42 @@ public void setup() {
 // called by Processing in an infinite loop
 //************************************************/
 public void draw(){
-	if (simPaused) return; // don't change anything if sim is paused
+	if(simPaused){
+		
+		background(240); // white background
+		
+		for(int i = 0; i < NUMBER_UAS; i++){ //Draw UAS agents
+			drawUAS(UAS_list.get(i));
+			UAS_list.get(i).getAgentState().pause();
+		}
+
+		for(int i = 0; i < NUMBER_TREES; i++){ //Makes all trees on screen.
+			trees.get(i).drawTree();
+		}
+		
+		for(int i = 0; i < NUMBER_HOUSES; i++){ //Makes all trees on screen.
+			houses.get(i).drawHouse();
+		}
+		
+		for(int i = 0; i < NUMBER_THREATS; i++){ //Makes all trees on screen.
+		    threats.get(i).drawThreat();
+		}
+		
+		playButton.label="play";
+		
+		playButton.drawButton();
+		stopButton.drawButton();
+		
+		return; // don't change anything if sim is paused
+	}
 	
 	// 1. TIME UPDATE
 	simTime += simTimeDelta; // simple discrete-time advance
 	// 2. STATE UPDATE (SIMULATION)
 	for(int i = 0; i < NUMBER_UAS; i++){ //Create UAS agents
+		UAS_list.get(i).getAgentState().run();
 		UAS_list.get(i).update(PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,trees,houses,UAS_list);
-	}  
+	}
 	for(int i = 0; i < NUMBER_THREATS; i++){ //Put threats
 		threats.get(i).update();
 	}  
@@ -140,8 +180,27 @@ public void draw(){
     }
     for(int i = 0; i < NUMBER_THREATS; i++) {//Draw Threats.
 	  	threats.get(i).drawThreat();
-    }    
+    }
+    
+    playButton.label="pause";
+	
+	playButton.drawButton();
+	stopButton.drawButton();
 }
+
+
+public void mousePressed(){
+	
+	if(playButton.MouseIsOver()){
+		pauseSimulation();
+	}
+	
+	if(stopButton.MouseIsOver()){
+		resetSimulation();
+	}
+}
+
+
 
 // Visualize
 public void drawUAS(UAS uas){
@@ -187,19 +246,16 @@ public void drawUAS(UAS uas){
 // belong to any particular class.
 //************************************************/
 // Reset the simulation
-public void resetSimulation (){
+public void resetSimulation(){
 	// Set simulation time to zero
 	simTime = 0;
-	// Set all UAS positions to initial
-	for(int i = 0; i < NUMBER_UAS; i++){ //Create UAS agents
-		UAS_list.get(i).reset();	
-	}  
-           
-	//Reset threats
-	for(int i = 0; i < NUMBER_THREATS; i++){ //Makes all trees on screen.
-		threats.get(i).reset();
-	} 
-               
+
+	trees.removeAll(trees);
+	houses.removeAll(houses);
+	threats.removeAll(threats);
+	UAS_list.removeAll(UAS_list);
+	
+	setup();
 	// Unpause the simualtion
 	simPaused = false;
 }
@@ -219,6 +275,51 @@ public void keyPressed(){  // handle keyboard input
     	default: break; // ignore any other key presses
 	}
 }
+
+
+//the Button class
+public class Button{
+	String label; // button label
+	float x;      // top left corner x position
+	float y;      // top left corner y position
+	float w;      // width of button
+	float h;      // height of button
+
+	// constructor
+	Button(String labelB, float xpos, float ypos, float widthB, float heightB){
+		label = labelB;
+		x = xpos;
+		y = ypos;
+		w = widthB;
+		h = heightB;
+	}
+
+	void drawButton(){
+		shapeMode(CORNER);
+		
+		if(label.contentEquals("play")){
+			//s=loadShape("play.svg");
+			shape(play, x, y, w, h);
+		}
+		else if(label.contentEquals("restart")){
+			//s=loadShape("replay.svg");
+			shape(restart, x, y, w, h);
+		}
+		else {
+			//s=loadShape("pause.svg");
+			shape(pause, x, y, w, h);
+		}
+	}
+
+	boolean MouseIsOver(){
+		if (mouseX > x && mouseX < (x + w) && mouseY > y && mouseY < (y + h)){
+			return true;
+		}
+		return false;
+	}
+
+}
+
 
 class Threat {
 	//-----------------------------------------
@@ -273,7 +374,8 @@ class Threat {
 		stroke(0);
 		s = loadShape("warning.svg");	  
 		// translate to center image on sposition.x, position.y
-		s.translate(-s.width/2,-s.height/2); 
+		s.translate(-s.width/2,-s.height/2);
+		//shapeMode(CENTER);
 		shape(s, position.x, position.y,10,10);      
 	} 
 }
@@ -304,7 +406,8 @@ class Tree {
 		stroke(0);
 		s = loadShape("tree.svg");
 		// translate to center image on sposition.x, position.y
-		s.translate(-s.width/2,-s.height/2);  
+		s.translate(-s.width/2,-s.height/2);
+		//shapeMode(CENTER);
 		shape(s, X, Y,15,15);    
 	}	  
 }
@@ -335,7 +438,8 @@ class House {
 		stroke(0);
 		s = loadShape("home.svg");  
 		// translate to center image on sposition.x, position.y
-		s.translate(-s.width/2,-s.height/2);  
+		s.translate(-s.width/2,-s.height/2);
+		//shapeMode(CENTER);
 		shape(s, X, Y,25,25);  
 	}	  
 }
