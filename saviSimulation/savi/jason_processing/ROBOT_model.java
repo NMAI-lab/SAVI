@@ -253,7 +253,8 @@ public void resetSimulation(){
 	trees.removeAll(trees);
 	houses.removeAll(houses);
 	threats.removeAll(threats);
-  
+	UAS_list.removeAll(UAS_list);
+	
 	setup();
 	// Unpause the simualtion
 	simPaused = false;
