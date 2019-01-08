@@ -160,8 +160,9 @@ public void draw(){
 	simTime += simTimeDelta; // simple discrete-time advance
 	// 2. STATE UPDATE (SIMULATION)
 	for(int i = 0; i < NUMBER_UAS; i++){ //Create UAS agents
+		UAS_list.get(i).getAgentState().run();
 		UAS_list.get(i).update(PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,trees,houses,UAS_list);
-	}  
+	}
 	for(int i = 0; i < NUMBER_THREATS; i++){ //Put threats
 		threats.get(i).update();
 	}  
