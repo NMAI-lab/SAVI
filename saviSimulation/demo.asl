@@ -41,8 +41,8 @@ withinMargin(X, Y) :-	margin(MARGIN) &
 						(positive(Y - X) & (Y - X < MARGIN * Y)).
 
 /* Initial goals */
-!seeTarget.			// Find a target
-//!observeTarget		// Keep a target visible (recursive seeTarget)
+//!seeTarget.			// Find a target
+!observeTarget		// Keep a target visible (recursive seeTarget)
 //!faceTarget.			// Turn to face a target head on
 //!watchTarget			// Face a target and keep facing it recursively
 //!followTarget.			// Follow a target
@@ -97,8 +97,9 @@ withinMargin(X, Y) :-	margin(MARGIN) &
 	
 /* Implementation of observeTarget (recursive seeTarget) */
 +!observeTarget
-	:	true
-	<-	!seeTarget.
+	:	noTarget
+	<-	!seeTarget;
+		!observeTarget.
 
 /* Plan for facing the target if none is seen */
 +!faceTarget
