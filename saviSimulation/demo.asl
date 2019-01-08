@@ -97,8 +97,9 @@ withinMargin(X, Y) :-	margin(MARGIN) &
 	
 /* Implementation of observeTarget (recursive seeTarget) */
 +!observeTarget
-	:	true
-	<-	!seeTarget.
+	:	noTarget
+	<-	!seeTarget;
+		!observeTarget.
 
 /* Plan for facing the target if none is seen */
 +!faceTarget
