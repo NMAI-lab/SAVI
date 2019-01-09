@@ -23,8 +23,8 @@ public class Perception {
 	 * @param newVersionID
 	 * @param newParameters
 	 */
-	public Perception(String newSensorType, long newVersionID, List<Double> newParameters) {
-		this.perceptionName = new String(newSensorType);
+	public Perception(String perceptionName, long newVersionID, List<Double> newParameters) {
+		this.perceptionName = new String(perceptionName);
 		this.versionID = newVersionID;
 		this.parameters = new ArrayList<Double>(newParameters);
 	}
