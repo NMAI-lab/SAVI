@@ -3,8 +3,10 @@ package savi.jason_processing;
 import java.util.ArrayList;
 import java.util.List;
 
+import jason.asSyntax.Literal;
+
 public class Perception {
-	private String sensorType;
+	private String perceptionName;
 	private long versionID;
 	private List<Double> parameters;
 	private final double similarity = 0.02; 	// Parameters must be 0.02% similar for comparison
@@ -22,17 +24,17 @@ public class Perception {
 	 * @param newParameters
 	 */
 	public Perception(String newSensorType, long newVersionID, List<Double> newParameters) {
-		this.sensorType = new String(newSensorType);
+		this.perceptionName = new String(newSensorType);
 		this.versionID = newVersionID;
 		this.parameters = new ArrayList<Double>(newParameters);
 	}
 	
 	/**
-	 * Get the sensor type
+	 * Get the perception name
 	 * @return
 	 */
-	public String getSensorType() {
-		return new String(this.sensorType);
+	public String getPerceptionName() {
+		return new String(this.perceptionName);
 	}
 	
 	
@@ -46,7 +48,7 @@ public class Perception {
 	
 	
 	public Boolean comparePerceptionType(Perception otherPerception) {
-		return this.sensorType.equals(otherPerception.getSensorType());		
+		return this.perceptionName.equals(otherPerception.getPerceptionName());		
 	}
 	
 	/**
@@ -115,4 +117,21 @@ public class Perception {
 		return (Math.abs(a - b))/((a + b)/2);
 	}
 	
+	/**
+	 * Convert the perception to a Literal for passing to the Jason agent.
+	 * @return
+	 */
+	public Literal getLiteral() {
+		String perceptString = new String(this.perceptionName);
+		perceptString = perceptString + "(";
+		for (int i = 0; i < this.parameters.size(); i++) {
+			perceptString = perceptString+this.parameters.get(i).toString();
+			if (i < this.parameters.size() - 1) {
+				perceptString = perceptString + ",";
+			} else {
+				perceptString = perceptString + ")";
+			}
+		}
+		return Literal.parseLiteral(perceptString);
+	}
 }
