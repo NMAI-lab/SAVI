@@ -195,12 +195,12 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		actionExecuted(action);
 		
 		// Busy wait for a fresh perception. TODO: is there a way to do this more elegantly? Better to suspend the thread if possible.
-		while(!this.checkForFreshPerception()) {}
+		//while(!this.checkForFreshPerception()) {}
 	}
 	
 	@Override
 	public boolean canSleep() {
-		return true;
+		return !this.checkForFreshPerception();
 	}
 
 	@Override
