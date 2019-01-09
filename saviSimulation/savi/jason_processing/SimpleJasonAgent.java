@@ -40,6 +40,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	private Random rand;
 	private long lastPerceptionId;		// ID of the last perception received
 	private boolean firstPerception;	// Flag for noting if any perceptions have ever been received (deal with the first ID issue)
+	private PerceptionHistory perceptHistory;
 	
 	public SimpleJasonAgent(String id, String type, SyncAgentState modelAgentState) { //need to make the UAS class public so that the AgArch can refer back to it
 		try {
@@ -51,6 +52,8 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		// Set parameters for the first perception ID
 		this.lastPerceptionId = 0;
 		this.firstPerception = true;
+		
+		this.perceptHistory = new PerceptionHistory();
     	
 		rand = new Random(100L); //the agent will act randomly but always the same way across executions 
 		
@@ -121,32 +124,31 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	@Override
 	public List<Literal> perceive() {
 		List<Literal> l = new ArrayList<Literal>();
-		
-		if (this.checkForFreshPerception()) {
-			System.out.println("Agent " + getAgName() + " Perceiving perception "+ this.lastPerceptionId);
-		
-			if (agentState.getCameraInfo().isEmpty())
-				System.out.println("(I see nothing)");
-
-			for (VisibleItem vi: agentState.getCameraInfo()) {
-				l.add(Literal.parseLiteral(vi.toPercept()));
-				System.out.println(vi.toPercept());
-			}
-
-			for (String ms: agentState.getMsgIn()) {
-				//TODO: Fix percept
-				//l.add(Literal.parseLiteral(ms));
-				System.out.println(ms);
-			}
-
-			// Perceive agent's speed and speed direction
-			double speed = agentState.getSpeedValue();
-			double speedAngle = agentState.getSpeedAngle();
-			String speedDataPercept = "speedData("+speedAngle+","+speed+")";
-			l.add(Literal.parseLiteral(speedDataPercept));
-			System.out.println(speedDataPercept);
+		PerceptionSnapshot currentPerceptions = new PerceptionSnapshot();
+		this.lastPerceptionId = this.agentState.getCounter();
+						
+		// Check for visible items
+		for (VisibleItem vi: agentState.getCameraInfo()) {
+			List<Double> parameters = new ArrayList<Double>();
+			parameters.add(new Double(vi.getAngle()));
+			parameters.add(new Double(vi.getDistance()));
+			String type = new String(vi.getType());
+			currentPerceptions.addPerception(new Perception(type, this.lastPerceptionId, parameters));
 		}
-		return l;
+		
+		// Perceive agent's speed and speed direction
+		List<Double> parameters = new ArrayList<Double>();
+		parameters.add(new Double(agentState.getSpeedAngle()));
+		parameters.add(new Double(agentState.getSpeedValue()));
+		String type = new String("speedData");
+		currentPerceptions.addPerception(new Perception(type, this.lastPerceptionId, parameters));
+		
+		// Update the history, get the list of literals to send to the agent
+		List<Literal> perceptionLiterals = new ArrayList<Literal>(this.perceptHistory.updatePerceptions(currentPerceptions));
+		
+		System.out.println("Agent " + getAgName() + " Perceiving perception "+ this.lastPerceptionId);
+		System.out.println(perceptionLiterals.toString());
+		return perceptionLiterals;
 	}
 	
 	/**
