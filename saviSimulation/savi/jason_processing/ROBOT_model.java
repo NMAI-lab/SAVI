@@ -28,7 +28,7 @@ public class ROBOT_model extends PApplet {
 /********** CONSTANTS **********/
 int	NUMBER_TREES = 0;
 int NUMBER_HOUSES =0;
-int NUMBER_THREATS =1; 
+int NUMBER_THREATS =10; 
 int X_PIXELS = 991;
 int Y_PIXELS = 740;
 int FRAME_RATE = 20;
