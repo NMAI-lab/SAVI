@@ -42,7 +42,7 @@ withinMargin(X, Y) :-	margin(MARGIN) &
 
 /* Initial goals */
 //!seeTarget.			// Find a target
-!observeTarget		// Keep a target visible (recursive seeTarget)
+!observeTarget.		// Keep a target visible (recursive seeTarget)
 //!faceTarget.			// Turn to face a target head on
 //!watchTarget			// Face a target and keep facing it recursively
 //!followTarget.			// Follow a target
