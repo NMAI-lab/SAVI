@@ -42,9 +42,14 @@ public class Perception {
 	 */
 	public Perception(String perceptionName, String type, long newVersionID, List<Double> newParameters) {
 		this.perceptionName = new String(perceptionName);
-		this.type = new String(type);
 		this.versionID = newVersionID;
+		this.type = null;
 		this.parameters = new ArrayList<Double>(newParameters);
+		
+		if (type != null) {
+			this.type = new String(type);
+		}
+		
 	}
 	
 	/**
