@@ -123,7 +123,6 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	// this method just add some perception for the agent
 	@Override
 	public List<Literal> perceive() {
-		List<Literal> l = new ArrayList<Literal>();
 		PerceptionSnapshot currentPerceptions = new PerceptionSnapshot();
 		this.lastPerceptionId = this.agentState.getCounter();
 						

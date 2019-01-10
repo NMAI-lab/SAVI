@@ -7,9 +7,10 @@ import jason.asSyntax.Literal;
 
 public class Perception {
 	private String perceptionName;
+	//private String type;
 	private long versionID;
 	private List<Double> parameters;
-	private final double similarity = 0.02; 	// Parameters must be 0.02% similar for comparison
+	private final double similarity = 0.02; 	// Parameters must be 2% similar for comparison
 	
 	/**
 	 * Default constructor is not useful
@@ -23,8 +24,10 @@ public class Perception {
 	 * @param newVersionID
 	 * @param newParameters
 	 */
+	//public Perception(String perceptionName, String type, long newVersionID, List<Double> newParameters) {
 	public Perception(String perceptionName, long newVersionID, List<Double> newParameters) {
 		this.perceptionName = new String(perceptionName);
+		//this.type = new String(type);
 		this.versionID = newVersionID;
 		this.parameters = new ArrayList<Double>(newParameters);
 	}
@@ -35,7 +38,7 @@ public class Perception {
 	 */
 	public String getPerceptionName() {
 		return new String(this.perceptionName);
-	}
+	} 
 	
 	
 	public long getVersionID() {
