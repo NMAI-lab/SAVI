@@ -15,16 +15,11 @@ public class PerceptionHistory {
 	// The previous perception snapshot
 	private PerceptionSnapshot previousPerception;
 	
-	// The last version of these perceptions that were sent to the agent
-	private PerceptionSnapshot previousPerceptionSent;
-	
-	
 	/**
 	 * Default Constructor
 	 */
 	public PerceptionHistory() {
 		this.previousPerception = new PerceptionSnapshot();
-		this.previousPerceptionSent = new PerceptionSnapshot();
 	}
 	
 	
@@ -32,60 +27,44 @@ public class PerceptionHistory {
 	 * Updates the perception history and updates the agent. Looks for things that are sufficiently 
 	 * different in order to send the update to the agent
 	 */
-	public List<Literal> updatePerceptions(PerceptionSnapshot newPerception) {
+	public List<Literal> updatePerceptions(PerceptionSnapshot newPerceptions) {
 		
-		// Make the empty perceptionUpdate list for the output.
-		List<Literal> perceptionUpdate = new ArrayList<Literal>();
+		// Make a new snapshot to become the new version of this.previousPerception
+		PerceptionSnapshot newPreviousPercption = new PerceptionSnapshot();
 		
-		// Check if the perceptions are up to date. If so, return empty list
-		if (this.lastPerceptionId == perceptionId) {
-			return perceptionUpdate;
-		}
+		// Make a safe copy of the new perceptions, we will be modifying it
+		PerceptionSnapshot differentPerceptions = new PerceptionSnapshot(newPerceptions);
+
+		// Make a snapshot for what will actually be sent to the agent
+		PerceptionSnapshot outputSnapshot = new PerceptionSnapshot();
 		
-		// Check if there are differences. Something I saw that isn't there anymore, something that was there that moved a little, change in speed
-		int numPerceptionsToUpdate = this.perceptionList.size();
-		List<Boolean> updateNeeded = this.initializeUpdateNeededList(numPerceptionsToUpdate);		// Updates that are needed
+		// Get the list of previous perceptions
+		List<Perception> prevPerceptList = new ArrayList<Perception>(this.previousPerception.getPerceptionList());
 		
-		
-		for (int i = 0; i < numPerceptionsToUpdate; i++) {
-			int numNewPerceptions = newPerceptionList.size();
-			Literal oldPerception = this.perceptionList.get(i);
-			int oldArity = oldPerception.getArity();
-			String oldFunctor = oldPerception.getFunctor();
+		// Iterate through the prevPerceptList
+		for (int i = 0; i < prevPerceptList.size(); i++) {
+			Perception similarPercept = differentPerceptions.pullSimilarPerception(prevPerceptList.get(i));
 			
-			for (int j = 0; j < numNewPerceptions; j++) {
-				Literal newPerception = newPerceptionList.get(j);
-				int newArity = newPerception.getArity();
-				String newFunctor = newPerception.getFunctor();
-				// Check if the functor is the same
-				if (oldFunctor.equals(newFunctor) && (oldArity == newArity)) {
-					// Check if the terms are the same
-					
-					for (int k = 0; k < oldArity; k++) {
-						if ((oldPerception.getTerm(k).equals(newPerception.getTerm(k)))) {
-							
-						}
-					}
-				}
+			if (similarPercept == null) {	// No similar Perceptions
+				// This perception was seen before but now isn't. Need to add a negative perception to the output list
+				Perception negativePercept = new Perception(prevPerceptList.get(i));
+				negativePercept.perceptionLost();
+				outputSnapshot.addPerception(negativePercept);
+
+			} else {
+				// This had been seen before. Need to log it in the history but don't send this to the agent
+				newPreviousPercption.addPerception(similarPercept);
 			}
-			
 		}
 		
-		return perceptionUpdate;
+		// Deal with any remaining new perceptions that were not in the previous list
+		newPreviousPercption.addPerceptionsFromSnapshot(differentPerceptions);
+		outputSnapshot.addPerceptionsFromSnapshot(differentPerceptions);
+				
+		// Update the internal perception history
+		this.previousPerception = newPreviousPercption;
 		
+		// Return the literals for the perception
+		return outputSnapshot.getLiterals();
 	}
-	
-	/**
-	 * 
-	 * @param length
-	 * @return
-	 */
-	private List<Boolean> initializeUpdateNeededList(int length) {
-		List<Boolean> updateNeeded = new ArrayList<Boolean>();
-		for (int i = 0; i < length; i++) {
-			updateNeeded.add(false);
-		}
-		return updateNeeded;
-	}
-	
 }

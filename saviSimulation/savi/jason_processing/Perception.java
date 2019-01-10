@@ -5,9 +5,14 @@ import java.util.List;
 
 import jason.asSyntax.Literal;
 
+/**
+ * 
+ * @author patrickgavigan
+ *
+ */
 public class Perception {
 	private String perceptionName;
-	//private String type;
+	private String type;
 	private long versionID;
 	private List<Double> parameters;
 	private final double similarity = 0.02; 	// Parameters must be 2% similar for comparison
@@ -24,12 +29,37 @@ public class Perception {
 	 * @param newVersionID
 	 * @param newParameters
 	 */
-	//public Perception(String perceptionName, String type, long newVersionID, List<Double> newParameters) {
 	public Perception(String perceptionName, long newVersionID, List<Double> newParameters) {
+		this(perceptionName, null, newVersionID, newParameters);
+	}
+	
+	/**
+	 * 
+	 * @param perceptionName
+	 * @param type
+	 * @param newVersionID
+	 * @param newParameters
+	 */
+	public Perception(String perceptionName, String type, long newVersionID, List<Double> newParameters) {
 		this.perceptionName = new String(perceptionName);
-		//this.type = new String(type);
+		this.type = new String(type);
 		this.versionID = newVersionID;
 		this.parameters = new ArrayList<Double>(newParameters);
+	}
+	
+	/**
+	 * 
+	 * @param other
+	 */
+	public Perception(Perception other) {
+		this(other.getPerceptionName(), other.getVersionID(), other.getParameters());
+	}
+	
+	/**
+	 * Changes the perceptionName to mark this perception as not being perceived anymore.
+	 */
+	public void perceptionLost() {
+		this.perceptionName = this.perceptionName + "Lost";
 	}
 	
 	/**
@@ -40,16 +70,28 @@ public class Perception {
 		return new String(this.perceptionName);
 	} 
 	
-	
+	/**
+	 * 
+	 * @return
+	 */
 	public long getVersionID() {
 		return this.versionID;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public List<Double> getParameters() {
 		return new ArrayList<Double>(this.parameters);
 	}
 	
 	
+	/**
+	 * 
+	 * @param otherPerception
+	 * @return
+	 */
 	public Boolean comparePerceptionType(Perception otherPerception) {
 		return this.perceptionName.equals(otherPerception.getPerceptionName());		
 	}
