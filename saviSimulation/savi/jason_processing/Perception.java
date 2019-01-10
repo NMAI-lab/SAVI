@@ -64,7 +64,7 @@ public class Perception {
 	 * Changes the perceptionName to mark this perception as not being perceived anymore.
 	 */
 	public void perceptionLost() {
-		this.perceptionName = this.perceptionName + "Lost";
+		this.perceptionName = this.perceptionName + "lost";
 	}
 	
 	/**
@@ -182,6 +182,6 @@ public class Perception {
 				perceptString = perceptString + ")";
 			}
 		}
-		return Literal.parseLiteral(perceptString);
+		return Literal.parseLiteral(perceptString.toLowerCase());
 	}
 }

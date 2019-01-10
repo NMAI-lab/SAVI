@@ -55,6 +55,23 @@ public class PerceptionSnapshot {
 	
 	
 	/**
+	 * Get the versionID of the most recent data in the snapshot
+	 * @return
+	 */
+	public long getLatestVersion() {
+		long latestVersion = -1;
+		
+		for (int i = 0; i < this.perceptionList.size(); i++) {
+			long currentID = this.perceptionList.get(i).getVersionID();
+			if (currentID > latestVersion) {
+				latestVersion = currentID;
+			}
+		}
+		return latestVersion;		
+	}
+	
+	
+	/**
 	 * Gets the most similar perception from the store and returns it.
 	 * Removes this perception from the snapshot
 	 * @param percept
