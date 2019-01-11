@@ -174,11 +174,11 @@ public class Perception {
 	}
 	
 	/**
-	 * Check if the is within the similarity distance for two similar perceptions
+	 * Check if otherPeception the is within the similarity distance for two similar perceptions
 	 * @param otherPerception
 	 * @return
 	 */
-	public boolean checkSimilar(Perception otherPerception) {
+	public boolean isSimilar(Perception otherPerception) {
 		if (Math.abs(this.getDifference(otherPerception)) < this.similarity) {
 			return true;			
 		} else {

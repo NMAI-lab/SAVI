@@ -82,7 +82,7 @@ public class PerceptionSnapshot {
 		double difference = 100;
 		
 		for (int i = 0; i < this.perceptionList.size(); i++) {
-			if (this.perceptionList.get(i).checkSimilar(otherPerception)) {
+			if (this.perceptionList.get(i).isSimilar(otherPerception)) {
 				double currentDifference = this.perceptionList.get(i).getDifference(otherPerception);
 				if (Math.abs(currentDifference) < Math.abs(difference)) {
 					difference = currentDifference;
