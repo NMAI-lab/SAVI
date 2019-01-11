@@ -12,7 +12,7 @@ import jason.asSyntax.Literal;
  */
 public class Perception {
 	private String perceptionName;
-	private String type;
+	private String perceptionType;
 	private long versionID;
 	private List<Double> parameters;
 	private final double similarity = 0.02; 	// Parameters must be 2% similar for comparison
@@ -43,11 +43,11 @@ public class Perception {
 	public Perception(String perceptionName, String type, long newVersionID, List<Double> newParameters) {
 		this.perceptionName = new String(perceptionName);
 		this.versionID = newVersionID;
-		this.type = null;
+		this.perceptionType = null;
 		this.parameters = new ArrayList<Double>(newParameters);
 		
 		if (type != null) {
-			this.type = new String(type);
+			this.perceptionType = new String(type);
 		}
 		
 	}
@@ -76,6 +76,14 @@ public class Perception {
 	} 
 	
 	/**
+	 * Get the perception name
+	 * @return
+	 */
+	public String getPerceptionType() {
+		return new String(this.perceptionType);
+	} 
+	
+	/**
 	 * 
 	 * @return
 	 */
@@ -98,7 +106,24 @@ public class Perception {
 	 * @return
 	 */
 	public Boolean comparePerceptionType(Perception otherPerception) {
-		return this.perceptionName.equals(otherPerception.getPerceptionName());		
+		if ((this.getPerceptionType() == null) && (otherPerception.getPerceptionType() == null)) {
+			return true;
+		} else {
+			return this.perceptionType.equals(otherPerception.getPerceptionType());
+		}
+	}
+	
+	/**
+	 * 
+	 * @param otherPerception
+	 * @return
+	 */
+	public Boolean comparePerceptionName(Perception otherPerception) {
+		if ((this.getPerceptionName() == null) && (otherPerception.getPerceptionName() == null)) {
+			return true;
+		} else {
+			return this.perceptionName.equals(otherPerception.getPerceptionName());
+		}
 	}
 	
 	/**
@@ -112,8 +137,8 @@ public class Perception {
 		List<Double> otherParameters = otherPerception.getParameters();
 		List<Double> myParameters = this.getParameters();
 		
-		// If the perceptions are from a different sensor, they are 100% different
-		if (!comparePerceptionType(otherPerception)) {
+		// If the perceptions have a different name or type, they are 100% different
+		if ((!this.comparePerceptionName(otherPerception)) || (!this.comparePerceptionType(otherPerception))) {
 			maxDifference = 1;
 			return maxDifference;
 		}
