@@ -105,7 +105,7 @@ public class Perception {
 	 * @param otherPerception
 	 * @return
 	 */
-	public Boolean comparePerceptionType(Perception otherPerception) {
+	public boolean comparePerceptionType(Perception otherPerception) {
 		if ((this.getPerceptionType() == null) && (otherPerception.getPerceptionType() == null)) {
 			return true;
 		} else {
@@ -118,7 +118,7 @@ public class Perception {
 	 * @param otherPerception
 	 * @return
 	 */
-	public Boolean comparePerceptionName(Perception otherPerception) {
+	public boolean comparePerceptionName(Perception otherPerception) {
 		if ((this.getPerceptionName() == null) && (otherPerception.getPerceptionName() == null)) {
 			return true;
 		} else {
@@ -164,9 +164,13 @@ public class Perception {
 	 * @param otherPerception
 	 * @return
 	 */
-	public Boolean equals(Perception otherPerception) {
-		return this.comparePerceptionType(otherPerception) && 
-				this.parameters.equals(otherPerception.getParameters());
+	public boolean equals(Object otherPerception) {
+		if (otherPerception instanceof Perception) {
+			Perception p = (Perception)otherPerception;
+			return this.comparePerceptionType(p) && this.parameters.equals(p.getParameters());
+		} else {
+			return false;
+		}
 	}
 	
 	/**
@@ -174,7 +178,7 @@ public class Perception {
 	 * @param otherPerception
 	 * @return
 	 */
-	public Boolean checkSimilar(Perception otherPerception) {
+	public boolean checkSimilar(Perception otherPerception) {
 		if (Math.abs(this.getDifference(otherPerception)) < this.similarity) {
 			return true;			
 		} else {
