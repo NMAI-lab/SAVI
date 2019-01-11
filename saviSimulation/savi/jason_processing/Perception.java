@@ -72,7 +72,11 @@ public class Perception {
 	 * @return
 	 */
 	public String getPerceptionName() {
-		return new String(this.perceptionName);
+		if (this.perceptionName == null) {
+			return null;
+		} else {
+			return new String(this.perceptionName);
+		}
 	} 
 	
 	/**
@@ -80,7 +84,11 @@ public class Perception {
 	 * @return
 	 */
 	public String getPerceptionType() {
-		return new String(this.perceptionType);
+		if (this.perceptionType == null) {
+			return null;
+		} else {
+			return new String(this.perceptionType);
+		}
 	} 
 	
 	/**
