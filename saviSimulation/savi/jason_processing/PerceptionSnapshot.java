@@ -31,7 +31,9 @@ public class PerceptionSnapshot {
 	 * @param newPerception
 	 */
 	public void addPerception(Perception newPerception) {
-		this.perceptionList.add(newPerception);
+		if (newPerception != null) {
+			this.perceptionList.add(newPerception);
+		}
 	}
 
 	/**
