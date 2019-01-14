@@ -25,37 +25,57 @@ public class PerceptionUnitTest {
 		
 		// Check the parameters of the new Perception
 		if (perceptTest.getPerceptionName().equals(perceptName)) {
-			System.out.println("Percept class - Name test OK");
+			if (verbose) {
+				System.out.println("Percept class - Name test OK");
+			}
 		} else {
-			System.out.println("Percept class - Name test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Name test FAILED");
+			}
 			testOK = false;
 		}
 		
 		if (perceptTest.getPerceptionType() == null) {
-			System.out.println("Percept class - Type null test OK");
+			if (verbose) {
+				System.out.println("Percept class - Type null test OK");
+			}
 		} else {
-			System.out.println("Percept class - Type null test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Type null test FAILED");
+			}
 			testOK = false;
 		}
 		
 		if (perceptTest.getVersionID() == versionID) {
-			System.out.println("Percept class - VersionID test OK");
+			if (verbose) {
+				System.out.println("Percept class - VersionID test OK");
+			}
 		} else {
-			System.out.println("Percept class - VersionID test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - VersionID test FAILED");
+			}
 			testOK = false;
 		}
 		
 		if (perceptTest.getParameters().equals(perceptParameters)) {
-			System.out.println("Percept class - Parameter test OK");
+			if (verbose) {
+				System.out.println("Percept class - Parameter test OK");
+			}
 		} else {
-			System.out.println("Percept class - Parameter test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Parameter test FAILED");
+			}
 			testOK = false;
 		}
 		
 		if (perceptTest.getParameters().equals(perceptParameters)) {
-			System.out.println("Percept class - Parameter test OK");
+			if (verbose) {
+				System.out.println("Percept class - Parameter test OK");
+			}
 		} else {
-			System.out.println("Percept class - Parameter test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Parameter test FAILED");
+			}
 			testOK = false;
 		}
 
@@ -63,9 +83,13 @@ public class PerceptionUnitTest {
 		perceptType = new String("someType");
 		Perception perceptTestType = new Perception(perceptName, perceptType, versionID, perceptParameters);
 		if (perceptTestType.getPerceptionType().equals(perceptType)) {
-			System.out.println("Percept class - Type (not null) test OK");
+			if (verbose) {
+				System.out.println("Percept class - Type (not null) test OK");
+			}
 		} else {
-			System.out.println("Percept class - Type (not null) null test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Type (not null) null test FAILED");
+			}
 			testOK = false;
 		}
 		
@@ -74,37 +98,57 @@ public class PerceptionUnitTest {
 		
 		// Check the parameters of the new copied Perception
 		if (perceptTest.getPerceptionName().equals(perceptTestCopy.getPerceptionName())) {
-			System.out.println("Percept class - Name after copy test OK");
+			if (verbose) {
+				System.out.println("Percept class - Name after copy test OK");
+			}
 		} else {
-			System.out.println("Percept class - Name after copy test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Name after copy test FAILED");
+			}
 			testOK = false;
 		}
 		
 		if (perceptTestCopy.getPerceptionType() == null) {
-			System.out.println("Percept class - Type null after copy test OK");
+			if (verbose) {
+				System.out.println("Percept class - Type null after copy test OK");
+			}
 		} else {
-			System.out.println("Percept class - Type null after copy test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Type null after copy test FAILED");
+			}
 			testOK = false;
 		}
 		
 		if (perceptTest.getVersionID() == perceptTestCopy.getVersionID()) {
-			System.out.println("Percept class - VersionID after copy test OK");
+			if (verbose) {
+				System.out.println("Percept class - VersionID after copy test OK");
+			}
 		} else {
-			System.out.println("Percept class - VersionID after copy test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - VersionID after copy test FAILED");
+			}
 			testOK = false;
 		}
 		
 		if (perceptTest.getParameters().equals(perceptTestCopy.getParameters())) {
-			System.out.println("Percept class - Parameter after copy test OK");
+			if (verbose) {
+				System.out.println("Percept class - Parameter after copy test OK");
+			}
 		} else {
-			System.out.println("Percept class - Parameter after copy test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Parameter after copy test FAILED");
+			}
 			testOK = false;
 		}
 		
 		if (perceptTest.equals(perceptTestCopy)) {
-			System.out.println("Percept class - Equals after copy with null test OK");
+			if (verbose) {
+				System.out.println("Percept class - Equals after copy with null test OK");
+			}
 		} else {
-			System.out.println("Percept class - Parameter after copy with null test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Parameter after copy with null test FAILED");
+			}
 			testOK = false;
 		}
 				
@@ -113,63 +157,95 @@ public class PerceptionUnitTest {
 		
 		// Check the parameters of the new copied Perception
 		if (perceptTestType.getPerceptionName().equals(perceptTestCopyType.getPerceptionName())) {
-			System.out.println("Percept class - Name after copy with type test OK");
+			if (verbose) {
+				System.out.println("Percept class - Name after copy with type test OK");
+			}
 		} else {
-			System.out.println("Percept class - Name after copy with type test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Name after copy with type test FAILED");
+			}
 			testOK = false;
 		}
 		
 		if (perceptTestType.getPerceptionType().equals(perceptTestCopyType.getPerceptionType())) {
-			System.out.println("Percept class - Type null after copy with type test OK");
+			if (verbose) {
+				System.out.println("Percept class - Type null after copy with type test OK");
+			}
 		} else {
-			System.out.println("Percept class - Type null after copy with type test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Type null after copy with type test FAILED");
+			}
 			testOK = false;
 		}
 		
 		if (perceptTestType.getVersionID() == perceptTestCopyType.getVersionID()) {
-			System.out.println("Percept class - VersionID after copy with type test OK");
+			if (verbose) {
+				System.out.println("Percept class - VersionID after copy with type test OK");
+			}
 		} else {
-			System.out.println("Percept class - VersionID after copy with type test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - VersionID after copy with type test FAILED");
+			}
 			testOK = false;
 		}
 		
 		if (perceptTestType.getParameters().equals(perceptTestCopyType.getParameters())) {
-			System.out.println("Percept class - Parameter after copy with type test OK");
+			if (verbose) {
+				System.out.println("Percept class - Parameter after copy with type test OK");
+			}
 		} else {
-			System.out.println("Percept class - Parameter after copy with type test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Parameter after copy with type test FAILED");
+			}
 			testOK = false;
 		}
 		
 		if (perceptTestType.equals(perceptTestCopyType)) {
-			System.out.println("Percept class - Equals after copy with type test OK");
+			if (verbose) {
+				System.out.println("Percept class - Equals after copy with type test OK");
+			}
 		} else {
-			System.out.println("Percept class - Parameter after copy with type test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Parameter after copy with type test FAILED");
+			}
 			testOK = false;
 		}
 		
 		// Test compare name
 		Perception perceptTestAnotherName = new Perception(perceptName + "different", perceptType, versionID, perceptParameters);
 		if (perceptTest.comparePerceptionName(perceptTest) && perceptTest.comparePerceptionName(perceptTestCopy) && !perceptTest.comparePerceptionName(perceptTestAnotherName)) {
-			System.out.println("Percept class - Perception name comparison test OK");
+			if (verbose) {
+				System.out.println("Percept class - Perception name comparison test OK");
+			}
 		} else {
-			System.out.println("Percept class - Perception name comparison test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Perception name comparison test FAILED");
+			}
 			testOK = false;
 		}
 		
 		// Test compare type - null case
 		if ((perceptTest.getPerceptionType() == null) && perceptTest.comparePerceptionType(perceptTest) && perceptTest.comparePerceptionType(perceptTestCopy) && !perceptTest.comparePerceptionType(perceptTestAnotherName)) {
-			System.out.println("Percept class - Perception type comparison (null case) test OK");
+			if (verbose) {
+				System.out.println("Percept class - Perception type comparison (null case) test OK");
+			}
 		} else {
-			System.out.println("Percept class - Perception type comparison (null case) test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Perception type comparison (null case) test FAILED");
+			}
 			testOK = false;
 		}
 		
 		// Test compare type - not null case
 		Perception perceptTestTypeAnotherType = new Perception(perceptName, perceptType + "different", versionID, perceptParameters);
 		if (perceptTestType.comparePerceptionType(perceptTestType) && perceptTestType.comparePerceptionType(perceptTestCopyType) && !perceptTest.comparePerceptionType(perceptTestTypeAnotherType)) {
-			System.out.println("Percept class - Perception type comparison (not null) test OK");
+			if (verbose) {
+				System.out.println("Percept class - Perception type comparison (not null) test OK");
+			}
 		} else {
-			System.out.println("Percept class - Perception type comparison (not null) test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Perception type comparison (not null) test FAILED");
+			}
 			testOK = false;
 		}
 		
@@ -177,17 +253,25 @@ public class PerceptionUnitTest {
 		Perception perceptLostTest = new Perception(perceptTest);
 		perceptLostTest.perceptionLost();
 		if(perceptLostTest.getPerceptionName().equals(perceptTest.getPerceptionName() + "lost")) {
-			System.out.println("Percept class - Perception lost test OK");
+			if (verbose) {
+				System.out.println("Percept class - Perception lost test OK");
+			}
 		} else {
-			System.out.println("Percept class - Perception lost test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Perception lost test FAILED");
+			}
 			testOK = false;
 		}
 
 		// Get Literal test
 		if(perceptLostTest.getLiteral().equals(Literal.parseLiteral(new String("testlost(1.0,2.0)"))) && perceptTest.getLiteral().equals(Literal.parseLiteral(new String("test(1.0,2.0)")))) {
-			System.out.println("Percept class - Perception lost test OK");
+			if (verbose) {
+				System.out.println("Percept class - Perception lost test OK");
+			}
 		} else {
-			System.out.println("Percept class - Perception lost test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Perception lost test FAILED");
+			}
 			testOK = false;
 		}
 		
@@ -210,9 +294,13 @@ public class PerceptionUnitTest {
 		boolean notSimilar = !perceptTest.isSimilar(new Perception(perceptTest.getPerceptionName(), perceptTest.getPerceptionType(), 0, differentList));
 
 		if (differenceZeroWithSelf && differenceOneFromLost && differenceOneType && similarWithSelf && differentFromLost && differentType && slightlySimilar && notSimilar) {
-			System.out.println("Percept class - Similarity test OK");
+			if (verbose) {
+				System.out.println("Percept class - Similarity test OK");
+			}
 		} else {
-			System.out.println("Percept class - Similarity test FAILED");
+			if (verbose) {
+				System.out.println("Percept class - Similarity test FAILED");
+			}
 			testOK = false;
 		}	
 		
