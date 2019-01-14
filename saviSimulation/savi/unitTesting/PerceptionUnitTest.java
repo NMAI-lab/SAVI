@@ -80,124 +80,54 @@ public class PerceptionUnitTest {
 		Perception perceptTestCopyType = new Perception(perceptTestType);
 		
 		// Check the parameters of the new copied Perception
-		if (perceptTestType.getPerceptionName().equals(perceptTestCopyType.getPerceptionName())) {
-			if (verbose) {
-				System.out.println("Percept class - Name after copy with type test OK");
-			}
-		} else {
-			if (verbose) {
-				System.out.println("Percept class - Name after copy with type test FAILED");
-			}
-			testOK = false;
-		}
+		testResult = (perceptTestType.getPerceptionName().equals(perceptTestCopyType.getPerceptionName()));
+		UnitTester.reportResult("Percept class - Name after copy with type test", testResult, verbose);
+		testOK = testOK && testResult;
 		
-		if (perceptTestType.getPerceptionType().equals(perceptTestCopyType.getPerceptionType())) {
-			if (verbose) {
-				System.out.println("Percept class - Type null after copy with type test OK");
-			}
-		} else {
-			if (verbose) {
-				System.out.println("Percept class - Type null after copy with type test FAILED");
-			}
-			testOK = false;
-		}
+		testResult = (perceptTestType.getPerceptionType().equals(perceptTestCopyType.getPerceptionType()));
+		UnitTester.reportResult("Percept class - Type null after copy with type test", testResult, verbose);
+		testOK = testOK && testResult;
 		
-		if (perceptTestType.getVersionID() == perceptTestCopyType.getVersionID()) {
-			if (verbose) {
-				System.out.println("Percept class - VersionID after copy with type test OK");
-			}
-		} else {
-			if (verbose) {
-				System.out.println("Percept class - VersionID after copy with type test FAILED");
-			}
-			testOK = false;
-		}
+		testResult = (perceptTestType.getVersionID() == perceptTestCopyType.getVersionID());
+		UnitTester.reportResult("Percept class - VersionID after copy with type test", testResult, verbose);
+		testOK = testOK && testResult;
 		
-		if (perceptTestType.getParameters().equals(perceptTestCopyType.getParameters())) {
-			if (verbose) {
-				System.out.println("Percept class - Parameter after copy with type test OK");
-			}
-		} else {
-			if (verbose) {
-				System.out.println("Percept class - Parameter after copy with type test FAILED");
-			}
-			testOK = false;
-		}
+		testResult = perceptTestType.getParameters().equals(perceptTestCopyType.getParameters());
+		UnitTester.reportResult("Percept class - Parameter after copy with type test", testResult, verbose);
+		testOK = testOK && testResult;
 		
-		if (perceptTestType.equals(perceptTestCopyType)) {
-			if (verbose) {
-				System.out.println("Percept class - Equals after copy with type test OK");
-			}
-		} else {
-			if (verbose) {
-				System.out.println("Percept class - Parameter after copy with type test FAILED");
-			}
-			testOK = false;
-		}
-		
+		testResult = perceptTestType.equals(perceptTestCopyType);
+		UnitTester.reportResult("Percept class - Equals after copy with type test", testResult, verbose);
+		testOK = testOK && testResult;
+				
 		// Test compare name
 		Perception perceptTestAnotherName = new Perception(perceptName + "different", perceptType, versionID, perceptParameters);
-		if (perceptTest.comparePerceptionName(perceptTest) && perceptTest.comparePerceptionName(perceptTestCopy) && !perceptTest.comparePerceptionName(perceptTestAnotherName)) {
-			if (verbose) {
-				System.out.println("Percept class - Perception name comparison test OK");
-			}
-		} else {
-			if (verbose) {
-				System.out.println("Percept class - Perception name comparison test FAILED");
-			}
-			testOK = false;
-		}
+		testResult = (perceptTest.comparePerceptionName(perceptTest) && perceptTest.comparePerceptionName(perceptTestCopy) && !perceptTest.comparePerceptionName(perceptTestAnotherName));
+		UnitTester.reportResult("Percept class - Perception name comparison test", testResult, verbose);
+		testOK = testOK && testResult;
 		
 		// Test compare type - null case
-		if ((perceptTest.getPerceptionType() == null) && perceptTest.comparePerceptionType(perceptTest) && perceptTest.comparePerceptionType(perceptTestCopy) && !perceptTest.comparePerceptionType(perceptTestAnotherName)) {
-			if (verbose) {
-				System.out.println("Percept class - Perception type comparison (null case) test OK");
-			}
-		} else {
-			if (verbose) {
-				System.out.println("Percept class - Perception type comparison (null case) test FAILED");
-			}
-			testOK = false;
-		}
+		testResult = ((perceptTest.getPerceptionType() == null) && perceptTest.comparePerceptionType(perceptTest) && perceptTest.comparePerceptionType(perceptTestCopy) && !perceptTest.comparePerceptionType(perceptTestAnotherName));
+		UnitTester.reportResult("Percept class - Perception type comparison (null case) test", testResult, verbose);
+		testOK = testOK && testResult;
 		
 		// Test compare type - not null case
 		Perception perceptTestTypeAnotherType = new Perception(perceptName, perceptType + "different", versionID, perceptParameters);
-		if (perceptTestType.comparePerceptionType(perceptTestType) && perceptTestType.comparePerceptionType(perceptTestCopyType) && !perceptTest.comparePerceptionType(perceptTestTypeAnotherType)) {
-			if (verbose) {
-				System.out.println("Percept class - Perception type comparison (not null) test OK");
-			}
-		} else {
-			if (verbose) {
-				System.out.println("Percept class - Perception type comparison (not null) test FAILED");
-			}
-			testOK = false;
-		}
+		testResult = (perceptTestType.comparePerceptionType(perceptTestType) && perceptTestType.comparePerceptionType(perceptTestCopyType) && !perceptTest.comparePerceptionType(perceptTestTypeAnotherType));
+		UnitTester.reportResult("Percept class - Perception type comparison (not null) test", testResult, verbose);
+		testOK = testOK && testResult;
 		
 		// Test perceptLost()
 		Perception perceptLostTest = new Perception(perceptTest);
 		perceptLostTest.perceptionLost();
-		if(perceptLostTest.getPerceptionName().equals(perceptTest.getPerceptionName() + "lost")) {
-			if (verbose) {
-				System.out.println("Percept class - Perception lost test OK");
-			}
-		} else {
-			if (verbose) {
-				System.out.println("Percept class - Perception lost test FAILED");
-			}
-			testOK = false;
-		}
+		testResult = perceptLostTest.getPerceptionName().equals(perceptTest.getPerceptionName() + "lost");
+		UnitTester.reportResult("Percept class - Perception lost test", testResult, verbose);
+		testOK = testOK && testResult;
 
 		// Get Literal test
-		if(perceptLostTest.getLiteral().equals(Literal.parseLiteral(new String("testlost(1.0,2.0)"))) && perceptTest.getLiteral().equals(Literal.parseLiteral(new String("test(1.0,2.0)")))) {
-			if (verbose) {
-				System.out.println("Percept class - Perception lost test OK");
-			}
-		} else {
-			if (verbose) {
-				System.out.println("Percept class - Perception lost test FAILED");
-			}
-			testOK = false;
-		}
+		testResult = (perceptLostTest.getLiteral().equals(Literal.parseLiteral(new String("testlost(1.0,2.0)"))) && perceptTest.getLiteral().equals(Literal.parseLiteral(new String("test(1.0,2.0)"))));
+		UnitTester.reportResult("Percept class - Perception lost test", testResult, verbose);
+		testOK = testOK && testResult;
 		
 		// Test difference and similarity (similarity uses difference calculation)
 		boolean differenceZeroWithSelf = (perceptTest.getDifference(perceptTest) == 0.0);
@@ -217,16 +147,9 @@ public class PerceptionUnitTest {
 		differentList.add(2.0);
 		boolean notSimilar = !perceptTest.isSimilar(new Perception(perceptTest.getPerceptionName(), perceptTest.getPerceptionType(), 0, differentList));
 
-		if (differenceZeroWithSelf && differenceOneFromLost && differenceOneType && similarWithSelf && differentFromLost && differentType && slightlySimilar && notSimilar) {
-			if (verbose) {
-				System.out.println("Percept class - Similarity test OK");
-			}
-		} else {
-			if (verbose) {
-				System.out.println("Percept class - Similarity test FAILED");
-			}
-			testOK = false;
-		}	
+		testResult = (differenceZeroWithSelf && differenceOneFromLost && differenceOneType && similarWithSelf && differentFromLost && differentType && slightlySimilar && notSimilar);
+		UnitTester.reportResult("Percept class - Similarity test", testResult, verbose);
+		testOK = testOK && testResult;
 		
 		// Return the final result
 		return testOK;
