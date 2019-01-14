@@ -107,4 +107,11 @@ public class PerceptionSnapshot {
 		}
 		return outputLiterals;
 	}
+	
+	/**
+	 * Returns the perception literals as a string 
+	 */
+	public String toString() {
+		return this.getLiterals().toString();
+	}
 }
