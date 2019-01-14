@@ -20,8 +20,16 @@ public class UnitTester {
 		
 		System.out.println("Running unit tester");
 		
-		// Test the perception class
+		// Test the Perception class
 		if (PerceptionUnitTest.unitTest(verboseTest)) {
+			System.out.println("Perception test - OK");
+		} else {
+			System.out.println("Perception test - FAILED");
+			testSuccess = false;
+		}
+		
+		// Test the PerceptionSnapshot class
+		if (PerceptionSnapshotUnitTest.unitTest(verboseTest)) {
 			System.out.println("Perception test - OK");
 		} else {
 			System.out.println("Perception test - FAILED");
