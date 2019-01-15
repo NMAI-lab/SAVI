@@ -82,16 +82,22 @@ public class PerceptionSnapshot {
 	public Perception pullSimilarPerception(Perception otherPerception) {
 		Perception similar = null;
 		double difference = 100;
+		int bestI = -1;
 		
 		for (int i = 0; i < this.perceptionList.size(); i++) {
 			if (this.perceptionList.get(i).isSimilar(otherPerception)) {
 				double currentDifference = this.perceptionList.get(i).getDifference(otherPerception);
 				if (Math.abs(currentDifference) < Math.abs(difference)) {
+					bestI = i;
 					difference = currentDifference;
-					similar = this.perceptionList.get(i);
-					this.perceptionList.remove(i);
 				}
 			}
+		}
+		
+		// Get the best one
+		if (bestI != -1) {
+			similar = this.perceptionList.get(bestI);
+			this.perceptionList.remove(bestI);
 		}
 		return similar;
 	}
