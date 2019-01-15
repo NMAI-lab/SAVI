@@ -8,6 +8,7 @@ import savi.jason_processing.PerceptionHistory;
 import savi.jason_processing.PerceptionSnapshot;
 
 public class PerceptionHistoryUnitTest {
+	
 	/**
 	 * Run all of the unit tests
 	 * @param verbose
@@ -21,8 +22,6 @@ public class PerceptionHistoryUnitTest {
 		PerceptionHistory history = new PerceptionHistory();
 		
 		// Setup the first update.
-		PerceptionSnapshot testSnapshot = new PerceptionSnapshot();
-
 		List<Double> parameterList = new ArrayList<Double>();
 		parameterList.add(1.0);
 		parameterList.add(2.0);
@@ -41,7 +40,6 @@ public class PerceptionHistoryUnitTest {
 		testResult = firstUpdateString.equals(firstUpdate.toString());
 		UnitTester.reportResult("PerceptHistory class - First update test", testResult, verbose);
 		testOK &= testResult;
-		//System.out.println(firstUpdateString);
 		
 		// Make the second update - Very similar, so there will be no change
 		parameterList = new ArrayList<Double>();
@@ -56,43 +54,14 @@ public class PerceptionHistoryUnitTest {
 		Perception differentPerception = new Perception("perceptName", 0, parameterList);		
 
 		PerceptionSnapshot secondUpdate = new PerceptionSnapshot();
-		secondUpdate.addPerception(testPerception1);
-		secondUpdate.addPerception(testPerception2);
+		secondUpdate.addPerception(similarPerception);
+		secondUpdate.addPerception(differentPerception);
 		
-		String secondUpdateString = history.updatePerceptions(firstUpdate).toString();
-		testResult = secondUpdateString.equals("[]");
+		String secondUpdateString = history.updatePerceptions(secondUpdate).toString();
+		testResult = secondUpdateString.equals("[perceptnamelost(5,2), perceptname(1.21,2)]");
 		UnitTester.reportResult("PerceptHistory class - Second update test (all same or similar)", testResult, verbose);
 		testOK &= testResult;
 		
-		// Third update - combination of similar, missing, and different
-		//System.out.println(secondUpdateString);
-		
-		/*
-		// Make the final update (empty)
-		
-		
-		// Check the size of the perception list
-		testResult = (testSnapshot.getPerceptionList().size() == 2);
-		UnitTester.reportResult("PerceptSnapshot class - Perception snapshot percept list size check", testResult, verbose);
-		testOK &= testResult;
-		
-		// Check the perception list - latest version
-		testResult = (testSnapshot.getLatestVersion() == 2);
-		UnitTester.reportResult("PerceptSnapshot class - Perception snapshot version check", testResult, verbose);
-		testOK &= testResult;
-		
-		
-		
-		// Test the case where there is an empty PerceptionSnapshot involved.
-		//testResult = PerceptionSnapshotUnitTest.emptyTest(verbose);
-		//testOK &= testResult;
-		
-		// Test a case where the PerceptionSnapshot is not empty
-		//testResult = PerceptionSnapshotUnitTest.contentTest(verbose);
-		//testOK &= testResult;
-		*/
-		
-		// Return result
 		return testOK;
 	}
 }
