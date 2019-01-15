@@ -33,11 +33,10 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	private static final String broadcastID = "BROADCAST";
 	
 	private String name;
-	//private String type; don't actually need to hold on to this beyond initialisation
 	private SyncAgentState agentState;
 	private boolean running;
 	private static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
-	private Random rand;
+
 	private long lastPerceptionId;		// ID of the last perception received
 	private boolean firstPerception;	// Flag for noting if any perceptions have ever been received (deal with the first ID issue)
 	private PerceptionHistory perceptHistory;
@@ -53,13 +52,8 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		this.lastPerceptionId = 0;
 		this.firstPerception = true;
 		this.perceptHistory = new PerceptionHistory();
-		rand = new Random(100L); //the agent will act randomly but always the same way across executions 
-		
 		agentState = modelAgentState;
-    	
 		running = false;
-
-		//myModel= model;
 
 		// set up the Jason agent
 		try {
@@ -76,14 +70,12 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		System.out.println("I'm a Jason Agent and I'm starting");
 		
 		try {
-			//Thread.sleep(1000);
 			running= true;
 			
 			while (isRunning()) {
 				// calls the Jason engine to perform one reasoning cycle
 				logger.fine("Reasoning....");
-				getTS().reasoningCycle();// sense();//reasoningCycle();
-				//Thread.sleep(100);
+				getTS().reasoningCycle();
                 
 				if (getTS().canSleep()) {
                 	sleep();
@@ -173,12 +165,6 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		// Check what action is being performed, update actionString accordingly.
 		if (actionTerm.equals(left)) {
 			actionString = "turn(left)";
-			/*try {
-				this.sendMsg(new Message("tell",));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
 		}
 		else if (actionTerm.equals(right)) 
 			actionString = "turn(right)";
@@ -193,9 +179,6 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		// Set that the execution was OK and flag it as complete.
 		action.setResult(true);
 		actionExecuted(action);
-		
-		// Busy wait for a fresh perception. TODO: is there a way to do this more elegantly? Better to suspend the thread if possible.
-		//while(!this.checkForFreshPerception()) {}
 	}
 	
 	@Override
@@ -224,7 +207,6 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	/**
 	 * Send message to another agent (via simulated wifi).
 	 */
-	// .send(r,tell,open(door)); // Test message for an asl file
 	@Override
 	public void sendMsg(jason.asSemantics.Message m) throws Exception {
 		// Make sure sender parameter is set
