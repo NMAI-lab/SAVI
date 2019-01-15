@@ -144,19 +144,35 @@ public class PerceptionSnapshotUnitTest {
 		testOK &= testResult;
 		
 		// Use the copy constructor and check the list of perceptions
-		PerceptionSnapshot copiedSnahpshot = new PerceptionSnapshot(testSnapshot);
-		boolean sizeOK = (copiedSnahpshot.getPerceptionList().size() == 2);
-		Literal1OK = copiedSnahpshot.getLiterals().contains(testPerception1.getLiteral());
-		Literal2OK = copiedSnahpshot.getLiterals().contains(testPerception2.getLiteral());
-		 noOtherLiteralOK = !copiedSnahpshot.getLiterals().contains(similarPerception.getLiteral());
+		PerceptionSnapshot copiedSnapshot = new PerceptionSnapshot(testSnapshot);
+		boolean sizeOK = (copiedSnapshot.getPerceptionList().size() == 2);
+		Literal1OK = copiedSnapshot.getLiterals().contains(testPerception1.getLiteral());
+		Literal2OK = copiedSnapshot.getLiterals().contains(testPerception2.getLiteral());
+		 noOtherLiteralOK = !copiedSnapshot.getLiterals().contains(similarPerception.getLiteral());
 		testResult = (sizeOK && Literal1OK && Literal2OK && noOtherLiteralOK);
 		
 		UnitTester.reportResult("PerceptSnapshot class - Snapshot copy constructor percept list check", testResult, verbose);
 		testOK &= testResult;
-
+		
+		// Make a new Perception, put something different in it, then addPerceptionsFromSnapshot()
+		PerceptionSnapshot snapshotToAdd = new PerceptionSnapshot();
+		snapshotToAdd.addPerception(differentPerception);
+		copiedSnapshot.addPerceptionsFromSnapshot(snapshotToAdd);
+		sizeOK = (copiedSnapshot.getPerceptionList().size() == 3);
+		Literal1OK = copiedSnapshot.getLiterals().contains(testPerception1.getLiteral());
+		Literal2OK = copiedSnapshot.getLiterals().contains(testPerception2.getLiteral());
+		boolean differentLiteralOK = copiedSnapshot.getLiterals().contains(differentPerception.getLiteral());
+		noOtherLiteralOK = !copiedSnapshot.getLiterals().contains(similarPerception.getLiteral());
+		testResult = (sizeOK && Literal1OK && Literal2OK && differentLiteralOK && noOtherLiteralOK);
+		UnitTester.reportResult("PerceptSnapshot class - Snapshot copy constructor percept list check", testResult, verbose);
+		testOK &= testResult;
+		
 		// Return result
 		return testOK;
 	}
+	
+	
+	
 	
 	
 	/**
@@ -176,8 +192,7 @@ public class PerceptionSnapshotUnitTest {
 		testResult = PerceptionSnapshotUnitTest.contentTest(verbose);
 		testOK &= testResult;
 		
-		// addPerceptionsFromSnapshot
-		
+		// Return result
 		return testOK;
 	}
 }
