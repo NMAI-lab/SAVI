@@ -43,8 +43,7 @@ public class PerceptionHistoryUnitTest {
 		testOK &= testResult;
 		//System.out.println(firstUpdateString);
 		
-		/*
-		// Make the second update
+		// Make the second update - Very similar, so there will be no change
 		parameterList = new ArrayList<Double>();
 		parameterList.add(1.01);
 		parameterList.add(2.0);
@@ -56,10 +55,19 @@ public class PerceptionHistoryUnitTest {
 		parameterList.add(2.0);
 		Perception differentPerception = new Perception("perceptName", 0, parameterList);		
 
-		// addPerceptions to the snapshot
-		testSnapshot.addPerception(testPerception1);
-		testSnapshot.addPerception(testPerception2);
+		PerceptionSnapshot secondUpdate = new PerceptionSnapshot();
+		secondUpdate.addPerception(testPerception1);
+		secondUpdate.addPerception(testPerception2);
 		
+		String secondUpdateString = history.updatePerceptions(firstUpdate).toString();
+		testResult = secondUpdateString.equals("[]");
+		UnitTester.reportResult("PerceptHistory class - Second update test (all same or similar)", testResult, verbose);
+		testOK &= testResult;
+		
+		// Third update - combination of similar, missing, and different
+		//System.out.println(secondUpdateString);
+		
+		/*
 		// Make the final update (empty)
 		
 		
