@@ -6,6 +6,7 @@ import java.util.Map;
 public class JasonMAS {
 
 
+	private Map<String, AgentModel> theAgentModels;
 	private Map<String,SimpleJasonAgent> theJasonAgents;
 
 	public JasonMAS() {
@@ -20,19 +21,23 @@ public class JasonMAS {
 	 */
 	public JasonMAS(Map<String, AgentModel> agents) {
 		theJasonAgents = new HashMap<String, SimpleJasonAgent>();
+		theAgentModels = agents;
 		AgentModel am;
 		for (String AgId: agents.keySet()) {
 			am = agents.get(AgId);
 			theJasonAgents.put(AgId, new SimpleJasonAgent(AgId,am.getType(), am.getAgentState()));
+			Thread t1 = new Thread(theJasonAgents.get(AgId));
+			am.setAgentThread(t1);
 		}
 
 	}
 
 
 	public void startAgents() {
-		for (String AgId: theJasonAgents.keySet()) {
-			Thread t1 = new Thread(theJasonAgents.get(AgId));
+		for (String AgId: theAgentModels.keySet()) {
+			Thread t1 = theAgentModels.get(AgId).getAgentThread();
 			t1.start();
+			
 		}
 	}
 

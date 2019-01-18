@@ -2,6 +2,8 @@ package savi.jason_processing;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import jason.architecture.AgArch;
+
 //import jason.asSyntax.Structure;
 
 public abstract class AgentModel {
@@ -10,6 +12,18 @@ public abstract class AgentModel {
 	protected String type;
 
 	protected SyncAgentState agentState; //visible to subclasses
+	
+	protected Thread theAgentThread;
+	
+	public void setAgentThread(Thread t) {
+		theAgentThread = t;
+	}
+	
+	protected void notifyAgent() {
+		if (theAgentThread != null) {
+			theAgentThread.interrupt();
+		}
+	}
 
 	public SyncAgentState getAgentState() // to access it from the jason agent [during init]
 	{
@@ -19,6 +33,11 @@ public abstract class AgentModel {
 	public String getType() {
 		
 		return type;
+	}
+
+	public Thread getAgentThread() {
+		
+		return theAgentThread;
 	};
 
 	//public void updateModel(Structure action);
