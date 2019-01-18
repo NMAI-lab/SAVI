@@ -28,7 +28,7 @@ public class ROBOT_model extends PApplet {
 /********** CONSTANTS **********/
 int	NUMBER_TREES = 60;
 int NUMBER_HOUSES =15;
-int NUMBER_THREATS =10; 
+int NUMBER_THREATS =10;
 int X_PIXELS = 991;
 int Y_PIXELS = 740;
 int FRAME_RATE = 20;
@@ -45,15 +45,14 @@ int simTime;      // stores simulation time (in seconds)
 int simTimeDelta; // discrete-time step (in seconds)
 boolean simPaused;// simulation paused or not
 
-List<Tree> trees = new ArrayList<Tree>(); //List of trees
-List<House> houses = new ArrayList<House>(); //List of houses
+List<WorldObject> objects = new ArrayList<WorldObject>();//List of world objects
 List<Threat> threats = new ArrayList<Threat>(); //List of threats
 List <UAS> UAS_list = new ArrayList<UAS>(); //List of UAS 
 
 JasonMAS jasonAgents; // the BDI agent
 
 Button playButton,stopButton,pauseButton;
-PShape play,pause,restart;
+PShape robot,tree,house,threat,play,pause,restart;
 
 public void settings() { size(X_PIXELS,Y_PIXELS, P2D);  smooth(8); } // let's assume a 2D environment
 
@@ -85,6 +84,14 @@ public void setup() {
 	play=loadShape("play.svg");
 	pause=loadShape("pause.svg");
 	restart=loadShape("replay.svg");
+
+	//load images for visualization
+	tree=loadShape("tree.svg");
+	house=loadShape("home.svg");
+	play=loadShape("play.svg");
+	pause=loadShape("pause.svg");
+	restart=loadShape("replay.svg");
+	threat=loadShape("warning.svg");
 	
 	Random rand = new Random();
 	for(int i = 0; i < NUMBER_UAS; i++)  { //Put UAS
@@ -94,15 +101,15 @@ public void setup() {
 	}    
 	for(int i = 0; i < NUMBER_TREES; i++) { //Put trees
 		//_PIXELS is the maximum and the 1 is our minimum.
-		trees.add(new Tree(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1));
+		objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), "tree"));
 	}
 	for(int i = 0; i < NUMBER_HOUSES; i++) { //Put houses
 		//_PIXELS is the maximum and the 1 is our minimum.
-		houses.add(new House(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1));
+		objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), "house"));
 	}
 	for(int i = 0; i < NUMBER_THREATS; i++) { //Put threats
 		//_PIXELS is the maximum and the 1 is our minimum.
-		threats.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, rand.nextInt(MAX_IN_X_VEL_THREAT) + 1, rand.nextInt(MAX_IN_Y_VEL_THREAT) + 1, 1 + rand.nextFloat() * (MAX_SPEED - 1)));
+		threats.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, rand.nextInt(MAX_IN_X_VEL_THREAT) + 1, rand.nextInt(MAX_IN_Y_VEL_THREAT) + 1, 1 + rand.nextFloat() * (MAX_SPEED - 1), "threat"));
 	}
   
 	// smoother rendering (optional)
@@ -136,16 +143,12 @@ public void draw(){
 			UAS_list.get(i).getAgentState().pause();
 		}
 
-		for(int i = 0; i < NUMBER_TREES; i++){ //Makes all trees on screen.
-			trees.get(i).drawTree();
-		}
-		
-		for(int i = 0; i < NUMBER_HOUSES; i++){ //Makes all trees on screen.
-			houses.get(i).drawHouse();
+		for(int i = 0; i < objects.size(); i++){ //Makes all trees on screen.
+			drawObject(objects.get(i));
 		}
 		
 		for(int i = 0; i < NUMBER_THREATS; i++){ //Makes all trees on screen.
-		    threats.get(i).drawThreat();
+		    drawThreat(threats.get(i));
 		}
 		
 		playButton.label="play";
@@ -161,10 +164,10 @@ public void draw(){
 	// 2. STATE UPDATE (SIMULATION)
 	for(int i = 0; i < NUMBER_UAS; i++){ //Create UAS agents
 		UAS_list.get(i).getAgentState().run();
-		UAS_list.get(i).update(PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,trees,houses,UAS_list);
+		UAS_list.get(i).update(PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,objects,UAS_list);
 	}
 	for(int i = 0; i < NUMBER_THREATS; i++){ //Put threats
-		threats.get(i).update();
+		threats.get(i).update(width,height);
 	}  
 	// 3. VISUALIZATION
 	//------------------
@@ -172,14 +175,11 @@ public void draw(){
 	for(int i = 0; i < NUMBER_UAS; i++){ //Draw UAS agents
 		drawUAS(UAS_list.get(i));	
 	}  
-    for(int i = 0; i < NUMBER_TREES; i++){ //Draw trees.
-    	trees.get(i).drawTree();
-    }
-    for(int i = 0; i < NUMBER_HOUSES; i++){//Draw houses.
-    	houses.get(i).drawHouse();
+    for(int i = 0; i < objects.size(); i++){ //Draw trees.
+    	drawObject(objects.get(i));
     }
     for(int i = 0; i < NUMBER_THREATS; i++) {//Draw Threats.
-	  	threats.get(i).drawThreat();
+	  	drawThreat(threats.get(i));
     }
     
     playButton.label="pause";
@@ -241,6 +241,37 @@ public void drawUAS(UAS uas){
 	}
 }
 
+
+//Visualize
+public void drawThreat(Threat oneThreat){
+	// Draw Threat
+	stroke(0);
+	shapeMode(CENTER);
+	
+	shape(threat,oneThreat.position.x, oneThreat.position.y,10,10);
+}
+
+
+
+public void drawObject(WorldObject object){
+	// Draw Object
+	stroke(0);
+
+	shapeMode(CENTER);
+	// translate to center image on sposition.x, position.y
+	//s.translate(-s.width/2,-s.height/2);
+	
+	if(object.type.contentEquals("house")){
+		shape(house, object.position.x, object.position.y,25,25);
+	}
+	if(object.type.contentEquals("tree")){
+		shape(tree, object.position.x, object.position.y,15,15);
+	}
+	
+}
+
+
+
 //************ UTILITY FUNCTIONS *****************/
 // These are general helper functions that don't
 // belong to any particular class.
@@ -250,8 +281,7 @@ public void resetSimulation(){
 	// Set simulation time to zero
 	simTime = 0;
 
-	trees.removeAll(trees);
-	houses.removeAll(houses);
+	objects.removeAll(objects);
 	threats.removeAll(threats);
 	UAS_list.removeAll(UAS_list);
 	
@@ -320,128 +350,5 @@ public class Button{
 
 }
 
-
-class Threat {
-	//-----------------------------------------
-	// DATA (or state variables)
-	//-----------------------------------------
-	int ID;
-	PVector position;
-	PVector velocity;     
-	float maxSpeed; 
-	Random rand;
-
-	//-----------------------------------------
-	// METHODS (functions that act on the data)
-	//-----------------------------------------
-	// Constructor: called when an object is created using
-	//              the "new" keyword. It's the only method
-	//              that doesn't have a type (not even void).
-	Threat(int id, int x, int y, int x_v, int y_v, float MS) {
-	// Initialize data values
-    ID = id;
-    position = new PVector(x,y);
-    velocity = new PVector(x_v, y_v); 
-    maxSpeed = MS;// the max speed 
-    rand = new Random();
-    }
-	// State Update: Randomly move up, down, left, right, or stay in one place
-	void update(){
-		int stepsize = 2;
-		PVector temp = new PVector();
-		// The size of the neighborhood depends on the range in this line 
-		// -1 = left/down, 0 = stay at your spot, 1 = right/up
-		// To obtain -1, 0 or 1 use int(random(-2,2))
-		while (temp.mag() == 0){
-			temp = new PVector(stepsize * (rand.nextInt(2) + -2), stepsize * (rand.nextInt(2) + -2));
-		}
-		position.add(temp);    
-		velocity = temp.limit(maxSpeed);//need to cross-check this    
-		// Stay within the screen's boundaries
-		position.x = constrain(position.x,0,width-1); //constrain: Constrains a value to not exceed a maximum and minimum value.
-		position.y = constrain(position.y,0,height-1);      
-	}
-	// State reset
-	void reset(){
-		// Initialize data values
-		position = new PVector(X_PIXELS/2,Y_PIXELS/2); //Assume that the initial position is at the center of the display window
-		velocity = new PVector();  // same as new PVector(0,0)
-	}
-	// Visualize
-	void drawThreat(){    
-		// Draw Threat
-		PShape s;
-		stroke(0);
-		s = loadShape("warning.svg");	  
-		// translate to center image on sposition.x, position.y
-		s.translate(-s.width/2,-s.height/2);
-		//shapeMode(CENTER);
-		shape(s, position.x, position.y,10,10);      
-	} 
-}
-
-class Tree {
-	//-----------------------------------------
-	// DATA (or state variables)
-	//-----------------------------------------
-	int ID;
-	int X;
-	int Y;	  
-	//-----------------------------------------
-	// METHODS (functions that act on the data)
-	//-----------------------------------------
-	// Constructor: called when an object is created using
-	//              the "new" keyword. It's the only method
-	//              that doesn't have a type (not even void).
-	Tree(int id, int x, int y) {
-		// Initialize data values
-		ID = id;
-	    X = x;
-	    Y = y;    
-	}	     
-	// Visualize
-	public void drawTree(){	      
-		// Draw Tree
-		PShape s;
-		stroke(0);
-		s = loadShape("tree.svg");
-		// translate to center image on sposition.x, position.y
-		s.translate(-s.width/2,-s.height/2);
-		//shapeMode(CENTER);
-		shape(s, X, Y,15,15);    
-	}	  
-}
-
-class House {
-	//-----------------------------------------
-	// DATA (or state variables)
-	//-----------------------------------------	  
-	int ID;
-	int X;
-	int Y;
-	//-----------------------------------------
-	// METHODS (functions that act on the data)
-	//-----------------------------------------
-	// Constructor: called when an object is created using
-	//              the "new" keyword. It's the only method
-	//              that doesn't have a type (not even void).
-	House(int id, int x, int y) {
-		// Initialize data values
-		ID = id;
-	    X = x;
-	    Y = y;
-	}	  
-	// Visualize
-	public void drawHouse(){	      
-		// Draw House
-		PShape s;
-		stroke(0);
-		s = loadShape("home.svg");  
-		// translate to center image on sposition.x, position.y
-		s.translate(-s.width/2,-s.height/2);
-		//shapeMode(CENTER);
-		shape(s, X, Y,25,25);  
-	}	  
-}
 
 }

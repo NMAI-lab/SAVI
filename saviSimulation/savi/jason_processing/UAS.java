@@ -8,9 +8,6 @@ import java.util.Queue;
 import processing.core.PApplet;
 import processing.core.PShape;
 import processing.core.PVector;
-import savi.jason_processing.ROBOT_model.House;
-import savi.jason_processing.ROBOT_model.Threat;
-import savi.jason_processing.ROBOT_model.Tree;
 
 import processing.data.*; 
 import processing.event.*; 
@@ -64,7 +61,7 @@ public class UAS extends AgentModel {
 
 	// State Update: Read actions from queue, execute them
 	// also includes coordinates of threat.
-	public void update(int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<Threat> threats, List<Tree> trees, List<House> houses, List<UAS> uas_list){
+	public void update(int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<Threat> threats, List<WorldObject> objects, List<UAS> uas_list){
 		PVector position = (PVector) agentState.getPosition();
 		double speedValue = agentState.getSpeedValue();
 		double compassAngle = agentState.getCompassAngle(); //TODO for now speedAngle is always zero 
@@ -96,10 +93,11 @@ public class UAS extends AgentModel {
 		agentState.setSpeedValue(speedValue);   
 		//calculate what we can see  
 		List<VisibleItem> things = new ArrayList<VisibleItem>();
+		
 		//Calculate threats detected
 		//System.out.println("UAS perception ---- threat number:"+threats.size());
 		for(int i=0; i<threats.size(); i++) {   
-			//get relative position of aircraft to UAS:
+			//get relative position to UAS:
 			float deltax = threats.get(i).position.x - getPosition().x;
 			float deltay = threats.get(i).position.y - getPosition().y;
 			//calculate distance
@@ -111,13 +109,14 @@ public class UAS extends AgentModel {
 				if(angle<0) angle+=2*Math.PI;
 				if(angle>2*Math.PI) angle-=2*Math.PI;
 				if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
-					//it's visible 
+				//it's visible 
 					things.add(new VisibleItem("threat", angle, dist)); 	
 				} //else {
-				//	System.out.println("threat " + i + " not visible.");
-				//}
+						//	System.out.println("threat " + i + " not visible.");
+						//}
 			}		
 		}
+		
 		//Calculate UAS detected for wifi communication
 		Queue<String> myMsgOutCopy = new LinkedList<String>();
 		myMsgOutCopy = this.agentState.getMsgOutAll();
@@ -138,50 +137,26 @@ public class UAS extends AgentModel {
 			}		
 		}
 		
-		//calculate trees detected
-
-		for(int i=0; i<trees.size(); i++) { 
-
+		//calculate objects detected
+		for(int i=0; i<objects.size(); i++) { 
 			//get relative position of aircraft to object:
-			float deltax = trees.get(i).X - getPosition().x;
-			float deltay = trees.get(i).Y - getPosition().y;
-
+			float deltax = objects.get(i).position.x - getPosition().x;
+			float deltay = objects.get(i).position.y - getPosition().y;
 			//calculate distance
 			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
-
 			if(dist<perceptionDistance) {
 				double theta = Math.atan2(deltay, deltax);
 				double angle = (theta - getCompassAngle());// % 2* Math.PI; //(adjust to 0, 2pi) interval
-
 				// to normalize between 0 to 2 Pi
 				if(angle<0) angle+=2*Math.PI;
 				if(angle>2*Math.PI) angle-=2*Math.PI;
-
 				if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
 					//it's visible 
-					things.add(new VisibleItem("tree", angle, dist));  
+					things.add(new VisibleItem(objects.get(i).type, angle, dist)); 
 				}
 			}	 
 		} 
-
-		for(int i=0; i<houses.size(); i++) { 
-			//get relative position of aircraft to object:
-			float deltax = houses.get(i).X - getPosition().x;
-			float deltay = houses.get(i).Y - getPosition().y;
-			//calculate distance
-			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
-			if(dist<perceptionDistance) {
-				double theta = Math.atan2(deltay, deltax);
-				double angle = (theta - getCompassAngle());// % 2* Math.PI; //(adjust to 0, 2pi) interval
-				// to normalize between 0 to 2 Pi
-				if(angle<0) angle+=2*Math.PI;
-				if(angle>2*Math.PI) angle-=2*Math.PI;
-				if (angle < Math.PI/2. || angle > 3* Math.PI/2.) { 
-					//it's visible
-					things.add(new VisibleItem("house", angle, dist));  
-				}	  
-			}  
-		}		 
+		 
 		agentState.setCameraInfo(things); 
 	}
 	// State reset
