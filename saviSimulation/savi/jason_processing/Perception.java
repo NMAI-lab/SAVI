@@ -15,7 +15,7 @@ public class Perception {
 	private String perceptionType;
 	private long versionID;
 	private List<Double> parameters;
-	private final double similarity = 0.02; 	// Parameters must be 2% similar for comparison
+	private final double similarityThreshold = 0.02; 	// Parameters must be 2% similar for comparison
 	
 	/**
 	 * Default constructor is not useful
@@ -194,7 +194,7 @@ public class Perception {
 	 * @return
 	 */
 	public boolean isSimilar(Perception otherPerception) {
-		if (Math.abs(this.getDifference(otherPerception)) < this.similarity) {
+		if (Math.abs(this.getDifference(otherPerception)) < this.similarityThreshold) {
 			return true;			
 		} else {
 			return false;
