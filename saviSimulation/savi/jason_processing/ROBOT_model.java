@@ -43,8 +43,8 @@ public class ROBOT_model extends PApplet {
 	int WIFI_PERCEPTION_DISTANCE;
 	int NUMBER_UAS;
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
-	int X_PIXELS = 991;
-	int Y_PIXELS = 740;
+	int X_PIXELS = 900;
+	int Y_PIXELS = 700;
 	
 	//Load Parameters
 	FileInputStream in = null;	
@@ -84,7 +84,7 @@ public class ROBOT_model extends PApplet {
 		/***LOAD SIM PARAMETERS ****/
 		try {
 			String filePath = new File("").getAbsolutePath();
-			filePath = filePath + "\\config.cfg";
+			filePath = filePath + "/config.cfg";
 			System.out.println(filePath);
 			File inFile = new File(filePath);
 			in = new FileInputStream(inFile);
@@ -98,8 +98,8 @@ public class ROBOT_model extends PApplet {
 		NUMBER_TREES = Integer.parseInt(modelProps.getProperty("NUMBER_TREES"));
 		NUMBER_HOUSES = Integer.parseInt(modelProps.getProperty("NUMBER_HOUSES"));
 		NUMBER_THREATS = Integer.parseInt(modelProps.getProperty("NUMBER_TREES"));
-		// int X_PIXELS = Integer.parseInt(modelProps.getProperty("X_PIXELS"));
-		// int Y_PIXELS = Integer.parseInt(modelProps.getProperty("Y_PIXELS"));
+		//X_PIXELS = Integer.parseInt(modelProps.getProperty("X_PIXELS"));
+		//Y_PIXELS = Integer.parseInt(modelProps.getProperty("Y_PIXELS"));
 		FRAME_RATE = Integer.parseInt(modelProps.getProperty("FRAME_RATE"));
 		MAX_IN_X_VEL_THREAT = Integer.parseInt(modelProps.getProperty("MAX_IN_X_VEL_THREAT"));
 		MAX_IN_Y_VEL_THREAT = Integer.parseInt(modelProps.getProperty("MAX_IN_Y_VEL_THREAT"));
