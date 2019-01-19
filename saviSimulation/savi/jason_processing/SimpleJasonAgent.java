@@ -11,6 +11,7 @@ import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.infra.centralised.BaseCentralisedMAS;
 import processing.core.PVector;
+import savi.agentBehaviour.UxVAgent;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 
 		// set up the Jason agent
 		try {
-			Agent ag = new Agent();
+			UxVAgent ag = new UxVAgent();
 			new TransitionSystem(ag, null, null, this);
 			this.name = id;
             ag.initAg(type+".asl");
