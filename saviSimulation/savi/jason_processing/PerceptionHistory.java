@@ -30,7 +30,7 @@ public class PerceptionHistory {
 	public List<Literal> updatePerceptions(PerceptionSnapshot newPerceptions) {
 		
 		// Make a new snapshot to become the new version of this.previousPerception
-		PerceptionSnapshot newPreviousPercption = new PerceptionSnapshot();
+		PerceptionSnapshot newPreviousPerception = new PerceptionSnapshot();
 		
 		// Make a safe copy of the new perceptions, we will be modifying it
 		PerceptionSnapshot differentPerceptions = new PerceptionSnapshot(newPerceptions);
@@ -53,16 +53,16 @@ public class PerceptionHistory {
 
 			} else {
 				// This had been seen before. Need to log it in the history but don't send this to the agent
-				newPreviousPercption.addPerception(similarPercept);
+				newPreviousPerception.addPerception(similarPercept);
 			}
 		}
 		
 		// Deal with any remaining new perceptions that were not in the previous list
-		newPreviousPercption.addPerceptionsFromSnapshot(differentPerceptions);
+		newPreviousPerception.addPerceptionsFromSnapshot(differentPerceptions);
 		outputSnapshot.addPerceptionsFromSnapshot(differentPerceptions);
 				
 		// Update the internal perception history
-		this.previousPerception = newPreviousPercption;
+		this.previousPerception = newPreviousPerception;
 		
 		// Return the literals for the perception
 		return outputSnapshot.getLiterals();
