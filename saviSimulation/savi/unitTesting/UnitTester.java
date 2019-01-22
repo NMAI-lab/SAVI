@@ -31,6 +31,11 @@ public class UnitTester {
 		reportResult("PerceptionSnapshot test", testResult, verboseTest);
 		testSuccess = testSuccess && testResult;
 		
+		// Test the PerceptionHistory class
+		testResult = PerceptionHistoryUnitTest.unitTest(verboseTest);
+		reportResult("PerceptionHistory test", testResult, verboseTest);
+		testSuccess = testSuccess && testResult;
+		
 		// Tests finished, force the result to print
 		verboseTest = true;
 		reportResult("Unit tester finished", testSuccess, verboseTest);
