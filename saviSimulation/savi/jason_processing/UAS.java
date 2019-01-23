@@ -158,6 +158,8 @@ public class UAS extends AgentModel {
 		} 
 		 
 		agentState.setCameraInfo(things); 
+		
+		this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
 	}
 	// State reset
 	public void reset(){
