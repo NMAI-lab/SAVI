@@ -145,7 +145,7 @@ public void setup() {
 	}
 	for(int i = 0; i < NUMBER_THREATS; i++) { //Put threats
 		//_PIXELS is the maximum and the 1 is our minimum.
-		threats.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, rand.nextInt(MAX_IN_X_VEL_THREAT) + 1, rand.nextInt(MAX_IN_Y_VEL_THREAT) + 1, 1 + rand.nextFloat() * (MAX_SPEED - 1), "threat"
+		threats.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, rand.nextInt(MAX_IN_X_VEL_THREAT) + 1, rand.nextInt(MAX_IN_Y_VEL_THREAT) + 1, 1 + rand.nextFloat() * (MAX_SPEED - 1), "threat"));
 	}          
   
   // smoother rendering (optional)
@@ -332,40 +332,6 @@ public void pauseSimulation(){
 	simPaused = !simPaused;
 }
 
-//************** USER INPUT *****************************/
-// These functions handle user input events
-// See "Input" subsection in processing.org/reference
-//************r*******************************************/
-public void keyPressed(){  // handle keyboard input
-	switch(key) {
-    	case 'r': case 'R': resetSimulation(); break; // reset the simulation
-    	case ' ':           pauseSimulation(); break; // pause the simulation   
-    	default: break; // ignore any other key presses
-=======
-
-	//************ UTILITY FUNCTIONS *****************/
-	// These are general helper functions that don't
-	// belong to any particular class.
-	//************************************************/
-	// Reset the simulation
-	public void resetSimulation(){
-		// Set simulation time to zero
-		simTime = 0;
-
-		trees.removeAll(trees);
-		houses.removeAll(houses);
-		threats.removeAll(threats);
-		UAS_list.removeAll(UAS_list);
-
-		setup();
-		// Unpause the simualtion
-		simPaused = false;
-	}
-      
-	// Pause the simulation
-	public void pauseSimulation(){
-		simPaused = !simPaused;
-	}
 
 	//************** USER INPUT *****************************/
 	// These functions handle user input events
