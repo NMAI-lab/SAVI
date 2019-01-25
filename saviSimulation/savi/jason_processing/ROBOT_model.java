@@ -117,17 +117,17 @@ public void setup() {
 	pauseButton = new Button("pause", width/2-20, 10, 40, 40);
 	stopButton = new Button("restart", width/2+20, 10, 40, 40);
 	
-	play=loadShape("play.svg");
-	pause=loadShape("pause.svg");
-	restart=loadShape("replay.svg");
+	play=loadShape("SimImages/play.svg");
+	pause=loadShape("SimImages/pause.svg");
+	restart=loadShape("SimImages/replay.svg");
 
 	//load images for visualization
-	tree=loadShape("tree.svg");
-	house=loadShape("home.svg");
-	play=loadShape("play.svg");
-	pause=loadShape("pause.svg");
-	restart=loadShape("replay.svg");
-	threat=loadShape("warning.svg");
+	tree=loadShape("SimImages/tree.svg");
+	house=loadShape("SimImages/home.svg");
+	play=loadShape("SimImages/play.svg");
+	pause=loadShape("SimImages/pause.svg");
+	restart=loadShape("SimImages/replay.svg");
+	threat=loadShape("SimImages/warning.svg");
 	
 	Random rand = new Random();
 	for(int i = 0; i < NUMBER_UAS; i++)  { //Put UAS
@@ -247,7 +247,7 @@ public void drawUAS(UAS uas){
 	// Draw UAS
 	stroke(0); 	 
 	PShape s;
-	s=loadShape("robot.svg");
+	s=loadShape("SimImages/robot.svg");
 
 	// translate to center image on uasposition.x, uasposition.y
 	s.translate(-s.width/2,-s.height/2);
