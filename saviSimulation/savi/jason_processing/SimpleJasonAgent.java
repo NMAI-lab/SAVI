@@ -132,6 +132,15 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		String type = new String("speedData");
 		currentPerceptions.addPerception(new Perception(type, this.agentState.getCounter(), parameters));
 		
+		// Perceive the agent's position
+		PVector position = agentState.getPosition();
+		parameters = new ArrayList<Double>();
+		parameters.add((Double)(double)position.x);
+		parameters.add((Double)(double)position.y);
+		parameters.add((Double)(double)position.z);
+		type = new String("position");
+		currentPerceptions.addPerception(new Perception(type, this.agentState.getCounter(), parameters));
+		
 		// Update the history, get the list of literals to send to the agent
 		List<Literal> perceptionLiterals = new ArrayList<Literal>(this.perceptHistory.updatePerceptions(currentPerceptions));
 		
