@@ -46,48 +46,42 @@ targetAhead :-
 	(not targetRight(T))).
 	
 // Initial goals
-//!seeTarget.			// Find a target
-//!observeTarget.		// Keep a target visible (recursive seeTarget)
-//!faceTarget.			// Turn to face a target head on
-//!watchTarget.			// Face a target and keep facing it recursively
+//!findTarget.		// Find a target
+//!observeTarget.	// Keep a target visible (recursive seeTarget)
+//!faceTarget.		// Turn to face a target head on
+//!watchTarget.		// Face a target and keep facing it recursively
 !followTarget.		// Follow a target
 
 /* Plans to achieve goals */
 
-// Plan for trying to see target
-+!seeTarget		:	noTarget
+// Plan for trying to find a target
++!findTarget	:	noTarget
 				<-	turn(left);
-					.broadcast(tell,turning(left));
-					!seeTarget.
-
-// See a target, seeTarget achieved
-+!seeTarget		: 	target(threat,DIR,DIST).
+					.broadcast(tell,turning(left)).
++!findTarget.
 
 // Default plan for observing target - force recursion.
 +!observeTarget
 	: 	true
-	<- 	!seeTarget;
+	<- 	!findTarget;
 		!observeTarget.
 		
 // Plan for facing the target if none is seen
 +!faceTarget
 	:	noTarget
-	<-	!seeTarget;
-		!faceTarget.
+	<-	!findTarget.
 
 // Face a target to the right.
 +!faceTarget
 	:	targetRight
 	<-	turn(right);
-		.broadcast(tell,turning(right));
-		!faceTarget.
+		.broadcast(tell,turning(right)).
 		
 // Face a target to the left
 +!faceTarget
 	:	targetLeft
 	<-	turn(left);
-		.broadcast(tell,turning(left));
-		!faceTarget.
+		.broadcast(tell,turning(left)).
 		
 // Face a target, goal achieved
 +!faceTarget
@@ -100,40 +94,33 @@ targetAhead :-
 	<-	!faceTarget;
 		!watchTarget.
 		
-/* Follow a target - case where target not ahead but we see one */	
+// Follow a target that is ahead
 +!followTarget
-	:	((not targetAhead(T)) | (not noTarget))
+	:	(not noTarget)
 	<-	!faceTarget;
-		!followTarget.
-
-/* Follow a target that is ahead but I'm not moving */
-+!followTarget
-	:	targetAhead(T) &
-		velocity(_,SPEED) &
-		SPEED == 0
-	<-	thrust(on);
-		.broadcast(tell,moving);
+		!move;
 		!followTarget.
 		
-/* Follow a target that is ahead but I'm already moving */
-+!followTarget
-	:	targetAhead(T) &
-		velocity(_,SPEED) &
-		SPEED \== 0
-	<-	!followTarget.
-
-/* Can't see a target, stop find one. */
+// Can't see a target, stop find one.
 +!followTarget
 	:	noTarget
 	<-	!stopMoving;
-		!seeTarget;
+		!faceTarget;
 		!followTarget.
-		
-/* Stop if moving */
+
+// Start moving if not moving
++!move
+	: 	velocity(_,SPEED) &
+		SPEED == 0
+	<-	thrust(on);
+		.broadcast(tell,moving).
++!move.
+
+// Stop if moving
 +!stopMoving
 	: 	velocity(_,SPEED) &
 		SPEED \== 0
 	<-	thrust(off);
-		.broadcast(tell,stopping);.
+		.broadcast(tell,stopping).
 +!stopMoving.
 		
