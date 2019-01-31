@@ -57,6 +57,7 @@ targetAhead :-
 // Plan for trying to see target
 +!seeTarget		:	noTarget
 				<-	turn(left);
+					.broadcast(tell,turning(left));
 					!seeTarget.
 
 // See a target, seeTarget achieved
@@ -78,17 +79,20 @@ targetAhead :-
 +!faceTarget
 	:	targetRight
 	<-	turn(right);
+		.broadcast(tell,turning(right));
 		!faceTarget.
 		
 // Face a target to the left
 +!faceTarget
 	:	targetLeft
 	<-	turn(left);
+		.broadcast(tell,turning(left));
 		!faceTarget.
 		
 // Face a target, goal achieved
 +!faceTarget
-	:	targetAhead.
+	:	targetAhead
+	<-	.broadcast(tell,targetAhead).
 
 // watchTarget - recursive faceTarget
 +!watchTarget
@@ -108,6 +112,7 @@ targetAhead :-
 		velocity(_,SPEED) &
 		SPEED == 0
 	<-	thrust(on);
+		.broadcast(tell,moving);
 		!followTarget.
 		
 /* Follow a target that is ahead but I'm already moving */
@@ -128,6 +133,7 @@ targetAhead :-
 +!stopMoving
 	: 	velocity(_,SPEED) &
 		SPEED \== 0
-	<-	thrust(off).
+	<-	thrust(off);
+		.broadcast(tell,stopping);.
 +!stopMoving.
 		
