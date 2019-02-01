@@ -12,7 +12,10 @@ import jason.asSyntax.Term;
 import jason.infra.centralised.BaseCentralisedMAS;
 import processing.core.PVector;
 
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +43,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	private long lastPerceptionId;		// ID of the last perception received
 	private boolean firstPerception;	// Flag for noting if any perceptions have ever been received (deal with the first ID issue)
 	private PerceptionHistory perceptHistory;
+	private String perceptionLogFileName;
 	
 	public SimpleJasonAgent(String id, String type, SyncAgentState modelAgentState) { //need to make the UAS class public so that the AgArch can refer back to it
 		try {
@@ -63,6 +67,16 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
             ag.initAg("savi/asl/"+type+".asl");
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Init error", e);
+		}
+		
+		// Set up the perception logfile
+		this.perceptionLogFileName = "PerceptionLog_" + this.name + ".log";
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(this.perceptionLogFileName));
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -146,6 +160,16 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		
 		System.out.println("Agent " + getAgName() + " Perceiving perception "+ this.agentState.getCounter());
 		System.out.println(perceptionLiterals.toString());
+		
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(this.perceptionLogFileName, true));
+			writer.append(perceptionLiterals.toString());
+			writer.newLine();
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return perceptionLiterals;
 	}
