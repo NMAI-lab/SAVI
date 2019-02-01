@@ -12,6 +12,8 @@ import processing.core.PVector;
 import processing.data.*; 
 import processing.event.*; 
 import processing.opengl.*;
+import savi.StateSynchronization.SyncAgentState;
+import savi.StateSynchronization.VisibleItem;
 
 
 public class UAS extends AgentModel {

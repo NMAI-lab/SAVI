@@ -3,6 +3,7 @@ import processing.core.*;
 import processing.data.*; 
 import processing.event.*; 
 import processing.opengl.*;
+import savi.StateSynchronization.VisibleItem;
 import savi.jason_processing.ROBOT_model.Button;
 
 import java.util.*;

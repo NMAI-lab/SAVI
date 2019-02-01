@@ -12,6 +12,12 @@ import jason.asSyntax.Term;
 import jason.infra.centralised.BaseCentralisedMAS;
 import processing.core.PVector;
 
+import savi.StateSynchronization.Perception;
+import savi.StateSynchronization.PerceptionHistory;
+import savi.StateSynchronization.PerceptionSnapshot;
+import savi.StateSynchronization.SyncAgentState;
+import savi.StateSynchronization.VisibleItem;
+
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;

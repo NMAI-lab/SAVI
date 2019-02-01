@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jason.asSyntax.Literal;
-import savi.jason_processing.Perception;
+import savi.StateSynchronization.Perception;
 
 public class PerceptionUnitTest {
 	/**

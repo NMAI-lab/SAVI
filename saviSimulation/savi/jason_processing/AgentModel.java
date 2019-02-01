@@ -3,6 +3,7 @@ package savi.jason_processing;
 import java.util.concurrent.ConcurrentHashMap;
 
 import jason.architecture.AgArch;
+import savi.StateSynchronization.SyncAgentState;
 
 //import jason.asSyntax.Structure;
 

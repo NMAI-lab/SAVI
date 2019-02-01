@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jason.asSyntax.Literal;
-import savi.jason_processing.Perception;
-import savi.jason_processing.PerceptionSnapshot;
+import savi.StateSynchronization.Perception;
+import savi.StateSynchronization.PerceptionSnapshot;
 
 public class PerceptionSnapshotUnitTest {
 	

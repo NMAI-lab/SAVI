@@ -3,9 +3,9 @@ package savi.unitTesting;
 import java.util.ArrayList;
 import java.util.List;
 
-import savi.jason_processing.Perception;
-import savi.jason_processing.PerceptionHistory;
-import savi.jason_processing.PerceptionSnapshot;
+import savi.StateSynchronization.Perception;
+import savi.StateSynchronization.PerceptionHistory;
+import savi.StateSynchronization.PerceptionSnapshot;
 
 public class PerceptionHistoryUnitTest {
 	

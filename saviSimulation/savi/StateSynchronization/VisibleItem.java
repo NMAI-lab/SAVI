@@ -1,4 +1,4 @@
-package savi.jason_processing;
+package savi.StateSynchronization;
 
 public class VisibleItem {
 	private String label;
