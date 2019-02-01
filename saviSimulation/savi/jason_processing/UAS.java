@@ -42,8 +42,8 @@ public class UAS extends AgentModel {
 		agentState.setPosition(position); //value type is PVector
 		agentState.setSpeedAngle(0.0); //TODO: calculate velocity angle + magnitude
 		agentState.setSpeedValue(0.0); //TODO
-		agentState.setCompassAngle(-Math.PI/2); //TODO calculate direction we're facing
-
+		//agentState.setCompassAngle(-Math.PI/2); //TODO calculate direction we're facing
+		agentState.setCompassAngle(3*Math.PI/2);
 		agentState.setCameraInfo(new ArrayList<VisibleItem>()); //TODO: calculate what we can see
 		//ArrayList<String> mes2share = new ArrayList<String>();
 		//mes2share.add(("HelloIAm(" + ID+")")); //TODO: messages cannot be arbitrary strings, they need to be well-formed agentspeak
@@ -87,8 +87,9 @@ public class UAS extends AgentModel {
 		agentState.setPosition(position);  
 		//Normalize angle between 0 and 2 Pi
 		//compassAngle = compassAngle % 2* Math.PI;
-		if(compassAngle<0) compassAngle+=2*Math.PI;
-		if(compassAngle>2*Math.PI) compassAngle-=2*Math.PI;
+		//if(compassAngle<0) compassAngle+=2*Math.PI;
+		//if(compassAngle>2*Math.PI) compassAngle-=2*Math.PI;
+		compassAngle=normalizeAngle(compassAngle);
 		agentState.setCompassAngle(compassAngle);
 		agentState.setSpeedValue(speedValue);   
 		//calculate what we can see  
@@ -106,8 +107,7 @@ public class UAS extends AgentModel {
 				double theta = Math.atan2(deltay, deltax);
 				double angle = (theta - getCompassAngle());// % 2* Math.PI; //(adjust to 0, 2pi) interval
 				// to normalize between 0 to 2 Pi
-				if(angle<0) angle+=2*Math.PI;
-				if(angle>2*Math.PI) angle-=2*Math.PI;
+				angle=normalizeAngle(angle);
 				if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
 				//it's visible 
 					things.add(new VisibleItem("threat", angle, dist)); 	
@@ -145,11 +145,13 @@ public class UAS extends AgentModel {
 			//calculate distance
 			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
 			if(dist<perceptionDistance) {
+				//atan2 returns a value between -pi and pi
 				double theta = Math.atan2(deltay, deltax);
-				double angle = (theta - getCompassAngle());// % 2* Math.PI; //(adjust to 0, 2pi) interval
+				//to normalize between 0 and 2pi;
+				//theta+=Math.PI;
+				double angle = (theta - getCompassAngle());
 				// to normalize between 0 to 2 Pi
-				if(angle<0) angle+=2*Math.PI;
-				if(angle>2*Math.PI) angle-=2*Math.PI;
+				angle=normalizeAngle(angle);
 				if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
 					//it's visible 
 					things.add(new VisibleItem(objects.get(i).type, angle, dist)); 
@@ -161,6 +163,26 @@ public class UAS extends AgentModel {
 		
 		this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
 	}
+	
+	// Normalize angle between 0 and 2Pp
+	public double normalizeAngle(double angle){
+		
+		if(angle<0){
+			while(angle<0){
+				angle+=2*Math.PI;		
+			}
+		}
+		
+		if(angle>2*Math.PI){
+			while(angle>2*Math.PI){
+				angle-=2*Math.PI;
+			}
+		}
+		
+		return angle;
+	}
+	
+	
 	// State reset
 	public void reset(){
 		// Initialize data values

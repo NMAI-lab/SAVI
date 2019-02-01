@@ -269,7 +269,8 @@ public void drawUAS(UAS uas){
 	items = uas.agentState.getCameraInfo(); 
 
 	for(int i=0; i< items.size(); i++) {  
-		double angle = (uas.getCompassAngle()+items.get(i).getAngle());// % 2* Math.PI;
+		double angle = (uas.getCompassAngle()+items.get(i).getAngle());
+		angle=uas.normalizeAngle(angle);
 		double cosv = Math.cos(angle);
 		double sinv = Math.sin(angle);
 		p1 = new PVector(Math.round(cosv*items.get(i).getDistance())+uas.getPosition().x, Math.round(sinv*items.get(i).getDistance())+uas.getPosition().y); 
