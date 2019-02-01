@@ -96,9 +96,9 @@ targetAhead :-
 		
 // Follow a target that is ahead
 +!followTarget
-	:	(not noTarget)
-	<-	!faceTarget;
-		!move;
+	:	target(_,_,_)
+	<-	!move;
+		!faceTarget;
 		!followTarget.
 		
 // Can't see a target, stop find one.
@@ -110,16 +110,16 @@ targetAhead :-
 
 // Start moving if not moving
 +!move
-	: 	velocity(_,SPEED) &
-		SPEED == 0
+	: 	speedData(_,SPEED) &
+		SPEED == 0.0
 	<-	thrust(on);
 		.broadcast(tell,moving).
 +!move.
 
 // Stop if moving
 +!stopMoving
-	: 	velocity(_,SPEED) &
-		SPEED \== 0
+	: 	speedData(_,SPEED) &
+		SPEED \== 0.0
 	<-	thrust(off);
 		.broadcast(tell,stopping).
 +!stopMoving.
