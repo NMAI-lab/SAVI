@@ -65,7 +65,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 			Agent ag = new Agent();
 			new TransitionSystem(ag, null, null, this);
 			this.name = id;
-            ag.initAg(type+".asl");
+            ag.initAg("savi/asl/"+type+".asl");
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Init error", e);
 		}
