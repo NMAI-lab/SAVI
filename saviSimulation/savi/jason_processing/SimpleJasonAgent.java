@@ -163,7 +163,9 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(this.perceptionLogFileName, true));
-			writer.append(perceptionLiterals.toString());
+			for (Literal current : perceptionLiterals) {
+				writer.append(current.toString() + " ");
+			}
 			writer.newLine();
 			writer.close();
 		} catch (IOException e) {
