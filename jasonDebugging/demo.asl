@@ -110,7 +110,7 @@ targetAhead :-
 
 // Start moving if not moving
 +!move
-	: 	speedData(_,SPEED) &
+	: 	speeddata(_,SPEED) &
 		SPEED == 0.0
 	<-	thrust(on);
 		.broadcast(tell,moving).
@@ -118,7 +118,7 @@ targetAhead :-
 
 // Stop if moving
 +!stopMoving
-	: 	speedData(_,SPEED) &
+	: 	speeddata(_,SPEED) &
 		SPEED \== 0.0
 	<-	thrust(off);
 		.broadcast(tell,stopping).
