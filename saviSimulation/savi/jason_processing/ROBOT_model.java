@@ -59,7 +59,7 @@ public class ROBOT_model extends PApplet {
 	List<Threat> threats = new ArrayList<Threat>(); //List of threats
 	List <UAS> UAS_list = new ArrayList<UAS>(); //List of UAS 
 
-	JasonMAS jasonAgents; // the BDI agent
+	JasonMAS jasonAgents; // the BDI agents
 
 	Button playButton,stopButton,pauseButton;
 	PShape robot,tree,house,threat,play,pause,restart;
@@ -171,12 +171,11 @@ public void setup() {
 //************************************************/
 	public void draw(){
 		if(simPaused){
-			
 			background(240); // white background
 
-			for(int i = 0; i < NUMBER_UAS; i++){ //Draw UAS agents
-				drawUAS(UAS_list.get(i));
-				UAS_list.get(i).getAgentState().pause();
+			for(UAS uasi: UAS_list){ //Draw UAS agents
+				drawUAS(uasi);
+				//uasi.getAgentState().pause(); TODO: why was this pause() called?
 			}
 
 			for(int i = 0; i < objects.size(); i++){ //Makes all trees on screen.
@@ -195,12 +194,12 @@ public void setup() {
 			return; // don't change anything if sim is paused
 		}
 	
-	// 1. TIME UPDATE
+		// 1. TIME UPDATE
 	simTime += simTimeDelta; // simple discrete-time advance
 	// 2. STATE UPDATE (SIMULATION)
-	for(int i = 0; i < NUMBER_UAS; i++){ //Create UAS agents
-		UAS_list.get(i).getAgentState().run();
-		UAS_list.get(i).update(PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,objects,UAS_list);
+	for(UAS uasi:UAS_list){ //Create UAS agents
+		//uasi.getAgentState().run();
+		uasi.update(PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,objects,UAS_list);
 	}
 	for(int i = 0; i < NUMBER_THREATS; i++){ //Put threats
 		threats.get(i).update(width,height);
@@ -323,11 +322,23 @@ public void resetSimulation(){
 	UAS_list.removeAll(UAS_list);
 	
 	setup();
-	// Unpause the simualtion
-	simPaused = false;
+	// Unpause the simulation =" use other method to ensure that agents are also unpaused
+	pauseSimulation();
 }
 // Pause the simulation
 public void pauseSimulation(){
+	if(!simPaused) { //the sim is NOT paused and we want to pause it
+		
+		System.out.println("pausing simulation!-------===================================================");
+		for(UAS uasi:UAS_list){ //unpause all agents
+			uasi.pauseAgent();			
+		}
+	} else { //the sim was paused, unpause it
+		System.out.println("resuming simulation!-------");
+		for(UAS uasi:UAS_list){ //pause all agents
+			uasi.unPauseAgent();			
+		}	
+	}
 	simPaused = !simPaused;
 }
 

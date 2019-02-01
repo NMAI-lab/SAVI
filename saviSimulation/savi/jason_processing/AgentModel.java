@@ -19,6 +19,24 @@ public abstract class AgentModel {
 		theAgentThread = t;
 	}
 	
+	
+	protected void pauseAgent() {
+		if (theAgentThread != null) {
+			System.out.println("Agent "+ID+" paused-----");
+			theAgentThread.suspend();
+		
+		}
+	}
+	protected void unPauseAgent() {
+		if (theAgentThread != null) {
+				theAgentThread.resume();
+			
+			
+		}
+		System.out.println("Agent "+ID+" UNpaused ----");
+	}
+	
+	
 	protected void notifyAgent() {
 		if (theAgentThread != null) {
 			theAgentThread.interrupt();

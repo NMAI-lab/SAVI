@@ -175,6 +175,7 @@ public class SyncAgentState {
 		return this.getPerceptionDataItem("speedAngle");
 	}
 
+	/* Update: pause handled in UAS class that just make the threads wait() then notifies them to unpause.
 	//TODO: use this to pause the agents [not working yet]
 	public synchronized void pause() {
 		pauseSignal = true;
@@ -186,6 +187,6 @@ public class SyncAgentState {
 	
 	public synchronized boolean checkPause() {
 		return this.pauseSignal;
-	}
+	}*/
 
 }
