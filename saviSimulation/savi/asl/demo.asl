@@ -1,142 +1,126 @@
 /*
  * Simple agent behaviour for the SAVI project
  * @author	Patrick Gavigan
- * @date	18 December 2018
+ * @date		25 Jan 2019
  */
 
-/* Set initial beliefs */
-noTarget.
-velocity(0,0).
-//pi(3.14159265359).
-turnAngle(3.14159265359/16).
-margin(0.2).
+// Set initial beliefs and test goals
+pi(3.14159265359).	// Set the constant for PI
 
 /* Rules */
+// Define the turn angle
+
+turnAngle(A) :-
+	((A = PI/16) & pi(PI)).
+
+// There is no target
+noTarget :-
+	not(threat(DIR,DIST)).
+
+// Target is the closest threat
+target(threat,DIR,DIST) :-
+	((threat(DIR,DIST)) &
+	not (threat(_,CLOSER) &
+	(CLOSER < DIST))).
+
 // See a target to the right
-targetRight(T) :-	(target(T,DIR,DIST) &
-					(DIR > ANGLE) &
-					turnAngle(ANGLE)).
+targetRight :-
+	(target(threat,DIR,DIST) &
+	turnAngle(ANGLE) &
+	pi(PI) &
+	(ANGLE < DIR) & 
+	(DIR <= PI)).
 
 // See a target to the left
-targettLeft(T) :-	(target(T,DIR,DIST) &
-					(DIR < -ANGLE) &
-					turnAngle(ANGLE)).
+targetLeft :-
+	(target(threat,DIR,DIST) &
+	turnAngle(ANGLE) &
+	pi(PI) &
+	((PI < DIR) &
+	(DIR < ((2 * PI) - ANGLE)))).
 
 // See a target ahead				
-targetAhead(T) :-	(target(T,DIR,DIST) &
-					(-ANGLE <= DIR) &
-					(DIR <= ANGLE) &
-					turnAngle(ANGLE)).
-
-// X is the absolute value of Y					
-abs(X,Y) :- 	((X > 0 | X == 0) &
-				((X == Y) | (X == -Y))).
-				
-// Check if X is positive or 0 
-positive(X) :-	X > 0 | X == 0.
-				
-// Check if the similarity of X and Y are within a margin of error.
-withinMargin(X, Y) :-	margin(MARGIN) &
-						(positive(X - Y) & (X - Y < MARGIN * Y)) |
-						(positive(Y - X) & (Y - X < MARGIN * Y)).
-
-/* Initial goals */
-//!seeTarget.			// Find a target
-//!observeTarget.		// Keep a target visible (recursive seeTarget)
-//!faceTarget.			// Turn to face a target head on
-//!watchTarget.			// Face a target and keep facing it recursively
-!followTarget.			// Follow a target
-
-/* Plans */
-
-/* Update beliefes of observing target */
-+threat(DIR,DIST)
-	:	noTarget
-	<- 	-noTarget;
-		+target(threat,DIR,DIST).
-
-/* Update target beliefs due to relative movement */
-+threat(DIR,DIST)
-	:	(not threat(OLD_DIR,OLD_DIST)) &
-		target(threat,OLD_DIR,OLD_DIST) &
-		(withinMargin(DIR,OLD_DIR) | withinMargin(DIST,OLD_DIST))
-	<- 	-target(threat,OLD_DIR,old_DIST);
-		+target(threat,DIR,DIST).
-		
-/* Update belief of not seeing target */
--threat(_,_)
-	: 	target(threat,OLD_DIR,OLD_DIST) &
-		(not threat(OLD_DIR,OLD_DIST))
-	<-	-target(threat,OLD_DIR,OLD_DIST);
-		+noTarget.
-
-/* Manage beliefs associated with agent velocity */
-+velocity(HEADDING,SPEED)
-	:	speedData(NEW_HEADDING,NEW_SPEED) &
-		(HEADDING \== NEW_HEADDING | SPEED \== NEW_SPEED)
-	<-	-velocity(HEADDING,SPEED);
-		+velocity(NEW_HEADDING,NEW_SPEED).
-		
-/* Plan for trying to see target */
-+!seeTarget
-	:	noTarget
-	<-	turn(left);
-		!seeTarget.
-
-/* See a target, seeTarget achieved */
-+!seeTarget
-	:	(not noTarget) | target(_,_,_).
-
-/* Stop the agent if it is moving */
-+!seeTarget
-	:	noTarget &
-		velocity(_,SPEED) &
-		SPEED \== 0
-	<-	thrust(off);
-		!seeTarget.
+targetAhead :-
+	(target(T,DIR,DIST) &
+	(not targetLeft(T)) &
+	(not targetRight(T))).
 	
-/* Implementation of observeTarget (recursive seeTarget) */
-+!observeTarget
-	:	true
-	<-	!seeTarget.
+// Initial goals
+//!findTarget.		// Find a target
+//!observeTarget.	// Keep a target visible (recursive seeTarget)
+//!faceTarget.		// Turn to face a target head on
+//!watchTarget.		// Face a target and keep facing it recursively
+!followTarget.		// Follow a target
 
-/* Plan for facing the target if none is seen */
+/* Plans to achieve goals */
+
+// Plan for trying to find a target
++!findTarget	:	noTarget
+				<-	turn(left);
+					.broadcast(tell,turning(left)).
++!findTarget.
+
+// Default plan for observing target - force recursion.
++!observeTarget
+	: 	true
+	<- 	!findTarget;
+		!observeTarget.
+		
+// Plan for facing the target if none is seen
 +!faceTarget
 	:	noTarget
-	<-	!seeTarget;
-		!faceTarget.
+	<-	!findTarget.
 
-/* Face a target to the right */
+// Face a target to the right.
 +!faceTarget
-	:	targetRight(T)
+	:	targetRight
 	<-	turn(right);
-		!faceTarget.
+		.broadcast(tell,turning(right)).
 		
-/* Face a target to the right */
+// Face a target to the left
 +!faceTarget
-	:	targetLeft(T)
+	:	targetLeft
 	<-	turn(left);
-		!faceTarget.
+		.broadcast(tell,turning(left)).
 		
-/* Face a target, goal achieved */
-+!faceTarget:	targetAhead(T).
+// Face a target, goal achieved
++!faceTarget
+	:	targetAhead
+	<-	.broadcast(tell,targetAhead).
 
-/* watchTarget - recursive faceTarget */
+// watchTarget - recursive faceTarget
 +!watchTarget
 	:	true
-	<-	!watchTarget.
-
-/* Follow a target - case where target not ahead */	
-+!followTarget
-	:	(not targetAhead(_,_,_))
 	<-	!faceTarget;
-		!followTarget.
-
-/* Follow a target that is ahead */
+		!watchTarget.
+		
+// Follow a target that is ahead
 +!followTarget
-	:	targetAhead(_,_,_) &
-		velocity(_,SPEED) &
-		SPEED == 0
-	<-	thrust(on);
+	:	target(_,_,_)
+	<-	!move;
+		!faceTarget;
+		!followTarget.
+		
+// Can't see a target, stop find one.
++!followTarget
+	:	noTarget
+	<-	!stopMoving;
+		!faceTarget;
 		!followTarget.
 
+// Start moving if not moving
++!move
+	: 	speeddata(_,SPEED) &
+		SPEED == 0.0
+	<-	thrust(on);
+		.broadcast(tell,moving).
++!move.
+
+// Stop if moving
++!stopMoving
+	: 	speeddata(_,SPEED) &
+		SPEED \== 0.0
+	<-	thrust(off);
+		.broadcast(tell,stopping).
++!stopMoving.
+		
