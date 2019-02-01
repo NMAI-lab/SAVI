@@ -27,7 +27,7 @@ public class PerceptionHistory {
 	 * Updates the perception history and updates the agent. Looks for things that are sufficiently 
 	 * different in order to send the update to the agent
 	 */
-	public List<Literal> updatePerceptions(PerceptionSnapshot newPerceptions) {
+	public List<Literal> updatePerceptionsChangesOnly(PerceptionSnapshot newPerceptions) {
 		
 		// Make a new snapshot to become the new version of this.previousPerception
 		PerceptionSnapshot newPreviousPerception = new PerceptionSnapshot();
@@ -66,5 +66,21 @@ public class PerceptionHistory {
 		
 		// Return the literals for the perception
 		return outputSnapshot.getLiterals();
+	}
+	
+	
+	public List<Literal> updatePerceptionsPassThrough(PerceptionSnapshot newPerceptions) {
+		this.previousPerception = new PerceptionSnapshot(newPerceptions);
+		return previousPerception.getLiterals();
+	}
+	
+	
+	
+	/**
+	 * Provides the new list of perceptions based on the history and the update
+	 */
+	public List<Literal> updatePerceptions(PerceptionSnapshot newPerceptions) {
+		//return this.updatePerceptionsChangesOnly(newPerceptions);
+		return this.updatePerceptionsPassThrough(newPerceptions);
 	}
 }

@@ -33,13 +33,13 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	private static final String broadcastID = "BROADCAST";
 	
 	private String name;
-	//private String type; don't actually need to hold on to this beyond initialisation
 	private SyncAgentState agentState;
 	private boolean running;
 	private static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
-	private Random rand;
+
 	private long lastPerceptionId;		// ID of the last perception received
 	private boolean firstPerception;	// Flag for noting if any perceptions have ever been received (deal with the first ID issue)
+	private PerceptionHistory perceptHistory;
 	
 	public SimpleJasonAgent(String id, String type, SyncAgentState modelAgentState) { //need to make the UAS class public so that the AgArch can refer back to it
 		try {
@@ -51,14 +51,9 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		// Set parameters for the first perception ID
 		this.lastPerceptionId = 0;
 		this.firstPerception = true;
-    	
-		rand = new Random(100L); //the agent will act randomly but always the same way across executions 
-		
+		this.perceptHistory = new PerceptionHistory();
 		agentState = modelAgentState;
-    	
 		running = false;
-
-		//myModel= model;
 
 		// set up the Jason agent
 		try {
@@ -75,14 +70,12 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		System.out.println("I'm a Jason Agent and I'm starting");
 		
 		try {
-			//Thread.sleep(1000);
 			running= true;
 			
 			while (isRunning()) {
 				// calls the Jason engine to perform one reasoning cycle
 				logger.fine("Reasoning....");
-				getTS().reasoningCycle();// sense();//reasoningCycle();
-				//Thread.sleep(100);
+				getTS().reasoningCycle();
                 
 				if (getTS().canSleep()) {
                 	sleep();
@@ -120,33 +113,41 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	// this method just add some perception for the agent
 	@Override
 	public List<Literal> perceive() {
-		List<Literal> l = new ArrayList<Literal>();
-		
-		if (this.checkForFreshPerception()) {
-			System.out.println("Agent " + getAgName() + " Perceiving perception "+ this.lastPerceptionId);
-		
-			if (agentState.getCameraInfo().isEmpty())
-				System.out.println("(I see nothing)");
-
-			for (VisibleItem vi: agentState.getCameraInfo()) {
-				l.add(Literal.parseLiteral(vi.toPercept()));
-				System.out.println(vi.toPercept());
-			}
-
-			for (String ms: agentState.getMsgIn()) {
-				//TODO: Fix percept
-				//l.add(Literal.parseLiteral(ms));
-				System.out.println(ms);
-			}
-
-			// Perceive agent's speed and speed direction
-			double speed = agentState.getSpeedValue();
-			double speedAngle = agentState.getSpeedAngle();
-			String speedDataPercept = "speedData("+speedAngle+","+speed+")";
-			l.add(Literal.parseLiteral(speedDataPercept));
-			System.out.println(speedDataPercept);
+		PerceptionSnapshot currentPerceptions = new PerceptionSnapshot();
+		this.lastPerceptionId = this.agentState.getCounter();
+						
+		// Check for visible items
+		for (VisibleItem vi: agentState.getCameraInfo()) {
+			List<Double> parameters = new ArrayList<Double>();
+			parameters.add(new Double(vi.getAngle()));
+			parameters.add(new Double(vi.getDistance()));
+			String type = new String(vi.getType());
+			currentPerceptions.addPerception(new Perception(type, this.agentState.getCounter(), parameters));
 		}
-		return l;
+		
+		// Perceive agent's speed and speed direction
+		List<Double> parameters = new ArrayList<Double>();
+		parameters.add(new Double(agentState.getSpeedAngle()));
+		parameters.add(new Double(agentState.getSpeedValue()));
+		String type = new String("speedData");
+		currentPerceptions.addPerception(new Perception(type, this.agentState.getCounter(), parameters));
+		
+		// Perceive the agent's position
+		PVector position = agentState.getPosition();
+		parameters = new ArrayList<Double>();
+		parameters.add((Double)(double)position.x);
+		parameters.add((Double)(double)position.y);
+		parameters.add((Double)(double)position.z);
+		type = new String("position");
+		currentPerceptions.addPerception(new Perception(type, this.agentState.getCounter(), parameters));
+		
+		// Update the history, get the list of literals to send to the agent
+		List<Literal> perceptionLiterals = new ArrayList<Literal>(this.perceptHistory.updatePerceptions(currentPerceptions));
+		
+		System.out.println("Agent " + getAgName() + " Perceiving perception "+ this.agentState.getCounter());
+		System.out.println(perceptionLiterals.toString());
+		
+		return perceptionLiterals;
 	}
 	
 	/**
@@ -173,12 +174,6 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		// Check what action is being performed, update actionString accordingly.
 		if (actionTerm.equals(left)) {
 			actionString = "turn(left)";
-			/*try {
-				this.sendMsg(new Message("tell",));
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
 		}
 		else if (actionTerm.equals(right)) 
 			actionString = "turn(right)";
@@ -193,9 +188,6 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		// Set that the execution was OK and flag it as complete.
 		action.setResult(true);
 		actionExecuted(action);
-		
-		// Busy wait for a fresh perception. TODO: is there a way to do this more elegantly? Better to suspend the thread if possible.
-		//while(!this.checkForFreshPerception()) {}
 	}
 	
 	@Override
@@ -224,7 +216,6 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	/**
 	 * Send message to another agent (via simulated wifi).
 	 */
-	// .send(r,tell,open(door)); // Test message for an asl file
 	@Override
 	public void sendMsg(jason.asSemantics.Message m) throws Exception {
 		// Make sure sender parameter is set
