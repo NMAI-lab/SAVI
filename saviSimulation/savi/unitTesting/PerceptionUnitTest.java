@@ -32,7 +32,7 @@ public class PerceptionUnitTest {
 		UnitTester.reportResult("Percept class - Type null test", testResult, verbose);
 		testOK = testOK && testResult;
 		
-		testResult = (perceptTest.getVersionID() == versionID);
+		testResult = (perceptTest.getTimeStamp() == versionID);
 		UnitTester.reportResult("Percept class - VersionID test", testResult, verbose);
 		testOK = testOK && testResult;
 		
@@ -63,7 +63,7 @@ public class PerceptionUnitTest {
 		UnitTester.reportResult("Percept class - Type null after copy test", testResult, verbose);
 		testOK = testOK && testResult;
 		
-		testResult = (perceptTest.getVersionID() == perceptTestCopy.getVersionID());
+		testResult = (perceptTest.getTimeStamp() == perceptTestCopy.getTimeStamp());
 		UnitTester.reportResult("Percept class - VersionID after copy test", testResult, verbose);
 		testOK = testOK && testResult;
 		
@@ -88,7 +88,7 @@ public class PerceptionUnitTest {
 		UnitTester.reportResult("Percept class - Type null after copy with type test", testResult, verbose);
 		testOK = testOK && testResult;
 		
-		testResult = (perceptTestType.getVersionID() == perceptTestCopyType.getVersionID());
+		testResult = (perceptTestType.getTimeStamp() == perceptTestCopyType.getTimeStamp());
 		UnitTester.reportResult("Percept class - VersionID after copy with type test", testResult, verbose);
 		testOK = testOK && testResult;
 		

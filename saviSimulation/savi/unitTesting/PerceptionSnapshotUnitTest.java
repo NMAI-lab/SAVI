@@ -30,7 +30,7 @@ public class PerceptionSnapshotUnitTest {
 		testOK &= testResult;
 		
 		// Check the empty perception list - latest version
-		testResult = (testSnapshot.getLatestVersion() == -1);
+		testResult = (testSnapshot.getLatestTimeStamp() == -1);
 		UnitTester.reportResult("PerceptSnapshot class - Empty snapshot version check", testResult, verbose);
 		testOK &= testResult;
 		
@@ -105,7 +105,7 @@ public class PerceptionSnapshotUnitTest {
 		testOK &= testResult;
 		
 		// Check the perception list - latest version
-		testResult = (testSnapshot.getLatestVersion() == 2);
+		testResult = (testSnapshot.getLatestTimeStamp() == 2);
 		UnitTester.reportResult("PerceptSnapshot class - Perception snapshot version check", testResult, verbose);
 		testOK &= testResult;
 		

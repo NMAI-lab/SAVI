@@ -43,7 +43,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	private boolean running;
 	private static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
 
-	private long lastPerceptionId;		// ID of the last perception received
+	private double lastPerceptionId;		// ID of the last perception received
 	private boolean firstPerception;	// Flag for noting if any perceptions have ever been received (deal with the first ID issue)
 	private PerceptionHistory perceptHistory;
 	
@@ -103,7 +103,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
      */
 	boolean checkForFreshPerception() {
 		boolean freshData = false;		// Return flag - default is false (perception is not fresh)
-		long currentPerceptId = agentState.getCounter();
+		double currentPerceptId = agentState.getLatestPerceptionTimeStamp();
     	
 		// Is this the first time perceiving? Is the perception ID different from the last perception?
 		if ((this.firstPerception) || (currentPerceptId != this.lastPerceptionId)) {

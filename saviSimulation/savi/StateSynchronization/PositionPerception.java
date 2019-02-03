@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 public class PositionPerception extends Perception {
 
-	public PositionPerception(long timeStamp, double x, double y, double z) {
+	public PositionPerception(double timeStamp, double x, double y, double z) {
 		super("position", null, timeStamp, ((ArrayList<Double>) Arrays.asList(new Double[] {x, y, z})));
 	}
 }

@@ -12,7 +12,7 @@ public class SyncAgentState {
 	
 	// The rest of these parameters will be deprecated soon.
 	private Map<String,Double> perceptionData;		// Hash map of the perception parameters
-	private long counter;							// Counter used for tracking changes to state data
+	private double counter;							// Counter used for tracking changes to state data
 	private PVector position;						// Vector for the agent's position. TODO: incorporate this into the map somehow
 	private boolean pauseSignal;					// For tracking the pause signal
 	private ArrayList<VisibleItem> cameraInfo;		// List of camera info
@@ -24,14 +24,14 @@ public class SyncAgentState {
 	public SyncAgentState() {
 		this.perceptions = null;
 		this.actions = new LinkedList<String>();
-		this.pauseSignal = false;
 		this.msgOut = new LinkedList<String>();
 		this.msgIn = new LinkedList<String>();
 		
 		// The rest of these parameters will be deprecated soon.
 		this.counter = 0;
 		this.perceptionData = new HashMap<String,Double>();
-		this.cameraInfo = new ArrayList<VisibleItem>(); 
+		this.cameraInfo = new ArrayList<VisibleItem>();
+		this.pauseSignal = false;
 	}
 	
 	
@@ -48,11 +48,11 @@ public class SyncAgentState {
 	 * Get the time stamp of the most recent perception in the snapshot
 	 * @return
 	 */
-	public synchronized long getLatestPerceptionTimeStamp() {
+	public synchronized double getLatestPerceptionTimeStamp() {
 		if (this.perceptions == null) {
 			return -1;
 		} else {
-			return this.perceptions.getLatestVersion();
+			return this.perceptions.getLatestTimeStamp();
 		}
 	}
 	
@@ -77,7 +77,7 @@ public class SyncAgentState {
 	private synchronized void incrementCounter() {
 		// Increment the counter to identify that the perception data was refreshed.
 		this.counter++;
-		if (this.counter == (Long.MAX_VALUE - 1)) {
+		if (this.counter == (Double.MAX_VALUE - 1)) {
 			this.counter = 0;
 		}
 	}
@@ -99,9 +99,9 @@ public class SyncAgentState {
 	/**
 	 * SOON TO BE DEPRECATED
 	 * Get the current counter value
-	 * @return	int counter
+	 * @return	double counter
 	 */
-	public synchronized long getCounter() {
+	public synchronized double getCounter() {
 		return this.counter;
 	}
 
