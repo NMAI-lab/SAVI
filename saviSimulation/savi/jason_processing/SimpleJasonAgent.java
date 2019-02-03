@@ -11,11 +11,14 @@ import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.infra.centralised.BaseCentralisedMAS;
 import processing.core.PVector;
-
+import savi.StateSynchronization.CameraPerception;
 import savi.StateSynchronization.Perception;
 import savi.StateSynchronization.PerceptionHistory;
 import savi.StateSynchronization.PerceptionSnapshot;
+import savi.StateSynchronization.PositionPerception;
 import savi.StateSynchronization.SyncAgentState;
+import savi.StateSynchronization.TimePerception;
+import savi.StateSynchronization.VelocityPerception;
 import savi.StateSynchronization.VisibleItem;
 
 import java.io.FileInputStream;
@@ -121,31 +124,32 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	public List<Literal> perceive() {
 		PerceptionSnapshot currentPerceptions = new PerceptionSnapshot();
 		this.lastPerceptionId = this.agentState.getCounter();
+		double timeStamp = this.lastPerceptionId;
 						
 		// Check for visible items
 		for (VisibleItem vi: agentState.getCameraInfo()) {
-			List<Double> parameters = new ArrayList<Double>();
-			parameters.add(new Double(vi.getAngle()));
-			parameters.add(new Double(vi.getDistance()));
+			double azumuth = vi.getAngle();
+			double elevation = 0;	// Hard code for 2D for now.
+			double range = vi.getDistance();
 			String type = new String(vi.getType());
-			currentPerceptions.addPerception(new Perception(type, this.agentState.getCounter(), parameters));
+			currentPerceptions.addPerception(new CameraPerception(type, timeStamp, azumuth, elevation, range));
 		}
 		
 		// Perceive agent's speed and speed direction
-		List<Double> parameters = new ArrayList<Double>();
-		parameters.add(new Double(agentState.getSpeedAngle()));
-		parameters.add(new Double(agentState.getSpeedValue()));
-		String type = new String("speedData");
-		currentPerceptions.addPerception(new Perception(type, this.agentState.getCounter(), parameters));
+		double bearing = agentState.getSpeedAngle();
+		double pitch = 0;	// Hard code for 2D for now.
+		double speed = agentState.getSpeedValue();
+		currentPerceptions.addPerception(new VelocityPerception(timeStamp, bearing, pitch, speed));
 		
 		// Perceive the agent's position
 		PVector position = agentState.getPosition();
-		parameters = new ArrayList<Double>();
-		parameters.add((Double)(double)position.x);
-		parameters.add((Double)(double)position.y);
-		parameters.add((Double)(double)position.z);
-		type = new String("position");
-		currentPerceptions.addPerception(new Perception(type, this.agentState.getCounter(), parameters));
+		double x = (double)position.x;
+		double y = (double)position.y;
+		double z = (double)position.z;
+		currentPerceptions.addPerception(new PositionPerception(timeStamp, x, y, z));
+		
+		// Perceive the current time
+		currentPerceptions.addPerception(new TimePerception(timeStamp));
 		
 		// Update the history, get the list of literals to send to the agent
 		List<Literal> perceptionLiterals = new ArrayList<Literal>(this.perceptHistory.updatePerceptions(currentPerceptions));
