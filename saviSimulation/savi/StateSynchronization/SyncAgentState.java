@@ -14,7 +14,7 @@ public class SyncAgentState {
 	private Map<String,Double> perceptionData;		// Hash map of the perception parameters
 	private double counter;							// Counter used for tracking changes to state data
 	private PVector position;						// Vector for the agent's position. TODO: incorporate this into the map somehow
-	private boolean pauseSignal;					// For tracking the pause signal
+	//private boolean pauseSignal;					// For tracking the pause signal
 	private ArrayList<VisibleItem> cameraInfo;		// List of camera info
 
 
@@ -31,7 +31,7 @@ public class SyncAgentState {
 		this.counter = 0;
 		this.perceptionData = new HashMap<String,Double>();
 		this.cameraInfo = new ArrayList<VisibleItem>();
-		this.pauseSignal = false;
+		//this.pauseSignal = false;
 	}
 	
 	
@@ -258,6 +258,45 @@ public class SyncAgentState {
 	 */
 	public synchronized double getSpeedAngle() {
 		return this.getPerceptionDataItem("speedAngle");
+	}
+	
+	
+	/**
+	 * DEPRECATED - this is an example for how to build a Perception snapshot and update the SyncAgentState class. This
+	 * should be done outside of this class. Once the SIMULATION team is ready, this method should be removed from this class,
+	 * updated and put where the perceptions are generated.
+	 */
+	public void buildSnapshot() {
+		PerceptionSnapshot currentPerceptions = new PerceptionSnapshot();
+		double timeStamp = this.getCounter();
+						
+		// Check for visible items
+		for (VisibleItem vi: this.getCameraInfo()) {
+			double azumuth = vi.getAngle();
+			double elevation = 0;	// Hard code for 2D for now.
+			double range = vi.getDistance();
+			String type = new String(vi.getType());
+			currentPerceptions.addPerception(new CameraPerception(type, timeStamp, azumuth, elevation, range));
+		}
+		
+		// Perceive agent's speed and speed direction
+		double bearing = this.getSpeedAngle();
+		double pitch = 0;	// Hard code for 2D for now.
+		double speed = this.getSpeedValue();
+		currentPerceptions.addPerception(new VelocityPerception(timeStamp, bearing, pitch, speed));
+		
+		// Perceive the agent's position
+		PVector position = this.getPosition();
+		double x = (double)position.x;
+		double y = (double)position.y;
+		double z = (double)position.z;
+		currentPerceptions.addPerception(new PositionPerception(timeStamp, x, y, z));
+		
+		// Perceive the current time
+		currentPerceptions.addPerception(new TimePerception(timeStamp));
+		
+		// Update the snapshot in the SyncAgentState class
+		this.setPerceptions(currentPerceptions);
 	}
 
 	/* Update: pause handled in UAS class that just make the threads wait() then notifies them to unpause.

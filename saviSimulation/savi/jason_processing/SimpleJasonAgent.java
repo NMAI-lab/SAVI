@@ -122,34 +122,8 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	// this method just add some perception for the agent
 	@Override
 	public List<Literal> perceive() {
-		PerceptionSnapshot currentPerceptions = new PerceptionSnapshot();
-		this.lastPerceptionId = this.agentState.getCounter();
-		double timeStamp = this.lastPerceptionId;
-						
-		// Check for visible items
-		for (VisibleItem vi: agentState.getCameraInfo()) {
-			double azumuth = vi.getAngle();
-			double elevation = 0;	// Hard code for 2D for now.
-			double range = vi.getDistance();
-			String type = new String(vi.getType());
-			currentPerceptions.addPerception(new CameraPerception(type, timeStamp, azumuth, elevation, range));
-		}
-		
-		// Perceive agent's speed and speed direction
-		double bearing = agentState.getSpeedAngle();
-		double pitch = 0;	// Hard code for 2D for now.
-		double speed = agentState.getSpeedValue();
-		currentPerceptions.addPerception(new VelocityPerception(timeStamp, bearing, pitch, speed));
-		
-		// Perceive the agent's position
-		PVector position = agentState.getPosition();
-		double x = (double)position.x;
-		double y = (double)position.y;
-		double z = (double)position.z;
-		currentPerceptions.addPerception(new PositionPerception(timeStamp, x, y, z));
-		
-		// Perceive the current time
-		currentPerceptions.addPerception(new TimePerception(timeStamp));
+		PerceptionSnapshot currentPerceptions = new PerceptionSnapshot(this.agentState.getPerceptions());
+		this.lastPerceptionId = currentPerceptions.getLatestTimeStamp();
 		
 		// Update the history, get the list of literals to send to the agent
 		List<Literal> perceptionLiterals = new ArrayList<Literal>(this.perceptHistory.updatePerceptions(currentPerceptions));
