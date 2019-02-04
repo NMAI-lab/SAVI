@@ -52,16 +52,17 @@ public class PerceptionSnapshotUnitTest {
 		
 		// Make some Perceptions for testing with
 		double timeStamp = 1.0;
-		Perception testPerception1 = new TimePerception(timeStamp);
-
 		String perceptionName = new String("threat");
 		double azumuth = 2.0;
 		double elevation = 3.0;
 		double range = 4.0;
 		double moreRecentTimeStep = 2.0;
+		
+		Perception testPerception1 = new TimePerception(timeStamp);
 		Perception testPerception2 = new CameraPerception(perceptionName, moreRecentTimeStep, azumuth, elevation, range);
 		Perception similarPerception = new CameraPerception(perceptionName, timeStamp, azumuth + 0.001, elevation, range);
 		Perception differentPerception = new CameraPerception(perceptionName, timeStamp, azumuth + 10000, elevation, range);
+		Perception samePerception = testPerception2.clone();
 		
 		// addPerceptions to the snapshot
 		testSnapshot.addPerception(testPerception1);
@@ -81,22 +82,20 @@ public class PerceptionSnapshotUnitTest {
 		// Check the empty perception list - toString
 		assertTrue(testSnapshot.toString().equals(new String("[" + testPerception1.toString() + ", " + testPerception2.toString() + "]")));
 				
-		// Check for the same, similar, and different perception in the snapshot
-		Perception samePerception = testPerception1.clone();
 		// Check if the same perception is there
 		assertTrue(testSnapshot.pullSimilarPerception(samePerception).equals(samePerception));
 		
-		// Check if a similar perception is there (will fail, it was removed by previous step
+		// Check if a similar perception is there (will fail, it was removed by previous step)
 		assertTrue(testSnapshot.pullSimilarPerception(similarPerception) == null);
 		
-		// Check if a similar perception is there (will fail, it was removed by previous step
-		testSnapshot.addPerception(testPerception1);
-		assertTrue(testSnapshot.pullSimilarPerception(similarPerception).equals(testPerception1));
+		// Put it back, try again
+		testSnapshot.addPerception(testPerception2);
+		assertTrue(testSnapshot.pullSimilarPerception(similarPerception).equals(testPerception2));
 		// Make sure it was removed
 		assertTrue(testSnapshot.pullSimilarPerception(similarPerception) == null);
 		
 		// Check if a completely different perception is in the list
-		testSnapshot.addPerception(testPerception1);
+		testSnapshot.addPerception(testPerception2);
 		assertTrue(testSnapshot.pullSimilarPerception(differentPerception) == null);
 		
 		// Use the copy constructor and check the list of perceptions
