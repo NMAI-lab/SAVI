@@ -8,7 +8,7 @@ import java.util.List;
 public class PositionPerception extends Perception {
 
 	public PositionPerception(double timeStamp, double x, double y, double z) {
-		super("position", null, timeStamp, ((ArrayList<Double>) Arrays.asList(new Double[] {x, y, z})));
+		super("position", null, timeStamp, (new ArrayList<Double>(Arrays.asList(new Double[] {x, y, z}))));
 	}
 	
 	protected PositionPerception(String perceptionName, String type, double newTimeStamp, List<Double> newParameters, boolean isLost) {
