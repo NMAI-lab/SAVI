@@ -122,6 +122,11 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	// this method just add some perception for the agent
 	@Override
 	public List<Literal> perceive() {
+		
+		// This line will need to go away once the SIM side handles this.
+		agentState.buildSnapshot();
+		
+		// Get the perceptions from agentState
 		PerceptionSnapshot currentPerceptions = new PerceptionSnapshot(this.agentState.getPerceptions());
 		this.lastPerceptionId = currentPerceptions.getLatestTimeStamp();
 		
