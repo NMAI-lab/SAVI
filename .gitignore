@@ -6,4 +6,5 @@ bin/
 *.classpath
 *.project
 *.log
-saviSimulation/*.log
+*.1
+*.0
