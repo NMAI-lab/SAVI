@@ -239,7 +239,14 @@ public abstract class Perception {
 			boolean sameType = this.comparePerceptionType(p);
 			boolean sameName = this.comparePerceptionName(p);
 			boolean sameTimeStamp = (this.getTimeStamp() == p.getTimeStamp());
-			boolean sameParameters = this.parameters.equals(p.getParameters());
+			boolean sameParameters = false;
+			
+			if ((this.parameters != null) && (p.getParameters() != null)) {
+				sameParameters = this.parameters.equals(p.getParameters());
+			} else {
+				sameParameters = (this.parameters == null) && (p.getParameters() == null);
+			}
+			
 			return sameType && sameName && sameTimeStamp && sameParameters;
 		} else {
 			return false;

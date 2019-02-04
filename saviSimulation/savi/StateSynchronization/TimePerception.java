@@ -10,11 +10,11 @@ public class TimePerception extends Perception {
 		super("time", null, timeStamp, null);
 	}
 	
-	protected TimePerception(String perceptionName, String type, double newTimeStamp, List<Double> newParameters, boolean isLost) {
-		super(perceptionName, type, newTimeStamp, (new ArrayList<Double>(newParameters)), isLost);
+	protected TimePerception(String perceptionName, double newTimeStamp, boolean isLost) {
+		super(perceptionName, null, newTimeStamp, null, isLost);
 	}
 	
 	public Perception clone() {
-		return (Perception)(new TimePerception(this.getPerceptionName(), this.getPerceptionType(), this.getTimeStamp(), this.getParameters(), this.isLost()));
+		return (Perception)(new TimePerception(this.getPerceptionName(), this.getTimeStamp(), this.isLost()));
 	}
 }
