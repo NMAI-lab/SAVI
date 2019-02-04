@@ -47,7 +47,7 @@ public class PerceptionHistory {
 			
 			if (similarPercept == null) {	// No similar Perceptions
 				// This perception was seen before but now isn't. Need to add a negative perception to the output list
-				Perception negativePercept = new Perception(prevPerceptList.get(i));
+				Perception negativePercept = prevPerceptList.get(i).clone();
 				negativePercept.perceptionLost();
 				outputSnapshot.addPerception(negativePercept);
 

@@ -10,12 +10,13 @@ import jason.asSyntax.Literal;
  * @author patrickgavigan
  *
  */
-public class Perception {
+public abstract class Perception {
 	private String perceptionName;
 	private String perceptionType;
 	private double timeStamp;
 	private List<Double> parameters;
 	private final double similarityThreshold = 0.02; 	// Parameters must be 2% similar for comparison
+	private boolean perceptionLost = false;
 	
 	/**
 	 * Default constructor is not useful
@@ -30,8 +31,19 @@ public class Perception {
 	 * @param newVersionID
 	 * @param newParameters
 	 */
-	public Perception(String perceptionName, double newTimeStamp, List<Double> newParameters) {
+	protected Perception(String perceptionName, double newTimeStamp, List<Double> newParameters) {
 		this(perceptionName, null, newTimeStamp, newParameters);
+	}
+	
+	/**
+	 * 
+	 * @param perceptionName
+	 * @param type
+	 * @param newTimeStamp
+	 * @param newParameters
+	 */
+	protected Perception(String perceptionName, String type, double newTimeStamp, List<Double> newParameters) {
+		this(perceptionName, type, newTimeStamp, newParameters, false);
 	}
 	
 	/**
@@ -41,11 +53,12 @@ public class Perception {
 	 * @param newVersionID
 	 * @param newParameters
 	 */
-	public Perception(String perceptionName, String type, double newTimeStamp, List<Double> newParameters) {
+	protected Perception(String perceptionName, String type, double newTimeStamp, List<Double> newParameters, boolean isLost) {
 		this.perceptionName = new String(perceptionName);
 		this.timeStamp = newTimeStamp;
 		this.perceptionType = null;
 		this.parameters = null;
+		this.perceptionLost = isLost;
 		
 		if (newParameters != null) {
 			this.parameters = new ArrayList<Double>(newParameters);
@@ -57,18 +70,23 @@ public class Perception {
 	}
 	
 	/**
-	 * 
+	 * Abstract class, this is needed instead of a copy constructor
 	 * @param other
 	 */
-	public Perception(Perception other) {
-		this(other.getPerceptionName(), other.getPerceptionType(), other.getTimeStamp(), other.getParameters());
-	}
+	public abstract Perception clone();
 	
 	/**
 	 * Changes the perceptionName to mark this perception as not being perceived anymore.
 	 */
 	public void perceptionLost() {
-		this.perceptionName = this.perceptionName + "lost";
+		if (!this.perceptionLost) {		// Can only lose a perception once
+			this.perceptionName = this.perceptionName + "lost";
+			this.perceptionLost = true;
+		}
+	}
+	
+	public boolean isLost() {
+		return this.perceptionLost;
 	}
 	
 	/**
@@ -107,7 +125,7 @@ public class Perception {
 	 * 
 	 * @return
 	 */
-	public List<Double> getParameters() {
+	protected List<Double> getParameters() {
 		if (this.parameters == null) {
 			return null;
 		} else {
@@ -279,5 +297,12 @@ public class Perception {
 		
 		// Make the literal and return the result		
 		return Literal.parseLiteral(perceptString.toLowerCase());
+	}
+	
+	/**
+	 * Implement the toString method
+	 */
+	public String toString() {
+		return new String(this.getLiteral().toString());
 	}
 }
