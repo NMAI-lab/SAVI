@@ -1,8 +1,11 @@
-package savi.StateSynchronization;
+package savi.unitTests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+
+import savi.StateSynchronization.Perception;
+import savi.StateSynchronization.VelocityPerception;
 
 class VelocityPerceptionTests {
 
