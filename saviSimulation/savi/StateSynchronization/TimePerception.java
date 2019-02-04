@@ -1,9 +1,6 @@
 
 package savi.StateSynchronization;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TimePerception extends Perception {
 
 	public TimePerception(double timeStamp) {

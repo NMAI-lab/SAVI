@@ -48,7 +48,6 @@ class TimePerceptionTest {
 		assertTrue(testCase.comparePerceptionType(testCaseLost));
 		assertTrue(testCase.comparePerceptionType(testCase.clone()));
 		
-		
 		// Check getDifference and isSimilar
 		assertTrue(testCase.isSimilar(testCase.clone()));
 		assertTrue(testCase.getDifference(testCase.clone()) == 0);

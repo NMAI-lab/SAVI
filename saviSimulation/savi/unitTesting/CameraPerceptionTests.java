@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import savi.StateSynchronization.CameraPerception;
 import savi.StateSynchronization.Perception;
+import savi.StateSynchronization.TimePerception;
 
 class CameraPerceptionTests {
 
@@ -76,5 +77,9 @@ class CameraPerceptionTests {
 		assertTrue(similarTestCase.isSimilar(testCase));
 		Perception differentTestCase = new CameraPerception(perceptionName, timeStamp, azumuth + 10000, elevation, range);
 		assertFalse(differentTestCase.isSimilar(testCase));
+		
+		Perception veryDifferent = new TimePerception(timeStamp);
+		assertFalse(testCase.isSimilar(veryDifferent));
+		assertTrue(testCase.getDifference(veryDifferent) == 1);
 	}
 }
