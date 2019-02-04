@@ -1,5 +1,10 @@
 package savi.StateSynchronization;
 
+/**
+ * THIS CLASS IS DEPRECATED 
+ * @author Patrick
+ *
+ */
 public class VisibleItem {
 	private String label;
 	private double angle;
