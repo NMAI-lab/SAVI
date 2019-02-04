@@ -15,35 +15,35 @@ turnAngle(A) :-
 
 // There is no target
 noTarget :-
-	not(threat(DIR,DIST)).
+	not(target(_,_,_,_,_)).
 
 // Target is the closest threat
-target(threat,DIR,DIST) :-
-	((threat(DIR,DIST)) &
-	not (threat(_,CLOSER) &
-	(CLOSER < DIST))).
+target(threat,TYPE,AZ,EL,RANGE) :-
+	((threat(AZ,EL,RANGE,TIME,TYPE)) &
+	not (threat(_,_,CLOSER,_,_) &
+	(CLOSER < RANGE))).
 
 // See a target to the right
 targetRight :-
-	(target(threat,DIR,DIST) &
+	(target(threat,TYPE,AZ,EL,RANGE) &
 	turnAngle(ANGLE) &
 	pi(PI) &
-	(ANGLE < DIR) & 
-	(DIR <= PI)).
+	(ANGLE < AZ) & 
+	(AZ <= PI)).
 
 // See a target to the left
 targetLeft :-
-	(target(threat,DIR,DIST) &
+	(target(threat,TYPE,AZ,EL,RANGE) &
 	turnAngle(ANGLE) &
 	pi(PI) &
-	((PI < DIR) &
-	(DIR < ((2 * PI) - ANGLE)))).
+	((PI < AZ) &
+	(AZ < ((2 * PI) - ANGLE)))).
 
 // See a target ahead				
 targetAhead :-
-	(target(T,DIR,DIST) &
-	(not targetLeft(T)) &
-	(not targetRight(T))).
+	((not noTarget) &
+	(not targetLeft) &
+	(not targetRight)).
 	
 // Initial goals
 //!findTarget.		// Find a target
@@ -55,9 +55,10 @@ targetAhead :-
 /* Plans to achieve goals */
 
 // Plan for trying to find a target
-+!findTarget	:	noTarget
-				<-	turn(left);
-					.broadcast(tell,turning(left)).
++!findTarget
+	:	noTarget
+	<-	turn(left);
+		.broadcast(tell,turning(left)).
 +!findTarget.
 
 // Default plan for observing target - force recursion.
@@ -96,7 +97,7 @@ targetAhead :-
 		
 // Follow a target that is ahead
 +!followTarget
-	:	target(_,_,_)
+	:	target(_,_,_,_,_)
 	<-	!move;
 		!faceTarget;
 		!followTarget.
@@ -110,7 +111,7 @@ targetAhead :-
 
 // Start moving if not moving
 +!move
-	: 	speedData(_,SPEED) &
+	: 	velocity(_,_,SPEED,_) &
 		SPEED == 0.0
 	<-	thrust(on);
 		.broadcast(tell,moving).
@@ -118,7 +119,7 @@ targetAhead :-
 
 // Stop if moving
 +!stopMoving
-	: 	speedData(_,SPEED) &
+	: 	velocity(_,_,SPEED,_) &
 		SPEED \== 0.0
 	<-	thrust(off);
 		.broadcast(tell,stopping).
