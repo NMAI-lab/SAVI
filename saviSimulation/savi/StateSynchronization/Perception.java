@@ -179,6 +179,11 @@ public abstract class Perception {
 		List<Double> otherParameters;
 		List<Double> myParameters;		
 		
+		// OtherPerception can't be null
+		if (otherPerception == null) {
+			return maxDifference;
+		}
+		
 		// Check if the parameters for one is null but not the other one
 		if ((otherPerception.getParameters() == null) != (this.getParameters() == null)) {
 			return maxDifference;
