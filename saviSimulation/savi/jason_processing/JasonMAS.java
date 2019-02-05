@@ -3,6 +3,8 @@ package savi.jason_processing;
 import java.util.HashMap;
 import java.util.Map;
 
+import savi.agentBehaviour.SimpleJasonAgent;
+
 public class JasonMAS {
 
 

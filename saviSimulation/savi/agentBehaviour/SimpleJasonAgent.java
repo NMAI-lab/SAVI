@@ -1,4 +1,4 @@
-package savi.jason_processing;
+package savi.agentBehaviour;
 
 import jason.architecture.AgArch;
 import jason.asSemantics.ActionExec;
@@ -9,17 +9,9 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
-import jason.infra.centralised.BaseCentralisedMAS;
-import processing.core.PVector;
-import savi.StateSynchronization.CameraPerception;
-import savi.StateSynchronization.Perception;
-import savi.StateSynchronization.PerceptionHistory;
-import savi.StateSynchronization.PerceptionSnapshot;
-import savi.StateSynchronization.PositionPerception;
-import savi.StateSynchronization.SyncAgentState;
-import savi.StateSynchronization.TimePerception;
-import savi.StateSynchronization.VelocityPerception;
-import savi.StateSynchronization.VisibleItem;
+import savi.StateSynchronization.*;
+
+
 
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
@@ -29,8 +21,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
