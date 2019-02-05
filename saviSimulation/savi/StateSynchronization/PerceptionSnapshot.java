@@ -1,4 +1,4 @@
-package savi.jason_processing;
+package savi.StateSynchronization;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,16 +60,16 @@ public class PerceptionSnapshot {
 	 * Get the versionID of the most recent data in the snapshot
 	 * @return
 	 */
-	public long getLatestVersion() {
-		long latestVersion = -1;
+	public double getLatestTimeStamp() {
+		double latestTimeStamp = -1;
 		
 		for (int i = 0; i < this.perceptionList.size(); i++) {
-			long currentID = this.perceptionList.get(i).getVersionID();
-			if (currentID > latestVersion) {
-				latestVersion = currentID;
+			double current = this.perceptionList.get(i).getTimeStamp();
+			if (current > latestTimeStamp) {
+				latestTimeStamp = current;
 			}
 		}
-		return latestVersion;		
+		return latestTimeStamp;		
 	}
 	
 	

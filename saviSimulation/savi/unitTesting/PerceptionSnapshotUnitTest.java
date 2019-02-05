@@ -1,11 +1,12 @@
 package savi.unitTesting;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
-import jason.asSyntax.Literal;
-import savi.jason_processing.Perception;
-import savi.jason_processing.PerceptionSnapshot;
+import savi.StateSynchronization.CameraPerception;
+import savi.StateSynchronization.Perception;
+import savi.StateSynchronization.PerceptionSnapshot;
+import savi.StateSynchronization.TimePerception;
 
 public class PerceptionSnapshotUnitTest {
 	
@@ -14,10 +15,7 @@ public class PerceptionSnapshotUnitTest {
 	 * @param verbose
 	 * @return
 	 */
-	public static boolean emptyTest(boolean verbose) {
-		boolean testOK = true;
-		boolean testResult = true;
-		
+	private void emptyTest() {
 		// Constructor
 		PerceptionSnapshot testSnapshot = new PerceptionSnapshot();
 
@@ -25,174 +23,109 @@ public class PerceptionSnapshotUnitTest {
 		testSnapshot.addPerception(null);
 		
 		// Check the empty perception list
-		testResult = (testSnapshot.getPerceptionList().size() == 0);
-		UnitTester.reportResult("PerceptSnapshot class - Empty snapshot percept list check", testResult, verbose);
-		testOK &= testResult;
+		assertTrue(testSnapshot.getPerceptionList().size() == 0);
 		
 		// Check the empty perception list - latest version
-		testResult = (testSnapshot.getLatestVersion() == -1);
-		UnitTester.reportResult("PerceptSnapshot class - Empty snapshot version check", testResult, verbose);
-		testOK &= testResult;
+		assertTrue(testSnapshot.getLatestTimeStamp() == -1);
 		
 		// Check the empty perception list - list of literals
-		testResult = (testSnapshot.getLiterals().isEmpty());
-		UnitTester.reportResult("PerceptSnapshot class - Empty list of Literals", testResult, verbose);
-		testOK &= testResult;
+		assertTrue(testSnapshot.getLiterals().isEmpty());
 		
 		// Check the empty perception list - toString
-		testResult = testSnapshot.toString().equals(new String("[]"));
-		UnitTester.reportResult("PerceptSnapshot class - Empty String ", testResult, verbose);
-		testOK &= testResult;
-		
+		assertTrue(testSnapshot.toString().equals("[]"));
+				
 		// Check for similar perception in an empty snapshot
-		List<Double> parameterList = new ArrayList<Double>();
-		parameterList.add(8.0);
-		testResult = (testSnapshot.pullSimilarPerception(new Perception("perceptName", 0, parameterList)) == null);
-		UnitTester.reportResult("PerceptSnapshot class - Empty String ", testResult, verbose);
-		testOK &= testResult;
+		double timeStamp = 8.0;
+		Perception testPerception1 = new TimePerception(timeStamp);
+		assertTrue(testSnapshot.pullSimilarPerception(testPerception1) == null);
 		
 		// Use the copy constructor and check the list of perceptions
 		PerceptionSnapshot copiedSnahpshot = new PerceptionSnapshot(testSnapshot);
-		testResult = (copiedSnahpshot.getPerceptionList().size() == 0);
-		UnitTester.reportResult("PerceptSnapshot class - Empty snapshot copy constructor percept list check", testResult, verbose);
-		testOK &= testResult;
-		
-		// Return result
-		return testOK;
+		assertTrue(copiedSnahpshot.getPerceptionList().size() == 0);
 	}
 	
 	
-	/**
-	 * Test the case where there is an empty PerceptionSnapshot
-	 * @param verbose
-	 * @return
-	 */
-	public static boolean contentTest(boolean verbose) {
-		boolean testOK = true;
-		boolean testResult = true;
-		
+
+	private void contentTest() {
 		// Constructor
 		PerceptionSnapshot testSnapshot = new PerceptionSnapshot();
 		
 		// Make some Perceptions for testing with
-		List<Double> parameterList = new ArrayList<Double>();
-		parameterList.add(1.0);
-		parameterList.add(2.0);
-		Perception testPerception1 = new Perception("perceptName", 1, parameterList);
-	
-		parameterList = new ArrayList<Double>();
-		parameterList.add(5.0);
-		parameterList.add(2.0);
-		Perception testPerception2 = new Perception("perceptName", 2, parameterList);
+		double timeStamp = 1.0;
+		String perceptionName = new String("threat");
+		double azumuth = 2.0;
+		double elevation = 3.0;
+		double range = 4.0;
+		double moreRecentTimeStep = 2.0;
 		
-		parameterList = new ArrayList<Double>();
-		parameterList.add(1.01);
-		parameterList.add(2.0);
-		Perception similarPerception = new Perception("perceptName", 0, parameterList);
+		Perception testPerception1 = new TimePerception(timeStamp);
+		Perception testPerception2 = new CameraPerception(perceptionName, moreRecentTimeStep, azumuth, elevation, range);
+		Perception similarPerception = new CameraPerception(perceptionName, timeStamp, azumuth + 0.001, elevation, range);
+		Perception differentPerception = new CameraPerception(perceptionName, timeStamp, azumuth + 10000, elevation, range);
+		Perception samePerception = testPerception2.clone();
 		
-		parameterList = new ArrayList<Double>();
-		parameterList.add(1.21);
-		parameterList.add(2.0);
-		Perception differentPerception = new Perception("perceptName", 0, parameterList);		
-
 		// addPerceptions to the snapshot
 		testSnapshot.addPerception(testPerception1);
 		testSnapshot.addPerception(testPerception2);
 		
 		// Check the size of the perception list
-		testResult = (testSnapshot.getPerceptionList().size() == 2);
-		UnitTester.reportResult("PerceptSnapshot class - Perception snapshot percept list size check", testResult, verbose);
-		testOK &= testResult;
+		assertTrue(testSnapshot.getPerceptionList().size() == 2);
 		
 		// Check the perception list - latest version
-		testResult = (testSnapshot.getLatestVersion() == 2);
-		UnitTester.reportResult("PerceptSnapshot class - Perception snapshot version check", testResult, verbose);
-		testOK &= testResult;
+		assertTrue(testSnapshot.getLatestTimeStamp() == moreRecentTimeStep);
 		
 		// Check the perception list - list of literals
-		boolean Literal1OK = testSnapshot.getLiterals().contains(testPerception1.getLiteral());
-		boolean Literal2OK = testSnapshot.getLiterals().contains(testPerception2.getLiteral());
-		boolean noOtherLiteralOK = !testSnapshot.getLiterals().contains(similarPerception.getLiteral());
-		testResult = (Literal1OK && Literal2OK && noOtherLiteralOK);
-		UnitTester.reportResult("PerceptSnapshot class - Contains Literal check list of Literals", testResult, verbose);
-		testOK &= testResult;
+		assertTrue(testSnapshot.getLiterals().contains(testPerception1.getLiteral()));
+		assertTrue(testSnapshot.getLiterals().contains(testPerception2.getLiteral()));
+		assertFalse(testSnapshot.getLiterals().contains(similarPerception.getLiteral()));
 		
 		// Check the empty perception list - toString
-		testResult = testSnapshot.toString().equals(new String("[perceptname(1,2), perceptname(5,2)]"));
-		UnitTester.reportResult("PerceptSnapshot class - String check", testResult, verbose);
-		testOK &= testResult;
+		assertTrue(testSnapshot.toString().equals(new String("[" + testPerception1.toString() + ", " + testPerception2.toString() + "]")));
 				
-		// Check for the same, similar, and different perception in the snapshot
-		Perception samePerception = new Perception(testPerception1);
 		// Check if the same perception is there
-		boolean sameTestResult = testSnapshot.pullSimilarPerception(samePerception).equals(samePerception);
+		assertTrue(testSnapshot.pullSimilarPerception(samePerception).equals(samePerception));
 		
-		// Check if a similar perception is there (will fail, it was removed by previous step
-		boolean similarTestResultNull = (testSnapshot.pullSimilarPerception(similarPerception) == null);
+		// Check if a similar perception is there (will fail, it was removed by previous step)
+		assertTrue(testSnapshot.pullSimilarPerception(similarPerception) == null);
 		
-		// Check if a similar perception is there (will fail, it was removed by previous step
-		testSnapshot.addPerception(testPerception1);
-		boolean similarTestResult = testSnapshot.pullSimilarPerception(similarPerception).equals(testPerception1);
+		// Put it back, try again
+		testSnapshot.addPerception(testPerception2);
+		assertTrue(testSnapshot.pullSimilarPerception(similarPerception).equals(testPerception2));
 		// Make sure it was removed
-		boolean similarTestResultRemoved = testSnapshot.pullSimilarPerception(similarPerception) == null;
+		assertTrue(testSnapshot.pullSimilarPerception(similarPerception) == null);
 		
 		// Check if a completely different perception is in the list
-		testSnapshot.addPerception(testPerception1);
-		boolean differentTestResult = (testSnapshot.pullSimilarPerception(differentPerception) == null);
-		testResult = sameTestResult && similarTestResultNull && similarTestResult && similarTestResultRemoved && differentTestResult;
-		UnitTester.reportResult("PerceptSnapshot class - pullSimilarPerception test", testResult, verbose);
-		testOK &= testResult;
+		testSnapshot.addPerception(testPerception2);
+		assertTrue(testSnapshot.pullSimilarPerception(differentPerception) == null);
 		
 		// Use the copy constructor and check the list of perceptions
 		PerceptionSnapshot copiedSnapshot = new PerceptionSnapshot(testSnapshot);
-		boolean sizeOK = (copiedSnapshot.getPerceptionList().size() == 2);
-		Literal1OK = copiedSnapshot.getLiterals().contains(testPerception1.getLiteral());
-		Literal2OK = copiedSnapshot.getLiterals().contains(testPerception2.getLiteral());
-		 noOtherLiteralOK = !copiedSnapshot.getLiterals().contains(similarPerception.getLiteral());
-		testResult = (sizeOK && Literal1OK && Literal2OK && noOtherLiteralOK);
-		
-		UnitTester.reportResult("PerceptSnapshot class - Snapshot copy constructor percept list check", testResult, verbose);
-		testOK &= testResult;
+		assertTrue(copiedSnapshot.getPerceptionList().size() == 2);
+		assertTrue(copiedSnapshot.getLiterals().contains(testPerception1.getLiteral()));
+		assertTrue(copiedSnapshot.getLiterals().contains(testPerception2.getLiteral()));
+		assertFalse(copiedSnapshot.getLiterals().contains(similarPerception.getLiteral()));
 		
 		// Make a new Perception, put something different in it, then addPerceptionsFromSnapshot()
 		PerceptionSnapshot snapshotToAdd = new PerceptionSnapshot();
 		snapshotToAdd.addPerception(differentPerception);
 		copiedSnapshot.addPerceptionsFromSnapshot(snapshotToAdd);
-		sizeOK = (copiedSnapshot.getPerceptionList().size() == 3);
-		Literal1OK = copiedSnapshot.getLiterals().contains(testPerception1.getLiteral());
-		Literal2OK = copiedSnapshot.getLiterals().contains(testPerception2.getLiteral());
-		boolean differentLiteralOK = copiedSnapshot.getLiterals().contains(differentPerception.getLiteral());
-		noOtherLiteralOK = !copiedSnapshot.getLiterals().contains(similarPerception.getLiteral());
-		testResult = (sizeOK && Literal1OK && Literal2OK && differentLiteralOK && noOtherLiteralOK);
-		UnitTester.reportResult("PerceptSnapshot class - Snapshot copy constructor percept list check", testResult, verbose);
-		testOK &= testResult;
-		
-		// Return result
-		return testOK;
+		assertTrue(copiedSnapshot.getPerceptionList().size() == 3);
+		assertTrue(copiedSnapshot.getLiterals().contains(testPerception1.getLiteral()));
+		assertTrue(copiedSnapshot.getLiterals().contains(testPerception2.getLiteral()));
+		assertTrue(copiedSnapshot.getLiterals().contains(differentPerception.getLiteral()));
+		assertFalse(copiedSnapshot.getLiterals().contains(similarPerception.getLiteral()));
 	}
 	
 	
-	
-	
-	
-	/**
-	 * Run all of the unit tests
-	 * @param verbose
-	 * @return
-	 */
-	public static boolean unitTest(boolean verbose) {
-		boolean testOK = true;
-		boolean testResult = true;
+	@Test
+	void test() {
+		
+		System.out.println(new String());
 		
 		// Test the case where there is an empty PerceptionSnapshot involved.
-		testResult = PerceptionSnapshotUnitTest.emptyTest(verbose);
-		testOK &= testResult;
+		this.emptyTest();
 		
 		// Test a case where the PerceptionSnapshot is not empty
-		testResult = PerceptionSnapshotUnitTest.contentTest(verbose);
-		testOK &= testResult;
-		
-		// Return result
-		return testOK;
+		this.contentTest();
 	}
 }

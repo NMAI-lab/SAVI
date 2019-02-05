@@ -1,4 +1,4 @@
-package savi.jason_processing;
+package savi.agentBehaviour;
 
 import jason.architecture.AgArch;
 import jason.asSemantics.ActionExec;
@@ -9,16 +9,18 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
-import jason.infra.centralised.BaseCentralisedMAS;
-import processing.core.PVector;
+import savi.StateSynchronization.*;
 
+
+
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -37,9 +39,10 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	private boolean running;
 	private static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
 
-	private long lastPerceptionId;		// ID of the last perception received
+	private double lastPerceptionId;		// ID of the last perception received
 	private boolean firstPerception;	// Flag for noting if any perceptions have ever been received (deal with the first ID issue)
 	private PerceptionHistory perceptHistory;
+	private String perceptionLogFileName;
 	
 	public SimpleJasonAgent(String id, String type, SyncAgentState modelAgentState) { //need to make the UAS class public so that the AgArch can refer back to it
 		try {
@@ -63,6 +66,16 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
             ag.initAg("savi/asl/"+type+".asl");
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Init error", e);
+		}
+		
+		// Set up the perception logfile
+		this.perceptionLogFileName = "PerceptionLog_" + this.name + ".log";
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(this.perceptionLogFileName));
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -97,7 +110,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
      */
 	boolean checkForFreshPerception() {
 		boolean freshData = false;		// Return flag - default is false (perception is not fresh)
-		long currentPerceptId = agentState.getCounter();
+		double currentPerceptId = agentState.getLatestPerceptionTimeStamp();
     	
 		// Is this the first time perceiving? Is the perception ID different from the last perception?
 		if ((this.firstPerception) || (currentPerceptId != this.lastPerceptionId)) {
@@ -113,39 +126,32 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	// this method just add some perception for the agent
 	@Override
 	public List<Literal> perceive() {
-		PerceptionSnapshot currentPerceptions = new PerceptionSnapshot();
-		this.lastPerceptionId = this.agentState.getCounter();
-						
-		// Check for visible items
-		for (VisibleItem vi: agentState.getCameraInfo()) {
-			List<Double> parameters = new ArrayList<Double>();
-			parameters.add(new Double(vi.getAngle()));
-			parameters.add(new Double(vi.getDistance()));
-			String type = new String(vi.getType());
-			currentPerceptions.addPerception(new Perception(type, this.agentState.getCounter(), parameters));
-		}
 		
-		// Perceive agent's speed and speed direction
-		List<Double> parameters = new ArrayList<Double>();
-		parameters.add(new Double(agentState.getSpeedAngle()));
-		parameters.add(new Double(agentState.getSpeedValue()));
-		String type = new String("speedData");
-		currentPerceptions.addPerception(new Perception(type, this.agentState.getCounter(), parameters));
+		// This line will need to go away once the SIM side handles this.
+		agentState.buildSnapshot();
 		
-		// Perceive the agent's position
-		PVector position = agentState.getPosition();
-		parameters = new ArrayList<Double>();
-		parameters.add((Double)(double)position.x);
-		parameters.add((Double)(double)position.y);
-		parameters.add((Double)(double)position.z);
-		type = new String("position");
-		currentPerceptions.addPerception(new Perception(type, this.agentState.getCounter(), parameters));
+		// Get the perceptions from agentState
+		PerceptionSnapshot currentPerceptions = new PerceptionSnapshot(this.agentState.getPerceptions());
+		this.lastPerceptionId = currentPerceptions.getLatestTimeStamp();
 		
 		// Update the history, get the list of literals to send to the agent
 		List<Literal> perceptionLiterals = new ArrayList<Literal>(this.perceptHistory.updatePerceptions(currentPerceptions));
 		
 		System.out.println("Agent " + getAgName() + " Perceiving perception "+ this.agentState.getCounter());
 		System.out.println(perceptionLiterals.toString());
+		
+		// Write the perceptions to the perception logfile
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(this.perceptionLogFileName, true));
+			for (Literal current : perceptionLiterals) {
+				writer.append(current.toString() + " ");
+			}
+			writer.newLine();
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return perceptionLiterals;
 	}

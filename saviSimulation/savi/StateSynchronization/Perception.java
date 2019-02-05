@@ -1,4 +1,4 @@
-package savi.jason_processing;
+package savi.StateSynchronization;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,18 +10,20 @@ import jason.asSyntax.Literal;
  * @author patrickgavigan
  *
  */
-public class Perception {
+public abstract class Perception {
 	private String perceptionName;
 	private String perceptionType;
-	private long versionID;
+	private double timeStamp;
 	private List<Double> parameters;
 	private final double similarityThreshold = 0.02; 	// Parameters must be 2% similar for comparison
+	private boolean perceptionLost = false;
 	
 	/**
 	 * Default constructor is not useful
 	 */
-	@SuppressWarnings("unused")
-	private Perception() {}
+	protected Perception() {
+		this.timeStamp = 0;
+	}
 	
 	/**
 	 * Constructor
@@ -29,8 +31,19 @@ public class Perception {
 	 * @param newVersionID
 	 * @param newParameters
 	 */
-	public Perception(String perceptionName, long newVersionID, List<Double> newParameters) {
-		this(perceptionName, null, newVersionID, newParameters);
+	protected Perception(String perceptionName, double newTimeStamp, List<Double> newParameters) {
+		this(perceptionName, null, newTimeStamp, newParameters);
+	}
+	
+	/**
+	 * 
+	 * @param perceptionName
+	 * @param type
+	 * @param newTimeStamp
+	 * @param newParameters
+	 */
+	protected Perception(String perceptionName, String type, double newTimeStamp, List<Double> newParameters) {
+		this(perceptionName, type, newTimeStamp, newParameters, false);
 	}
 	
 	/**
@@ -40,31 +53,40 @@ public class Perception {
 	 * @param newVersionID
 	 * @param newParameters
 	 */
-	public Perception(String perceptionName, String type, long newVersionID, List<Double> newParameters) {
+	protected Perception(String perceptionName, String type, double newTimeStamp, List<Double> newParameters, boolean isLost) {
 		this.perceptionName = new String(perceptionName);
-		this.versionID = newVersionID;
+		this.timeStamp = newTimeStamp;
 		this.perceptionType = null;
-		this.parameters = new ArrayList<Double>(newParameters);
+		this.parameters = null;
+		this.perceptionLost = isLost;
+		
+		if (newParameters != null) {
+			this.parameters = new ArrayList<Double>(newParameters);
+		}
 		
 		if (type != null) {
 			this.perceptionType = new String(type);
 		}
-		
 	}
 	
 	/**
-	 * 
+	 * Abstract class, this is needed instead of a copy constructor
 	 * @param other
 	 */
-	public Perception(Perception other) {
-		this(other.getPerceptionName(), other.getPerceptionType(), other.getVersionID(), other.getParameters());
-	}
+	public abstract Perception clone();
 	
 	/**
 	 * Changes the perceptionName to mark this perception as not being perceived anymore.
 	 */
 	public void perceptionLost() {
-		this.perceptionName = this.perceptionName + "lost";
+		if (!this.perceptionLost) {		// Can only lose a perception once
+			this.perceptionName = this.perceptionName + "lost";
+			this.perceptionLost = true;
+		}
+	}
+	
+	public boolean isLost() {
+		return this.perceptionLost;
 	}
 	
 	/**
@@ -95,16 +117,20 @@ public class Perception {
 	 * 
 	 * @return
 	 */
-	public long getVersionID() {
-		return this.versionID;
+	public double getTimeStamp() {
+		return this.timeStamp;
 	}
 	
 	/**
 	 * 
 	 * @return
 	 */
-	public List<Double> getParameters() {
-		return new ArrayList<Double>(this.parameters);
+	protected List<Double> getParameters() {
+		if (this.parameters == null) {
+			return null;
+		} else {
+			return new ArrayList<Double>(this.parameters);
+		}
 	}
 	
 	
@@ -147,23 +173,51 @@ public class Perception {
 	 * Closer to 0 is more similar.
 	 */
 	public double getDifference(Perception otherPerception) {
-		double maxDifference = 0;
 		
-		List<Double> otherParameters = otherPerception.getParameters();
-		List<Double> myParameters = this.getParameters();
+		// First deal with cases where they are completely different
+		double maxDifference = 1;
+		List<Double> otherParameters;
+		List<Double> myParameters;		
+		
+		// OtherPerception can't be null
+		if (otherPerception == null) {
+			return maxDifference;
+		}
+		
+		// Check if the parameters for one is null but not the other one
+		if ((otherPerception.getParameters() == null) != (this.getParameters() == null)) {
+			return maxDifference;
+		}		
+		
+		// Check if both are null
+		if  ((otherPerception.getParameters() == null) && (this.getParameters() == null)) {
+			otherParameters = null;
+			myParameters = null;
+		} else {
+			otherParameters = otherPerception.getParameters();
+			myParameters = this.getParameters();
+		}
+
 		
 		// If the perceptions have a different name or type, they are 100% different
 		if ((!this.comparePerceptionName(otherPerception)) || (!this.comparePerceptionType(otherPerception))) {
-			maxDifference = 1;
 			return maxDifference;
+		}
+
+		// If the parameters lists are null, calculate difference on the timestamp
+		if (otherParameters == null) {
+			return maxDifference = calculateDifference(this.getTimeStamp(), otherPerception.getTimeStamp());
 		}
 		
 		// If there is a difference number of parameters, they are 100% different
 		if (myParameters.size() != otherParameters.size()) {
-			maxDifference = 1;
 			return maxDifference;
 		}
 		
+		// Finished all the 100% different cases.
+		maxDifference = 0;
+		
+		// Otherwise, compare the other parameters
 		for (int i = 0; i < myParameters.size(); i++) {
 			double currentDifference = calculateDifference(myParameters.get(i), otherParameters.get(i));
 			if (Math.abs(currentDifference) > Math.abs(maxDifference)) {
@@ -175,14 +229,25 @@ public class Perception {
 	}
 	
 	/**
-	 * Overwrite the equals method. Version ID does not matter!
+	 * Overwrite the equals method.
 	 * @param otherPerception
 	 * @return
 	 */
 	public boolean equals(Object otherPerception) {
 		if (otherPerception instanceof Perception) {
 			Perception p = (Perception)otherPerception;
-			return this.comparePerceptionType(p) && this.parameters.equals(p.getParameters());
+			boolean sameType = this.comparePerceptionType(p);
+			boolean sameName = this.comparePerceptionName(p);
+			boolean sameTimeStamp = (this.getTimeStamp() == p.getTimeStamp());
+			boolean sameParameters = false;
+			
+			if ((this.parameters != null) && (p.getParameters() != null)) {
+				sameParameters = this.parameters.equals(p.getParameters());
+			} else {
+				sameParameters = (this.parameters == null) && (p.getParameters() == null);
+			}
+			
+			return sameType && sameName && sameTimeStamp && sameParameters;
 		} else {
 			return false;
 		}
@@ -213,19 +278,43 @@ public class Perception {
 	
 	/**
 	 * Convert the perception to a Literal for passing to the Jason agent.
-	 * @return
+	 * Format is: PerceptName(Param0,Param1...,TimeStamp, PerceptType)
+	 * If any of these parameters is null, they are skipped. Can be as simple as:
+	 * PerceptName(TimeStamp)
+	 * @return	Perception as a Literal
 	 */
 	public Literal getLiteral() {
+		// Start with the perception name
 		String perceptString = new String(this.perceptionName);
+		
+		// Add the opening bracket
 		perceptString = perceptString + "(";
-		for (int i = 0; i < this.parameters.size(); i++) {
-			perceptString = perceptString+this.parameters.get(i).toString();
-			if (i < this.parameters.size() - 1) {
-				perceptString = perceptString + ",";
-			} else {
-				perceptString = perceptString + ")";
+		
+		// Add the parameters, if we have any
+		if (this.parameters != null) {
+			for (int i = 0; i < this.parameters.size(); i++) {
+				perceptString = perceptString + this.parameters.get(i).toString() + ",";
 			}
 		}
+
+		// Add the timeStamp
+		perceptString = perceptString + this.getTimeStamp();
+		
+		// Add the type, is we have one
+		if (this.perceptionType != null) {
+			perceptString = perceptString + "," + this.perceptionType + ")";
+		} else {
+			perceptString = perceptString + ")";
+		}
+		
+		// Make the literal and return the result		
 		return Literal.parseLiteral(perceptString.toLowerCase());
+	}
+	
+	/**
+	 * Implement the toString method
+	 */
+	public String toString() {
+		return new String(this.getLiteral().toString());
 	}
 }
