@@ -14,7 +14,7 @@ import processing.event.*;
 import processing.opengl.*;
 
 
-public class UAS extends AgentModel {
+public class UAS extends AgentModel implements Communicator {
 	private static final double SPEED = 3; //we move by one unit / pixel at each timestep?
 
 	//-----------------------------------------
@@ -24,13 +24,14 @@ public class UAS extends AgentModel {
 	//String type; -- same
 	PVector initialPosition; // to be able to reset
 	double wifi;
+	double wifiPerceptionDistance;
 	//SyncAgentState agentState; // contains all relevant info = It's in the superclass!
 	//-----------------------------------------
 	// METHODS (functions that act on the data)
 	//-----------------------------------------
 	// Constructor: called when an object is created using the "new" keyword. It's the only method
 	//              that doesn't have a type (not even void).
-	UAS(String id, String type, PVector initialPosition) {	
+	UAS(String id, String type, PVector initialPosition, double wifiPerceptionDistance) {	
 		// Initialize data values
 		this.ID = id;
 		this.type = type;
@@ -61,7 +62,7 @@ public class UAS extends AgentModel {
 
 	// State Update: Read actions from queue, execute them
 	// also includes coordinates of threat.
-	public void update(int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<Threat> threats, List<WorldObject> objects, List<UAS> uas_list){
+	public void update(int perceptionDistance, List<Threat> threats, List<WorldObject> objects, List<Communicator> wifiParticipants){
 		PVector position = (PVector) agentState.getPosition();
 		double speedValue = agentState.getSpeedValue();
 		double compassAngle = agentState.getCompassAngle(); //TODO for now speedAngle is always zero 
@@ -96,12 +97,15 @@ public class UAS extends AgentModel {
 		
 		//Calculate threats detected
 		//System.out.println("UAS perception ---- threat number:"+threats.size());
-		for(int i=0; i<threats.size(); i++) {   
+		for(Threat threati : threats) {   
+			
 			//get relative position to UAS:
-			float deltax = threats.get(i).position.x - getPosition().x;
-			float deltay = threats.get(i).position.y - getPosition().y;
+			float deltax = threati.position.x - getPosition().x;
+			float deltay = threati.position.y - getPosition().y;
 			//calculate distance
-			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
+			double dist  = threati.position.dist(getPosition());//Math.sqrt(deltax*deltax + deltay*deltay); =
+			
+			
 			if(dist<perceptionDistance) {
 				double theta = Math.atan2(deltay, deltax);
 				double angle = (theta - getCompassAngle());// % 2* Math.PI; //(adjust to 0, 2pi) interval
@@ -117,25 +121,8 @@ public class UAS extends AgentModel {
 			}		
 		}
 		
-		//Calculate UAS detected for wifi communication
-		Queue<String> myMsgOutCopy = new LinkedList<String>();
-		myMsgOutCopy = this.agentState.getMsgOutAll();
-		for(int i=0; i<uas_list.size(); i++) { 
-			//get relative position of UAS to UAS:
-			float deltax = uas_list.get(i).getPosition().x - getPosition().x;
-			float deltay = uas_list.get(i).getPosition().x - getPosition().y;
-			//calculate distance
-			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
-			if(dist < WIFI_PERCEPTION_DISTANCE & wifi > 0) {
-				Queue<String> msg = new LinkedList<String>();
-				msg = myMsgOutCopy;
-				if(this.ID != uas_list.get(i).ID & uas_list.get(i).wifi > 0 ) {
-					while(!msg.isEmpty()) {
-						uas_list.get(i).agentState.setMsgIn(msg.poll());			
-					}
-				}				
-			}		
-		}
+				
+		sendMessages(wifiParticipants);
 		
 		//calculate objects detected
 		for(int i=0; i<objects.size(); i++) { 
@@ -173,6 +160,39 @@ public class UAS extends AgentModel {
 	public String getID() {
 		
 		return ID;
+	}
+
+	@Override
+	public void sendMessages(List<Communicator> others) {
+		
+		List<String> myMsgOutCopy = new LinkedList<String>();
+		myMsgOutCopy.addAll(this.agentState.getMsgOutAll());
+		
+		for(Communicator thing: others) { 
+			//get relative position of communicating things:
+			//calculate distance
+			double dist  = this.getPosition().dist(thing.getPosition());
+			if(dist < wifiPerceptionDistance && wifi > 0 && this.ID != thing.getID() && thing.getWifiValue() > 0 ) {
+				List<String> msglist = new LinkedList<String>();
+				msglist.addAll(myMsgOutCopy);
+
+				thing.receiveMessages(msglist);			
+
+			}		
+		}
+	
+	}
+
+	@Override
+	public void receiveMessages(List<String> msglist) {
+		while(!msglist.isEmpty()) {
+			agentState.setMsgIn(msglist.remove(0));			
+		}
+	}
+
+	@Override
+	public double getWifiValue() {
+		return wifi;
 	}
 
 

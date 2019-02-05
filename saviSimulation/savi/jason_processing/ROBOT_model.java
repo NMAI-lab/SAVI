@@ -42,9 +42,11 @@ public class ROBOT_model extends PApplet {
 	int PERCEPTION_DISTANCE;
 	int WIFI_PERCEPTION_DISTANCE;
 	int NUMBER_UAS;
+	String CONSOLE_ID = "console"; //not loaded from config file
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
 	int X_PIXELS = 900;
 	int Y_PIXELS = 700;
+	
 	
 	//Load Parameters
 	FileInputStream in = null;	
@@ -58,6 +60,10 @@ public class ROBOT_model extends PApplet {
 	List<WorldObject> objects = new ArrayList<WorldObject>();//List of world objects  
 	List<Threat> threats = new ArrayList<Threat>(); //List of threats
 	List <UAS> UAS_list = new ArrayList<UAS>(); //List of UAS 
+	
+	FieldAntenna antenna; //this is an antenna placed somewhere in the area that allows the console to communicate with the agents via wifi
+	
+	List<Communicator> wifiParticipants = new LinkedList<Communicator>();
 
 	JasonMAS jasonAgents; // the BDI agents
 
@@ -133,8 +139,17 @@ public void setup() {
 	for(int i = 0; i < NUMBER_UAS; i++)  { //Put UAS
 		//_PIXELS is the maximum and the 1 is our minimum
 		//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
-		UAS_list.add(new UAS(Integer.toString(i), "demo", new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1)));
+		UAS_list.add(new UAS(Integer.toString(i), "demo", new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), WIFI_PERCEPTION_DISTANCE));
 	}    
+	
+	//initialize the console antenna in the middle of the area.
+	antenna = new FieldAntenna("console", new PVector(X_PIXELS/2, Y_PIXELS/2));
+	
+	//this is the list of elements (UAS, sensors...) that participate in the wifi network
+	wifiParticipants.addAll(UAS_list);
+	wifiParticipants.add(antenna);
+
+	
 	for(int i = 0; i < NUMBER_TREES; i++) { //Put trees
 		//_PIXELS is the maximum and the 1 is our minimum.
 		objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), "tree"));
@@ -175,7 +190,6 @@ public void setup() {
 
 			for(UAS uasi: UAS_list){ //Draw UAS agents
 				drawUAS(uasi);
-				//uasi.getAgentState().pause(); TODO: why was this pause() called?
 			}
 
 			for(int i = 0; i < objects.size(); i++){ //Makes all trees on screen.
@@ -199,7 +213,7 @@ public void setup() {
 	// 2. STATE UPDATE (SIMULATION)
 	for(UAS uasi:UAS_list){ //Create UAS agents
 		//uasi.getAgentState().run();
-		uasi.update(PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,objects,UAS_list);
+		uasi.update(PERCEPTION_DISTANCE, threats,objects,UAS_list);
 	}
 	for(int i = 0; i < NUMBER_THREATS; i++){ //Put threats
 		threats.get(i).update(width,height);
