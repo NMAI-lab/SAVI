@@ -5,10 +5,10 @@ import java.util.*;
 import processing.core.PVector;
 
 public class SyncAgentState {
-	private PerceptionSnapshot perceptions;
-	private LinkedList<String> actions;
-	private Queue<String> msgOut;		// List of camera info
-	private Queue<String> msgIn;		// TODO: ID & message
+	private PerceptionSnapshot perceptions;		// Perceptions for the agent
+	private LinkedList<String> actions;			// Actions that the agent wants to execute
+	private Queue<String> msgOut;				// Messages that the agent is sending
+	private Queue<String> msgIn;				// Messages for the agent
 	
 	// The rest of these parameters will be deprecated soon.
 	private Map<String,Double> perceptionData;		// Hash map of the perception parameters
