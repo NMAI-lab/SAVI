@@ -73,7 +73,7 @@ public class UASBehavior extends AgentModel {
 	 * update
 	 * process actions from the queue, update the UAS state variable and set the new perceptions
 	 */
-	public void update(double simTime, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects){
+	public void update(double simTime, int perceptionDistance, List<WorldObject> objects){
 		//Process actions to update speedVal & compassAngle
 		processAgentActions();
 		
@@ -95,7 +95,7 @@ public class UASBehavior extends AgentModel {
 		}	
 
 		//Communicate through Wifi
-		wifiCommunication(WIFI_PERCEPTION_DISTANCE, objects);
+		//wifiCommunication(WIFI_PERCEPTION_DISTANCE, objects);
 			
 		//Update percepts	
 		updatePercepts();
@@ -125,32 +125,6 @@ public class UASBehavior extends AgentModel {
             	
 		}
 		return visibleItems;
-	}
-	/**
-	 * Wifi Communication
-	 */
-	protected void wifiCommunication(int WIFI_PERCEPTION_DISTANCE, List<WorldObject> objects) {
-		//Calculate UAS detected for wifi communication
-				Queue<String> myMsgOutCopy = new LinkedList<String>();
-				myMsgOutCopy = this.agentState.getMsgOutAll();
-				for(WorldObject wo:objects) {
-					if(wo instanceof UAS){
-						//get relative position of UAS to UAS:
-						float deltax = ((UAS)wo).getBehavior().getPosition().x - this.getPosition().x;
-						float deltay = ((UAS)wo).getBehavior().getPosition().y - this.getPosition().y;
-						//calculate distance
-						double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
-						if(dist < WIFI_PERCEPTION_DISTANCE & wifiProbWorking > 0) {
-							Queue<String> msg = new LinkedList<String>();
-							msg = myMsgOutCopy;
-							if(this.ID != ((UAS)wo).getBehavior().ID & ((UAS)wo).getBehavior().wifiProbWorking > 0 ) {
-								while(!msg.isEmpty()) {
-									((UAS)wo).getBehavior().agentState.setMsgIn(msg.poll());			
-								}
-							}				
-						}		
-					}
-				}
 	}
 	/**
 	 * Process the action in the queue to update the speedVal and compassAngle

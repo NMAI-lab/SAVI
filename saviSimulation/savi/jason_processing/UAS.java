@@ -10,13 +10,14 @@ import processing.opengl.*;
 import savi.StateSynchronization.*;
 
 
-public class UAS extends WorldObject {
+public class UAS extends WorldObject implements Communicator {
 	private static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
 
 	//-----------------------------------------
 	// DATA (or state variables)
 	//-----------------------------------------  
 	private UASBehavior uasBehavior;
+	private WifiAntenna wifiAntenna;
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
 	//IF WE WANT TO IMPLEMENTE MALFUNCTION OF SENSORS, THE INFO RECEIVED IN 
@@ -37,16 +38,22 @@ public class UAS extends WorldObject {
 		super(id, pos, pixels, Type, sim, image);
 		// Initializes Behaviuor
 		this.uasBehavior = new UASBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod);
+		this.wifiAntenna = new WifiAntenna(id, this);
 	}
 	
 	@Override
-	public void update(double simtime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects) {
-		this.uasBehavior.update(simtime, perceptionDistance, WIFI_PERCEPTION_DISTANCE, objects);
+	public void update(double simtime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
+		this.uasBehavior.update(simtime, perceptionDistance, objects);
+		this.wifiAntenna.update(WIFI_PERCEPTION_DISTANCE, wifiParticipants);
 	}
 	
 	public UASBehavior getBehavior() {		
 		return uasBehavior;
 	}
+	
+		
+				
+		
 	
 	@Override
 	public PVector getPosition() {		
@@ -71,7 +78,7 @@ public class UAS extends WorldObject {
 
 		//draw image
 		simulator.shape(image, this.getBehavior().getPosition().x, this.getBehavior().getPosition().y, 26, 26);
-
+		
 		simulator.noFill();
 
 		//draw perception area
@@ -89,6 +96,28 @@ public class UAS extends WorldObject {
 		
 		
 	}
-	
+
+	@Override
+	public  List<String> getOutgoingMessages(){
+		
+		List<String> myMsgOutCopy = new LinkedList<String>();
+		myMsgOutCopy.addAll(getBehavior().agentState.getMsgOutAll());
+		
+		return myMsgOutCopy;
+	}
+
+	@Override
+	public void receiveMessage(String msg) {
+		getBehavior().agentState.setMsgIn(msg);			
+		
+	}
+
+	@Override
+	public WifiAntenna getAntennaRef() {		
+		return this.wifiAntenna;
+	}
+
+
+		
 	
 }

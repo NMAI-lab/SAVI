@@ -33,9 +33,11 @@ public class SAVIWorld_model extends PApplet {
 	private int HOUSE_SIZE;
 	private int THREAT_SIZE;
 	private int UAS_SIZE;
+	private int ANTENNA_SIZE; //TODO: intialize from config file
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
 	public final int X_PIXELS = 900;
 	public final int Y_PIXELS = 700;
+	String CONSOLE_ID = "console"; //not loaded from config file
 
 	// TimeStamp file names
 	private long lastCycleTimeStamp;
@@ -53,11 +55,14 @@ public class SAVIWorld_model extends PApplet {
 	private boolean simPaused;// simulation paused or not
 
 	private List<WorldObject> objects = new ArrayList<WorldObject>();// List of world objects
+	FieldAntenna consoleProxy; //this is an antenna placed somewhere in the area that allows the console to communicate with the agents via wifi
+
+	List<WifiAntenna> wifiParticipants = new LinkedList<WifiAntenna>(); // the UAS and the antenna
 
 	private JasonMAS jasonAgents; // the BDI agents
 
 	private Button playButton, stopButton;
-	private PShape uasImage, treeImage, houseImage, threatImage, play, pause, restart;
+	private PShape uasImage, treeImage, houseImage, threatImage, play, pause, restart, antennaImage;
 
 	public void settings() {
 		size(X_PIXELS, Y_PIXELS, P3D);
@@ -107,6 +112,7 @@ public class SAVIWorld_model extends PApplet {
 		HOUSE_SIZE = Integer.parseInt(modelProps.getProperty("HOUSE_SIZE"));
 		THREAT_SIZE = Integer.parseInt(modelProps.getProperty("THREAT_SIZE"));
 		UAS_SIZE = Integer.parseInt(modelProps.getProperty("UAS_SIZE"));
+		ANTENNA_SIZE = Integer.parseInt(modelProps.getProperty("UAS_SIZE")); //TODO: replace with appropriate antenna size
 
 		// Initialization code goes here
 		simTime = 0; // seconds
@@ -129,6 +135,7 @@ public class SAVIWorld_model extends PApplet {
 		restart = loadShape("SimImages/replay.svg");
 		threatImage = loadShape("SimImages/warning.svg");
 		uasImage = loadShape("SimImages/robot.svg");
+		antennaImage = loadShape("SimImages/antenna.svg"); //TODO: get an antenna image
 
 		Random rand = new Random();
 
@@ -140,8 +147,11 @@ public class SAVIWorld_model extends PApplet {
 			if (RANDOM_SEED != -1) {
 				rand = new Random(RANDOM_SEED + i);
 			}
-			objects.add(new UAS(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), UAS_SIZE,
-					"demo", this, uasImage, REASONING_CYCLE_PERIOD));
+			UAS uas = new UAS(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), UAS_SIZE,
+					"demo", this, uasImage, REASONING_CYCLE_PERIOD);
+			objects.add(uas);
+			wifiParticipants.add(uas.getAntennaRef());
+			
 		}
 
 		for (int i = 0; i < NUMBER_TREES; i++) { // Put trees
@@ -169,6 +179,10 @@ public class SAVIWorld_model extends PApplet {
 					THREAT_SIZE, "threat", this, threatImage));
 
 		}
+		
+		consoleProxy = new FieldAntenna(NUMBER_UAS+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), this, ANTENNA_SIZE, antennaImage);
+		objects.add(consoleProxy);
+		wifiParticipants.add(consoleProxy.getAntennaRef());
 
 		// smoother rendering (optional)
 		frameRate(FRAME_RATE); // max 60 draw() calls per real second. (Can make it a larger value for the
@@ -245,7 +259,7 @@ public class SAVIWorld_model extends PApplet {
 		logger.info("== SAVIWorld_Model draw() == at:" + simTime);
 		// 2. STATE UPDATE (SIMULATION)
 		for (WorldObject wo : objects) { // Update threats
-			wo.update(simTime, simTimeDelta, PERCEPTION_DISTANCE, WIFI_PERCEPTION_DISTANCE, objects);
+			wo.update(simTime, simTimeDelta, PERCEPTION_DISTANCE, WIFI_PERCEPTION_DISTANCE, objects, wifiParticipants);
 		}
 		// 3. VISUALIZATION
 		// ------------------
