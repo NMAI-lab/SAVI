@@ -213,7 +213,7 @@ public void setup() {
 	// 2. STATE UPDATE (SIMULATION)
 	for(UAS uasi:UAS_list){ //Create UAS agents
 		//uasi.getAgentState().run();
-		uasi.update(PERCEPTION_DISTANCE, threats,objects,UAS_list);
+		uasi.update(PERCEPTION_DISTANCE, threats,objects, wifiParticipants);
 	}
 	for(int i = 0; i < NUMBER_THREATS; i++){ //Put threats
 		threats.get(i).update(width,height);
