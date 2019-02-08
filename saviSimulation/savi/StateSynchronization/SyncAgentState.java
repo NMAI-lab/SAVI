@@ -266,6 +266,7 @@ public class SyncAgentState {
 	 * should be done outside of this class. Once the SIMULATION team is ready, this method should be removed from this class,
 	 * updated and put where the perceptions are generated.
 	 */
+	/*
 	public void buildSnapshot() {
 		PerceptionSnapshot currentPerceptions = new PerceptionSnapshot();
 		double timeStamp = this.getCounter();
@@ -298,7 +299,7 @@ public class SyncAgentState {
 		// Update the snapshot in the SyncAgentState class
 		this.setPerceptions(currentPerceptions);
 	}
-
+*/
 	/* Update: pause handled in UAS class that just make the threads wait() then notifies them to unpause.
 	//TODO: use this to pause the agents [not working yet]
 	public synchronized void pause() {
