@@ -18,9 +18,9 @@ class Threat extends WorldObject{
 	//              the "new" keyword. It's the only method
 	//              that doesn't have a type (not even void).
 	
-	Threat(int id, int x, int y, int x_v, int y_v, float MS, String type) {
+	Threat(int id, PVector pos, int x_v, int y_v, float MS, String type) {
 		// Initialize data values
-		super(id,new PVector(x,y),type);
+		super(id,pos,type);
 		velocity = new PVector(x_v, y_v);
 		maxSpeed = MS;// the max speed 
 		rand = new Random();

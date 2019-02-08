@@ -53,7 +53,7 @@ public class ROBOT_model extends PApplet {
 	Button playButton,stopButton,pauseButton;
 	PShape robot,tree,house,threat,play,pause,restart;
 
-	public void settings() { size(X_PIXELS,Y_PIXELS, P2D);  smooth(8); } // let's assume a 2D environment
+	public void settings() { size(X_PIXELS,Y_PIXELS, P3D);  smooth(8); } // 3D environment
 
 	public static void main(String[] passedArgs) {
 		String[] appletArgs = new String[] { "savi.jason_processing.ROBOT_model" };
@@ -96,7 +96,6 @@ public void setup() {
 	WIFI_PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("WIFI_PERCEPTION_DISTANCE"));
 	NUMBER_UAS = Integer.parseInt(modelProps.getProperty("NUMBER_UAS"));
 	
-	// let's assume a 2D environment
 	// Initialization code goes here
 	simTime = 0;      // seconds
 	simTimeDelta = 1; // seconds
@@ -122,19 +121,19 @@ public void setup() {
 	for(int i = 0; i < NUMBER_UAS; i++)  { //Put UAS
 		//_PIXELS is the maximum and the 1 is our minimum
 		//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
-		UAS_list.add(new UAS(Integer.toString(i), "demo", new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1)));
+		UAS_list.add(new UAS(Integer.toString(i), "demo", new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, 0)));
 	}    
 	for(int i = 0; i < NUMBER_TREES; i++) { //Put trees
 		//_PIXELS is the maximum and the 1 is our minimum.
-		objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), "tree"));
+		objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, 0), "tree"));
 	}
 	for(int i = 0; i < NUMBER_HOUSES; i++) { //Put houses
 		//_PIXELS is the maximum and the 1 is our minimum.
-		objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), "house"));
+		objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, 0), "house"));
 	}
 	for(int i = 0; i < NUMBER_THREATS; i++) { //Put threats
 		//_PIXELS is the maximum and the 1 is our minimum.
-		threats.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, rand.nextInt(MAX_IN_X_VEL_THREAT) + 1, rand.nextInt(MAX_IN_Y_VEL_THREAT) + 1, 1 + rand.nextFloat() * (MAX_SPEED - 1), "threat"));
+		threats.add(new Threat(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, 0), rand.nextInt(MAX_IN_X_VEL_THREAT) + 1, rand.nextInt(MAX_IN_Y_VEL_THREAT) + 1, 1 + rand.nextFloat() * (MAX_SPEED - 1), "threat"));
 	}          
   
   // smoother rendering (optional)
