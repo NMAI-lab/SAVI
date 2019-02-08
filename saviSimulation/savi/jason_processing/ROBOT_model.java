@@ -3,8 +3,8 @@ import processing.core.*;
 import processing.data.*; 
 import processing.event.*; 
 import processing.opengl.*;
-import savi.StateSynchronization.VisibleItem;
 import savi.jason_processing.ROBOT_model.Button;
+import savi.StateSynchronization.*;
 
 import java.util.*;
 import java.io.*;
@@ -40,8 +40,8 @@ public class ROBOT_model extends PApplet {
 	Properties modelProps = new Properties();
 		
 		/************* Global Variables *******************/
-	int simTime;      // stores simulation time (in seconds) 
-	int simTimeDelta; // discrete-time step (in seconds)
+	double simTime;      // stores simulation time (in seconds) 
+	double simTimeDelta; // discrete-time step (in seconds)
 	boolean simPaused;// simulation paused or not
 
 	List<WorldObject> objects = new ArrayList<WorldObject>();//List of world objects  
@@ -187,7 +187,7 @@ public void setup() {
 	// 2. STATE UPDATE (SIMULATION)
 	for(UAS uasi:UAS_list){ //Create UAS agents
 		//uasi.getAgentState().run();
-		uasi.update(PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,objects,UAS_list);
+		uasi.update(simTime, PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,objects,UAS_list);
 	}
 	for(int i = 0; i < NUMBER_THREATS; i++){ //Put threats
 		threats.get(i).update(width,height);
@@ -251,17 +251,21 @@ public void drawUAS(UAS uas){
 	arc(uas.getPosition().x, uas.getPosition().y, PERCEPTION_DISTANCE*2, PERCEPTION_DISTANCE*2,(float)uas.getCompassAngle()-(float)Math.PI/2, (float)uas.getCompassAngle()+(float)Math.PI/2);
 
 	//draw circle on objects percepted
-	ArrayList<VisibleItem> items = new ArrayList<VisibleItem>();
+	ArrayList<Perception> items = uas.agentState.getPerceptions().getPerceptionList(); 
 
-	items = uas.agentState.getCameraInfo(); 
-
-	for(int i=0; i< items.size(); i++) {  
-		double angle = (uas.getCompassAngle()+items.get(i).getAngle());// % 2* Math.PI;
-		double cosv = Math.cos(angle);
-		double sinv = Math.sin(angle);
-		p1 = new PVector(Math.round(cosv*items.get(i).getDistance())+uas.getPosition().x, Math.round(sinv*items.get(i).getDistance())+uas.getPosition().y); 
+	for(int i=0; i< items.size(); i++) {
+		//TODO: fix drawing circles
+		//if(items.get(i).getPerceptionName.comparePerceptionName(new String("tree"))
+		//		|| items.get(i).getPerceptionName.comparePerceptionName(new String ("house")) 
+		//		|| items.get(i).getPerceptionName.comparePerceptionName(new String("threat")) ) {
+		//	
+		//double angle = (uas.getCompassAngle()+items.get(i).getParameters().get(0));// % 2* Math.PI;
+		//double cosv = Math.cos(angle);
+		//double sinv = Math.sin(angle);
+		//p1 = new PVector(Math.round(cosv*items.get(i).getDistance())+uas.getPosition().x, Math.round(sinv*items.get(i).getDistance())+uas.getPosition().y); 
 		// draw circle over items visualized
-		ellipse(p1.x,p1.y, 26, 26);
+		//ellipse(p1.x,p1.y, 26, 26);
+		//}
 	}
 }
 
