@@ -7,28 +7,16 @@ import savi.StateSynchronization.VisibleItem;
 import savi.jason_processing.ROBOT_model.Button;
 
 import java.util.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.io.*;
 
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.infra.centralised.BaseCentralisedMAS;
 
-import java.util.ArrayList;
-import java.util.Random;
-import java.io.*;
-import java.io.File; 
-import java.io.BufferedReader; 
-import java.io.PrintWriter; 
-import java.io.InputStream; 
-import java.io.OutputStream; 
-import java.io.IOException; 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream; 
+
+
+
 
 public class ROBOT_model extends PApplet {
 
