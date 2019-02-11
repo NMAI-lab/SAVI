@@ -102,8 +102,6 @@ public void setup() {
 	//X_PIXELS = Integer.parseInt(modelProps.getProperty("X_PIXELS"));
 	//Y_PIXELS = Integer.parseInt(modelProps.getProperty("Y_PIXELS"));
 	FRAME_RATE = Integer.parseInt(modelProps.getProperty("FRAME_RATE"));
-	MAX_IN_X_VEL_THREAT = Integer.parseInt(modelProps.getProperty("MAX_IN_X_VEL_THREAT"));
-	MAX_IN_Y_VEL_THREAT = Integer.parseInt(modelProps.getProperty("MAX_IN_Y_VEL_THREAT"));
 	MAX_SPEED = (double) Integer.parseInt(modelProps.getProperty("MAX_SPEED"));
 	PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("PERCEPTION_DISTANCE"));
 	WIFI_PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("WIFI_PERCEPTION_DISTANCE"));
@@ -216,7 +214,7 @@ public void setup() {
 		uasi.update(PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,objects,UAS_list);
 	}
 	for(int i = 0; i < NUMBER_THREATS; i++){ //Put threats
-		threats.get(i).update(width,height, RANDOM_SEED);
+		threats.get(i).update();
 	}  
 	// 3. VISUALIZATION
 	//------------------

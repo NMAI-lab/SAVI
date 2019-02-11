@@ -31,7 +31,7 @@ class Threat extends WorldObject{
 	  }
 
 	// State Update: Randomly move up, down, left, right, or stay in one place
-	void update(int width,int height, int seed){
+	void update(){
 		
 		double speedValue = (double) (rand.nextFloat() * this.maxSpeed);
 		//double speedValue = 0;
