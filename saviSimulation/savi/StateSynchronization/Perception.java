@@ -125,7 +125,7 @@ public abstract class Perception {
 	 * 
 	 * @return
 	 */
-	protected List<Double> getParameters() {
+	public List<Double> getParameters() {
 		if (this.parameters == null) {
 			return null;
 		} else {
