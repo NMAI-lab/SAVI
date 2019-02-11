@@ -8,9 +8,9 @@ class Threat extends WorldObject{
 	//-----------------------------------------
 	// DATA (or state variables)
 	//-----------------------------------------
-	PVector velocity;
-	float maxSpeed;
+	double maxSpeed;
 	Random rand;
+	double movingAngle = 0;
 	//-----------------------------------------
 	// METHODS (functions that act on the data)
 	//-----------------------------------------
@@ -18,33 +18,30 @@ class Threat extends WorldObject{
 	//              the "new" keyword. It's the only method
 	//              that doesn't have a type (not even void).
 	
-	Threat(int id, int x, int y, int x_v, int y_v, float MS, String type) {
+	Threat(int id, int x, int y, int seed, double MS, String type) {
 		// Initialize data values
 		super(id,new PVector(x,y),type);
-		velocity = new PVector(x_v, y_v);
-		maxSpeed = MS;// the max speed 
 		rand = new Random();
+		if(seed != -1) {
+			rand = new Random(seed + this.ID);
+		}		
+		maxSpeed = MS;// the max speed 
+		this.movingAngle = (double) (rand.nextInt(10)*(Math.PI/4));	
+		
 	  }
 
 	// State Update: Randomly move up, down, left, right, or stay in one place
-	void update(int width,int height){
-		int stepsize = 2;
-		PVector temp = new PVector();
-		// The size of the neighborhood depends on the range in this line 
-		// -1 = left/down, 0 = stay at your spot, 1 = right/up
-		// To obtain -1, 0 or 1 use int(random(-2,2))
-		while (temp.mag() == 0){
-			temp = new PVector(stepsize * (rand.nextInt(2) + -2), stepsize * (rand.nextInt(2) + -2));
-		}
-	
-		position.add(temp);    
-		velocity = temp.limit(maxSpeed);//need to cross-check this    
-		//Stay within the screen's boundaries
-		//position.x = constrain(position.x,0,width-1); //constrain: Constrains a value to not exceed a maximum and minimum value.
-		//position.y = constrain(position.y,0,height-1);
+	void update(int width,int height, int seed){
 		
-		position.x = (position.x > width-1) ? width-1 : (position.x < 0 ? 0 : position.x);
-		position.y = (position.y > height-1) ? height-1 : (position.y < 0 ? 0 : position.y);
+		double speedValue = (double) (rand.nextFloat() * this.maxSpeed);
+		//double speedValue = 0;
+		//double speedValue = this.maxSpeed ;	
+		this.movingAngle = this.movingAngle + (double) (rand.nextInt(2)*(Math.PI/4));	
+		double cosv = Math.cos(movingAngle);
+		double sinv = Math.sin(movingAngle);  
+		//calculate new position
+		PVector temp = new PVector(Math.round(cosv*speedValue), Math.round(sinv*speedValue));
+		position.add(temp);		
 	}
 
 
@@ -52,7 +49,6 @@ class Threat extends WorldObject{
 	void reset(int X_PIXELS, int Y_PIXELS){
 		// Initialize data values
 		position = new PVector(X_PIXELS/2,Y_PIXELS/2); //Assume that the initial position is at the center of the display window
-		velocity = new PVector();  // same as new PVector(0,0)
 	}
 
 
