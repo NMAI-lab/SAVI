@@ -266,7 +266,7 @@ public void drawUAS(UAS uas){
 	arc(uas.getPosition().x, uas.getPosition().y, PERCEPTION_DISTANCE*2, PERCEPTION_DISTANCE*2,(float)uas.getCompassAngle()-(float)Math.PI/2, (float)uas.getCompassAngle()+(float)Math.PI/2);
 
 	//draw circle on objects percepted
-	ArrayList<Perception> items = uas.agentState.getPerceptions().getPerceptionList(); 
+	ArrayList<Perception> items = uas.percepts.getPerceptionList(); 
 	for(int i=0; i< items.size(); i++) {
 		if(items.get(i).getPerceptionName().equals(new String("tree"))
 				|| items.get(i).getPerceptionName().equals(new String ("house")) 

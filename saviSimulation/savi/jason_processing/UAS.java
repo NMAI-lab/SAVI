@@ -28,6 +28,7 @@ public class UAS extends AgentModel {
 	PVector position;
 	double speedVal;
 	double compasAngle;
+	PerceptionSnapshot percepts;
 	
 	double wifi;
 	//SyncAgentState agentState; // contains all relevant info = It's in the superclass!
@@ -55,7 +56,7 @@ public class UAS extends AgentModel {
 		wifi = 100; //Probability of having the wifi working 0-100
 		//TODO: "break the wifi during simulation time
 		
-		PerceptionSnapshot percepts = new PerceptionSnapshot();
+		this.percepts = new PerceptionSnapshot();
 		//Add position
 		percepts.addPerception(new PositionPerception(0, (double) position.x, (double) position.y, (double) position.z));
 		//Add velocity
@@ -65,17 +66,6 @@ public class UAS extends AgentModel {
 		//Do not see anything			
 		agentState.setPerceptions(percepts);
 		
-		//**TO DELETE **//
-		//agentState.setSpeedAngle(0.0); //TODO: calculate velocity angle + magnitude
-		//agentState.setSpeedValue(0.0); //TODO
-		//agentState.setCompassAngle(-Math.PI/2); //TODO calculate direction we're facing
-
-		//agentState.setCameraInfo(new ArrayList<VisibleItem>()); //TODO: calculate what we can see
-		//ArrayList<String> mes2share = new ArrayList<String>();
-		//mes2share.add(("HelloIAm(" + ID+")")); //TODO: messages cannot be arbitrary strings, they need to be well-formed agentspeak
-		//agentState.setMessages2Share(mes2share);
-		//agentState.setMsgIn( new Queue<String>());	  
-		//**TO DELETE FINISHED**//
 	}
 
 	public PVector getPosition() {
@@ -88,11 +78,6 @@ public class UAS extends AgentModel {
 
 	// State Update: Read actions from queue, execute them and set new perceptions
 	public void update(double simTime, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<Threat> threats, List<WorldObject> objects, List<UAS> uas_list){
-		//**TO DELETE **//
-		//PVector position = (PVector) agentState.getPosition();
-		//double speedValue = agentState.getSpeedValue();
-		//double compassAngle = agentState.getCompassAngle(); //TODO for now speedAngle is always zero 
-		//**TO DELETE FINISHED**//
 		
 		List<String> toexec = agentState.getAllActions();   
 		for (String action : toexec) {
@@ -108,7 +93,7 @@ public class UAS extends AgentModel {
 		} 			
 		double cosv = Math.cos(this.compasAngle);
 		double sinv = Math.sin(this.compasAngle);
-		PerceptionSnapshot percepts = new PerceptionSnapshot();
+		this.percepts = new PerceptionSnapshot();
 		//Calculate, set and add position
 		this.position.add(new PVector(Math.round(cosv*this.speedVal), Math.round(sinv*this.speedVal), 0));
 		percepts.addPerception(new PositionPerception(simTime, (double) position.x, (double) position.y, (double) position.z));	
@@ -120,10 +105,7 @@ public class UAS extends AgentModel {
 		//compassAngle = compassAngle % 2* Math.PI;
 		if(compasAngle<0) compasAngle+=2*Math.PI;
 		if(compasAngle>2*Math.PI) compasAngle-=2*Math.PI;
-		//**TO DELETE **//
-		//agentState.setCompassAngle(compasAngle);
-		//agentState.setSpeedValue(speedValue);
-		//**TO DELETE FINISHED**//
+		
 		//calculate what we can see  					
 				
 		//Calculate threats detected
@@ -200,7 +182,7 @@ public class UAS extends AgentModel {
 		// Initialize data values
 		this.position = initialPosition.copy(); //Assume that the initial position is at the center of the display window
 		this.speedVal = 0;	
-		PerceptionSnapshot percepts = new PerceptionSnapshot();
+		this.percepts = new PerceptionSnapshot();
 		//Add position
 		percepts.addPerception(new PositionPerception(0, (double) position.x, (double) position.y, (double) position.z));
 		//Add velocity
@@ -210,7 +192,8 @@ public class UAS extends AgentModel {
 		//Do not see anything			
 		agentState.setPerceptions(percepts);
 	}
-
+	
+	
 	public String getID() {
 		
 		return ID;
