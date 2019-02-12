@@ -18,6 +18,7 @@ class Threat extends WorldObject{
 	//              the "new" keyword. It's the only method
 	//              that doesn't have a type (not even void).
 	
+
 	Threat(int id, int x, int y, int seed, double MS, String type) {
 		// Initialize data values
 		super(id,new PVector(x,y),type);

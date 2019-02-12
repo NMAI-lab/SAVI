@@ -148,6 +148,7 @@ public void setup() {
 			rand = new Random(4*RANDOM_SEED+i);
 		}
 		threats.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, RANDOM_SEED, MAX_SPEED, "threat"));
+
 	}          
   
   // smoother rendering (optional)
