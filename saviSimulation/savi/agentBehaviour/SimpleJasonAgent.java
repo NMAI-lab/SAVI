@@ -128,7 +128,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	public List<Literal> perceive() {
 		
 		// This line will need to go away once the SIM side handles this.
-		agentState.buildSnapshot();
+		//agentState.buildSnapshot();
 		
 		// Get the perceptions from agentState
 		PerceptionSnapshot currentPerceptions = new PerceptionSnapshot(this.agentState.getPerceptions());
@@ -137,7 +137,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		// Update the history, get the list of literals to send to the agent
 		List<Literal> perceptionLiterals = new ArrayList<Literal>(this.perceptHistory.updatePerceptions(currentPerceptions));
 		
-		System.out.println("Agent " + getAgName() + " Perceiving perception "+ this.agentState.getCounter());
+		System.out.println("Agent " + getAgName() + " Perceiving perception "+ this.lastPerceptionId);
 		System.out.println(perceptionLiterals.toString());
 		
 		// Write the perceptions to the perception logfile

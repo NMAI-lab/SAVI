@@ -3,32 +3,20 @@ import processing.core.*;
 import processing.data.*; 
 import processing.event.*; 
 import processing.opengl.*;
-import savi.StateSynchronization.VisibleItem;
 import savi.jason_processing.ROBOT_model.Button;
+import savi.StateSynchronization.*;
 
 import java.util.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.io.*;
 
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.infra.centralised.BaseCentralisedMAS;
 
-import java.util.ArrayList;
-import java.util.Random;
-import java.io.*;
-import java.io.File; 
-import java.io.BufferedReader; 
-import java.io.PrintWriter; 
-import java.io.InputStream; 
-import java.io.OutputStream; 
-import java.io.IOException; 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream; 
+
+
+
 
 public class ROBOT_model extends PApplet {
 
@@ -53,8 +41,8 @@ public class ROBOT_model extends PApplet {
 	Properties modelProps = new Properties();
 		
 		/************* Global Variables *******************/
-	int simTime;      // stores simulation time (in seconds) 
-	int simTimeDelta; // discrete-time step (in seconds)
+	double simTime;      // stores simulation time (in seconds) 
+	double simTimeDelta; // discrete-time step (in seconds)
 	boolean simPaused;// simulation paused or not
 
 	List<WorldObject> objects = new ArrayList<WorldObject>();//List of world objects  
@@ -66,7 +54,7 @@ public class ROBOT_model extends PApplet {
 	Button playButton,stopButton,pauseButton;
 	PShape robot,tree,house,threat,play,pause,restart;
 
-	public void settings() { size(X_PIXELS,Y_PIXELS, P2D);  smooth(8); } // let's assume a 2D environment
+	public void settings() { size(X_PIXELS,Y_PIXELS, P3D);  smooth(8); } // 3D environment
 
 	public static void main(String[] passedArgs) {
 		String[] appletArgs = new String[] { "savi.jason_processing.ROBOT_model" };
@@ -108,6 +96,8 @@ public void setup() {
 	NUMBER_UAS = Integer.parseInt(modelProps.getProperty("NUMBER_UAS"));
 	RANDOM_SEED = Integer.parseInt(modelProps.getProperty("RANDOM_SEED"));
 	// let's assume a 2D environment
+
+	
 	// Initialization code goes here
 	simTime = 0;      // seconds
 	simTimeDelta = 1; // seconds
@@ -158,6 +148,7 @@ public void setup() {
 			rand = new Random(4*RANDOM_SEED+i);
 		}
 		threats.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, RANDOM_SEED, MAX_SPEED, "threat"));
+
 	}          
   
   // smoother rendering (optional)
@@ -211,7 +202,7 @@ public void setup() {
 	// 2. STATE UPDATE (SIMULATION)
 	for(UAS uasi:UAS_list){ //Create UAS agents
 		//uasi.getAgentState().run();
-		uasi.update(PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,objects,UAS_list);
+		uasi.update(simTime, PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,objects,UAS_list);
 	}
 	for(int i = 0; i < NUMBER_THREATS; i++){ //Put threats
 		threats.get(i).update();
@@ -275,17 +266,18 @@ public void drawUAS(UAS uas){
 	arc(uas.getPosition().x, uas.getPosition().y, PERCEPTION_DISTANCE*2, PERCEPTION_DISTANCE*2,(float)uas.getCompassAngle()-(float)Math.PI/2, (float)uas.getCompassAngle()+(float)Math.PI/2);
 
 	//draw circle on objects percepted
-	ArrayList<VisibleItem> items = new ArrayList<VisibleItem>();
-
-	items = uas.agentState.getCameraInfo(); 
-
-	for(int i=0; i< items.size(); i++) {  
-		double angle = (uas.getCompassAngle()+items.get(i).getAngle());// % 2* Math.PI;
+	ArrayList<Perception> items = uas.percepts.getPerceptionList(); 
+	for(int i=0; i< items.size(); i++) {
+		if(items.get(i).getPerceptionName().equals(new String("tree"))
+				|| items.get(i).getPerceptionName().equals(new String ("house")) 
+				|| items.get(i).getPerceptionName().equals(new String("threat")) ) {
+		double angle = (uas.getCompassAngle()+items.get(i).getParameters().get(0));// % 2* Math.PI;
 		double cosv = Math.cos(angle);
 		double sinv = Math.sin(angle);
-		p1 = new PVector(Math.round(cosv*items.get(i).getDistance())+uas.getPosition().x, Math.round(sinv*items.get(i).getDistance())+uas.getPosition().y); 
+		p1 = new PVector(Math.round(cosv*items.get(i).getParameters().get(2))+uas.getPosition().x, Math.round(sinv*items.get(i).getParameters().get(2))+uas.getPosition().y); 
 		// draw circle over items visualized
 		ellipse(p1.x,p1.y, 26, 26);
+		}
 	}
 }
 
