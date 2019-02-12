@@ -267,17 +267,10 @@ public void drawUAS(UAS uas){
 
 	//draw circle on objects percepted
 	ArrayList<Perception> items = uas.agentState.getPerceptions().getPerceptionList(); 
-	System.out.println("ITEMS " + items.size());
 	for(int i=0; i< items.size(); i++) {
-		System.out.println("GOES INSIDE THE LOOP: " + items.get(i).getPerceptionName());
-		//TODO: fix drawing circles
-		System.out.println("is tree: " + (items.get(i).getPerceptionName() == (new String("tree"))));
-		System.out.println("is house: " + (items.get(i).getPerceptionName() == (new String("house"))));
-		System.out.println("is threat: " + (items.get(i).getPerceptionName() == (new String("threat"))));
-		if(items.get(i).getPerceptionName() == (new String("tree"))
-				|| items.get(i).getPerceptionName() == (new String ("house")) 
-				|| items.get(i).getPerceptionName() == (new String("threat")) ) {
-			System.out.println("GOES INSIDE THE IF");
+		if(items.get(i).getPerceptionName().equals(new String("tree"))
+				|| items.get(i).getPerceptionName().equals(new String ("house")) 
+				|| items.get(i).getPerceptionName().equals(new String("threat")) ) {
 		double angle = (uas.getCompassAngle()+items.get(i).getParameters().get(0));// % 2* Math.PI;
 		double cosv = Math.cos(angle);
 		double sinv = Math.sin(angle);
