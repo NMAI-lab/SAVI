@@ -39,10 +39,11 @@ public class ROBOT_model extends PApplet {
 	int FRAME_RATE;
 	int MAX_IN_X_VEL_THREAT;
 	int MAX_IN_Y_VEL_THREAT;
-	float MAX_SPEED;
+	double MAX_SPEED;
 	int PERCEPTION_DISTANCE;
 	int WIFI_PERCEPTION_DISTANCE;
 	int NUMBER_UAS;
+	int RANDOM_SEED;
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
 	int X_PIXELS = 900;
 	int Y_PIXELS = 700;
@@ -101,13 +102,11 @@ public void setup() {
 	//X_PIXELS = Integer.parseInt(modelProps.getProperty("X_PIXELS"));
 	//Y_PIXELS = Integer.parseInt(modelProps.getProperty("Y_PIXELS"));
 	FRAME_RATE = Integer.parseInt(modelProps.getProperty("FRAME_RATE"));
-	MAX_IN_X_VEL_THREAT = Integer.parseInt(modelProps.getProperty("MAX_IN_X_VEL_THREAT"));
-	MAX_IN_Y_VEL_THREAT = Integer.parseInt(modelProps.getProperty("MAX_IN_Y_VEL_THREAT"));
-	MAX_SPEED = Integer.parseInt(modelProps.getProperty("MAX_SPEED"));
+	MAX_SPEED = (double) Integer.parseInt(modelProps.getProperty("MAX_SPEED"));
 	PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("PERCEPTION_DISTANCE"));
 	WIFI_PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("WIFI_PERCEPTION_DISTANCE"));
 	NUMBER_UAS = Integer.parseInt(modelProps.getProperty("NUMBER_UAS"));
-	
+	RANDOM_SEED = Integer.parseInt(modelProps.getProperty("RANDOM_SEED"));
 	// let's assume a 2D environment
 	// Initialization code goes here
 	simTime = 0;      // seconds
@@ -134,19 +133,31 @@ public void setup() {
 	for(int i = 0; i < NUMBER_UAS; i++)  { //Put UAS
 		//_PIXELS is the maximum and the 1 is our minimum
 		//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
+		if(RANDOM_SEED != -1) {
+			rand = new Random(RANDOM_SEED+i);
+		}
 		UAS_list.add(new UAS(Integer.toString(i), "demo", new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1)));
 	}    
 	for(int i = 0; i < NUMBER_TREES; i++) { //Put trees
 		//_PIXELS is the maximum and the 1 is our minimum.
+		if(RANDOM_SEED != -1) {
+			rand = new Random(2*RANDOM_SEED+i);
+		}
 		objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), "tree"));
 	}
 	for(int i = 0; i < NUMBER_HOUSES; i++) { //Put houses
 		//_PIXELS is the maximum and the 1 is our minimum.
+		if(RANDOM_SEED != -1) {
+			rand = new Random(3*RANDOM_SEED+i);
+		}
 		objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), "house"));
 	}
 	for(int i = 0; i < NUMBER_THREATS; i++) { //Put threats
 		//_PIXELS is the maximum and the 1 is our minimum.
-		threats.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, rand.nextInt(MAX_IN_X_VEL_THREAT) + 1, rand.nextInt(MAX_IN_Y_VEL_THREAT) + 1, 1 + rand.nextFloat() * (MAX_SPEED - 1), "threat"));
+		if(RANDOM_SEED != -1) {
+			rand = new Random(4*RANDOM_SEED+i);
+		}
+		threats.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, RANDOM_SEED, MAX_SPEED, "threat"));
 	}          
   
   // smoother rendering (optional)
@@ -203,7 +214,7 @@ public void setup() {
 		uasi.update(PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,objects,UAS_list);
 	}
 	for(int i = 0; i < NUMBER_THREATS; i++){ //Put threats
-		threats.get(i).update(width,height);
+		threats.get(i).update();
 	}  
 	// 3. VISUALIZATION
 	//------------------
