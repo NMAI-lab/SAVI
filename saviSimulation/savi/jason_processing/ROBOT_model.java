@@ -54,7 +54,7 @@ public class ROBOT_model extends PApplet {
 	Button playButton,stopButton,pauseButton;
 	PShape robot,tree,house,threat,play,pause,restart;
 
-	public void settings() { size(X_PIXELS,Y_PIXELS, P2D);  smooth(8); } // let's assume a 2D environment
+	public void settings() { size(X_PIXELS,Y_PIXELS, P3D);  smooth(8); } // 3D environment
 
 	public static void main(String[] passedArgs) {
 		String[] appletArgs = new String[] { "savi.jason_processing.ROBOT_model" };
@@ -96,6 +96,8 @@ public void setup() {
 	NUMBER_UAS = Integer.parseInt(modelProps.getProperty("NUMBER_UAS"));
 	RANDOM_SEED = Integer.parseInt(modelProps.getProperty("RANDOM_SEED"));
 	// let's assume a 2D environment
+
+	
 	// Initialization code goes here
 	simTime = 0;      // seconds
 	simTimeDelta = 1; // seconds
