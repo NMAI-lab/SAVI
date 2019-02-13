@@ -266,18 +266,13 @@ public void drawUAS(UAS uas){
 	arc(uas.getPosition().x, uas.getPosition().y, PERCEPTION_DISTANCE*2, PERCEPTION_DISTANCE*2,(float)uas.getCompassAngle()-(float)Math.PI/2, (float)uas.getCompassAngle()+(float)Math.PI/2);
 
 	//draw circle on objects percepted
-	ArrayList<Perception> items = uas.percepts.getPerceptionList(); 
-	for(int i=0; i< items.size(); i++) {
-		if(items.get(i).getPerceptionName().equals(new String("tree"))
-				|| items.get(i).getPerceptionName().equals(new String ("house")) 
-				|| items.get(i).getPerceptionName().equals(new String("threat")) ) {
-		double angle = (uas.getCompassAngle()+items.get(i).getParameters().get(0));// % 2* Math.PI;
+	for(CameraPerception cpi : uas.visibleItems){
+		double angle = (uas.getCompassAngle()+cpi.getParameters().get(0));// % 2* Math.PI;
 		double cosv = Math.cos(angle);
 		double sinv = Math.sin(angle);
-		p1 = new PVector(Math.round(cosv*items.get(i).getParameters().get(2))+uas.getPosition().x, Math.round(sinv*items.get(i).getParameters().get(2))+uas.getPosition().y); 
+		p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+uas.getPosition().x, Math.round(sinv*cpi.getParameters().get(2))+uas.getPosition().y); 
 		// draw circle over items visualized
 		ellipse(p1.x,p1.y, 26, 26);
-		}
 	}
 }
 
