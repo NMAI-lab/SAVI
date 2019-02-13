@@ -74,8 +74,12 @@ public class UAS extends AgentModel {
 		this.position.add(new PVector(Math.round(cosv*this.speedVal), Math.round(sinv*this.speedVal), 0));
 		//Calculate visible items
 		this.visibleItems = new ArrayList<CameraPerception>();
-		//Calculate threats detected	
+		//Calculate objects detected with camera	
 		for (CameraPerception c: objectDetection(objects, perceptionDistance)) {
+			visibleItems.add(c);
+		}	
+		//Calculate UAS detected with camera
+		for (CameraPerception c: UASDetection(uas_list, perceptionDistance)) {
 			visibleItems.add(c);
 		}	
 		
@@ -131,6 +135,37 @@ public class UAS extends AgentModel {
 		}
 		return visibleItems;
 	}
+	
+	/**
+	 * Detect other UAS with the camera
+	 */
+	protected ArrayList<CameraPerception> UASDetection(List<UAS> obj, int perceptionDistance) {
+		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
+		for(int i=0; i<obj.size(); i++) {   
+			if(! this.ID.equals(obj.get(i).getID())) {
+				//get relative position to UAS:
+				float deltax = obj.get(i).getPosition().x - getPosition().x;
+				float deltay = obj.get(i).getPosition().y - getPosition().y;
+				//calculate distance
+				double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
+				if(dist<perceptionDistance) {
+					double theta = Math.atan2(deltay, deltax);
+					double angle = (theta - this.compasAngle);// % 2* Math.PI; //(adjust to 0, 2pi) interval
+					// to normalize between 0 to 2 Pi
+					if(angle<0) angle+=2*Math.PI;
+					if(angle>2*Math.PI) angle-=2*Math.PI;
+					if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
+						//it's visible 
+						visibleItems.add(new CameraPerception(obj.get(i).getType(),obj.get(i).getID(), this.time, angle, 0, dist));
+					} //else {
+							//	System.out.println(obj.get(i).getType() + i + " not visible.");
+							//}
+				}		
+			}
+			
+		}
+		return visibleItems;
+	}
 	/**
 	 * Process the action in the queue to update the speedVal and compassAngle
 	 */
@@ -170,6 +205,13 @@ public class UAS extends AgentModel {
 	 */
 	public String getID() {		
 		return ID;
+	}
+	/**
+	 * Get UAS type
+	 * @return
+	 */
+	public String getType() {		
+		return type;
 	}	
 	/**
 	 * Update perception Snapshot in agent state
