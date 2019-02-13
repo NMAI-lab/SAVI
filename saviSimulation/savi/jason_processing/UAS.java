@@ -63,7 +63,7 @@ public class UAS extends AgentModel {
 	 * update
 	 * process actions from the queue, update the UAS state variable and set the new perceptions
 	 */
-	public void update(double simTime, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<Threat> threats, List<WorldObject> objects, List<UAS> uas_list){
+	public void update(double simTime, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<UAS> uas_list){
 		//Update simTime
 		this.time = simTime;
 		//Process actions to update speedVal & compassAngle
@@ -74,48 +74,10 @@ public class UAS extends AgentModel {
 		this.position.add(new PVector(Math.round(cosv*this.speedVal), Math.round(sinv*this.speedVal), 0));
 		//Calculate visible items
 		this.visibleItems = new ArrayList<CameraPerception>();
-		//Calculate threats detected		
-		//System.out.println("UAS perception ---- threat number:"+threats.size());
-		for(int i=0; i<threats.size(); i++) {   
-			//get relative position to UAS:
-			float deltax = threats.get(i).position.x - getPosition().x;
-			float deltay = threats.get(i).position.y - getPosition().y;
-			//calculate distance
-			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
-			if(dist<perceptionDistance) {
-				double theta = Math.atan2(deltay, deltax);
-				double angle = (theta - this.compasAngle);// % 2* Math.PI; //(adjust to 0, 2pi) interval
-				// to normalize between 0 to 2 Pi
-				if(angle<0) angle+=2*Math.PI;
-				if(angle>2*Math.PI) angle-=2*Math.PI;
-				if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
-					//it's visible 
-					visibleItems.add(new CameraPerception(threats.get(i).type, simTime, angle, 0, dist));
-				} //else {
-						//	System.out.println("threat " + i + " not visible.");
-						//}
-			}		
-		}
-		//calculate objects detected
-		for(int i=0; i<objects.size(); i++) { 
-			//get relative position of aircraft to object:
-			float deltax = objects.get(i).position.x - getPosition().x;
-			float deltay = objects.get(i).position.y - getPosition().y;
-			//calculate distance
-			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
-			if(dist<perceptionDistance) {
-				double theta = Math.atan2(deltay, deltax);
-				double angle = (theta - this.compasAngle);// % 2* Math.PI; //(adjust to 0, 2pi) interval
-				// to normalize between 0 to 2 Pi
-				//HERE IS THE PROBLEM WITH THE ANGLES, WE ONLY CHECK ONCE - 
-				if(angle<0) angle+=2*Math.PI;
-				if(angle>2*Math.PI) angle-=2*Math.PI;
-				if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
-					//it's visible 
-					visibleItems.add(new CameraPerception(objects.get(i).type, simTime, angle, 0, dist)); 
-				}
-			}	 
-		} 
+		//Calculate threats detected	
+		for (CameraPerception c: objectDetection(objects, perceptionDistance)) {
+			visibleItems.add(c);
+		}	
 		
 		//Calculate UAS detected for wifi communication
 		Queue<String> myMsgOutCopy = new LinkedList<String>();
@@ -140,6 +102,34 @@ public class UAS extends AgentModel {
 		
 		updatePercepts(); //Update percepts
 		this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
+	}
+	
+	/**
+	 * Detect world objects & threats with the camera
+	 */
+	protected ArrayList<CameraPerception> objectDetection(List<WorldObject> obj, int perceptionDistance) {
+		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
+		for(int i=0; i<obj.size(); i++) {   
+			//get relative position to UAS:
+			float deltax = obj.get(i).position.x - getPosition().x;
+			float deltay = obj.get(i).position.y - getPosition().y;
+			//calculate distance
+			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
+			if(dist<perceptionDistance) {
+				double theta = Math.atan2(deltay, deltax);
+				double angle = (theta - this.compasAngle);// % 2* Math.PI; //(adjust to 0, 2pi) interval
+				// to normalize between 0 to 2 Pi
+				if(angle<0) angle+=2*Math.PI;
+				if(angle>2*Math.PI) angle-=2*Math.PI;
+				if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
+					//it's visible 
+					visibleItems.add(new CameraPerception(obj.get(i).type, this.time, angle, 0, dist));
+				} //else {
+						//	System.out.println(obj.get(i).type + i + " not visible.");
+						//}
+			}		
+		}
+		return visibleItems;
 	}
 	/**
 	 * Process the action in the queue to update the speedVal and compassAngle
