@@ -46,7 +46,7 @@ public class ROBOT_model extends PApplet {
 	boolean simPaused;// simulation paused or not
 
 	List<WorldObject> objects = new ArrayList<WorldObject>();//List of world objects  
-	List<Threat> threats = new ArrayList<Threat>(); //List of threats
+	//List<Threat> threats = new ArrayList<Threat>(); //List of threats
 	List <UAS> UAS_list = new ArrayList<UAS>(); //List of UAS 
 
 	JasonMAS jasonAgents; // the BDI agents
@@ -147,7 +147,7 @@ public void setup() {
 		if(RANDOM_SEED != -1) {
 			rand = new Random(4*RANDOM_SEED+i);
 		}
-		threats.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, RANDOM_SEED, MAX_SPEED, "threat"));
+		objects.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, RANDOM_SEED, MAX_SPEED, "threat"));
 
 	}          
   
@@ -181,14 +181,10 @@ public void setup() {
 				//uasi.getAgentState().pause(); TODO: why was this pause() called?
 			}
 
-			for(int i = 0; i < objects.size(); i++){ //Makes all trees on screen.
+			for(int i = 0; i < objects.size(); i++){ //Makes all objects on screen.
 			  drawObject(objects.get(i));
-			}
-		
-			for(int i = 0; i < NUMBER_THREATS; i++){ //Makes all trees on screen.
-				drawThreat(threats.get(i));
-			}
-      
+			}		
+			      
 			playButton.label="play";
 
 			playButton.drawButton();
@@ -202,10 +198,13 @@ public void setup() {
 	// 2. STATE UPDATE (SIMULATION)
 	for(UAS uasi:UAS_list){ //Create UAS agents
 		//uasi.getAgentState().run();
-		uasi.update(simTime, PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, threats,objects,UAS_list);
+		uasi.update(simTime, PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, objects,UAS_list);
 	}
-	for(int i = 0; i < NUMBER_THREATS; i++){ //Put threats
-		threats.get(i).update();
+	for(WorldObject oi: objects){ //Update threats
+		if(oi.type.contentEquals("threat")){
+			((Threat) oi).update();
+		}
+		
 	}  
 	// 3. VISUALIZATION
 	//------------------
@@ -214,13 +213,10 @@ public void setup() {
 		drawUAS(UAS_list.get(i));	
 	}  
     
-	for(int i = 0; i < objects.size(); i++){ //Draw trees.
+	for(int i = 0; i < objects.size(); i++){ //Draw worldObjects.
 		drawObject(objects.get(i));
 	}
     
-	for(int i = 0; i < NUMBER_THREATS; i++) {//Draw Threats.
-		drawThreat(threats.get(i));
-	}
     
 	playButton.label="pause";
 	
@@ -266,33 +262,18 @@ public void drawUAS(UAS uas){
 	arc(uas.getPosition().x, uas.getPosition().y, PERCEPTION_DISTANCE*2, PERCEPTION_DISTANCE*2,(float)uas.getCompassAngle()-(float)Math.PI/2, (float)uas.getCompassAngle()+(float)Math.PI/2);
 
 	//draw circle on objects percepted
-	ArrayList<Perception> items = uas.percepts.getPerceptionList(); 
-	for(int i=0; i< items.size(); i++) {
-		if(items.get(i).getPerceptionName().equals(new String("tree"))
-				|| items.get(i).getPerceptionName().equals(new String ("house")) 
-				|| items.get(i).getPerceptionName().equals(new String("threat")) ) {
-		double angle = (uas.getCompassAngle()+items.get(i).getParameters().get(0));// % 2* Math.PI;
+	for(CameraPerception cpi : uas.visibleItems){
+		double angle = (uas.getCompassAngle()+cpi.getParameters().get(0));// % 2* Math.PI;
 		double cosv = Math.cos(angle);
 		double sinv = Math.sin(angle);
-		p1 = new PVector(Math.round(cosv*items.get(i).getParameters().get(2))+uas.getPosition().x, Math.round(sinv*items.get(i).getParameters().get(2))+uas.getPosition().y); 
+		p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+uas.getPosition().x, Math.round(sinv*cpi.getParameters().get(2))+uas.getPosition().y); 
 		// draw circle over items visualized
 		ellipse(p1.x,p1.y, 26, 26);
-		}
 	}
 }
 
 
 //Visualize
-public void drawThreat(Threat oneThreat){
-	// Draw Threat
-	stroke(0);
-	shapeMode(CENTER);
-	
-	shape(threat,oneThreat.position.x, oneThreat.position.y,10,10);
-}
-
-
-
 public void drawObject(WorldObject object){
 	// Draw Object
 	stroke(0);
@@ -306,6 +287,9 @@ public void drawObject(WorldObject object){
 	}
 	if(object.type.contentEquals("tree")){
 		shape(tree, object.position.x, object.position.y,15,15);
+	}
+	if(object.type.contentEquals("threat")){
+		shape(threat, object.position.x, object.position.y,10,10);
 	}
 	
 }
@@ -322,7 +306,6 @@ public void resetSimulation(){
 	simTime = 0;
 
 	objects.removeAll(objects);
-	threats.removeAll(threats);
 	UAS_list.removeAll(UAS_list);
 	
 	setup();

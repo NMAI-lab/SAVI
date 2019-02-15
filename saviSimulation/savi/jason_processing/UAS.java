@@ -1,14 +1,8 @@
 package savi.jason_processing;
 
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-
-import processing.core.PApplet;
-import processing.core.PShape;
-import processing.core.PVector;
+import processing.core.*;
 
 import processing.data.*; 
 import processing.event.*; 
@@ -24,14 +18,14 @@ public class UAS extends AgentModel {
 	//-----------------------------------------  
 	//String ID; -- Note: moved to superclass 
 	//String type; -- same
+	//SyncAgentState agentState; --same
 	PVector initialPosition;
 	PVector position;
 	double speedVal;
 	double compasAngle;
-	PerceptionSnapshot percepts;
-	
+	ArrayList<CameraPerception> visibleItems;
+	double time;	
 	double wifi;
-	//SyncAgentState agentState; // contains all relevant info = It's in the superclass!
 	
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
@@ -42,30 +36,20 @@ public class UAS extends AgentModel {
 	//-----------------------------------------
 	// METHODS (functions that act on the data)
 	//-----------------------------------------
-	// Constructor: called when an object is created using the "new" keyword. It's the only method
-	//              that doesn't have a type (not even void).
+	/**
+	 * Constructor
+	 * @param id
+	 * @param type
+	 * @param initialPosition
+	 */
 	UAS(String id, String type, PVector initialPosition) {	
 		// Initialize data values
 		this.ID = id;
 		this.type = type;
-		agentState = new SyncAgentState();
-		this.position = initialPosition;
 		this.initialPosition = initialPosition;
-		this.speedVal = 0;
-		this.compasAngle = 0;
 		wifi = 100; //Probability of having the wifi working 0-100
-		//TODO: "break the wifi during simulation time
-		
-		this.percepts = new PerceptionSnapshot();
-		//Add position
-		percepts.addPerception(new PositionPerception(0, (double) position.x, (double) position.y, (double) position.z));
-		//Add velocity
-		percepts.addPerception(new VelocityPerception(0, Math.atan(position.x/position.y), 0, speedVal));
-		//Add time
-		percepts.addPerception(new TimePerception(0));
-		//Do not see anything			
-		agentState.setPerceptions(percepts);
-		
+		//TODO: "break the wifi during simulation time		
+		reset();		
 	}
 
 	public PVector getPosition() {
@@ -75,81 +59,29 @@ public class UAS extends AgentModel {
 	public double getCompassAngle() {
 		return this.compasAngle;
 	}
-
-	// State Update: Read actions from queue, execute them and set new perceptions
-	public void update(double simTime, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<Threat> threats, List<WorldObject> objects, List<UAS> uas_list){
-		
-		List<String> toexec = agentState.getAllActions();   
-		for (String action : toexec) {
-			System.out.println("UAS doing:"+ action);
-			if (action.equals("turn(left)")) //TODO: make these MOD 2 pi ? 
-				this.compasAngle -= Math.PI/16.0;
-			else if (action.equals("turn(right)")) 
-				this.compasAngle += Math.PI/16.0;
-			else if (action.equals( "thrust(on)")) 
-				this.speedVal = SPEED;
-			else if (action.equals("thrust(off)")) 
-				this.speedVal = 0;  
-		} 			
+	/**
+	 * update
+	 * process actions from the queue, update the UAS state variable and set the new perceptions
+	 */
+	public void update(double simTime, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<UAS> uas_list){
+		//Update simTime
+		this.time = simTime;
+		//Process actions to update speedVal & compassAngle
+		processAgentActions();
+		//Calculate new position
 		double cosv = Math.cos(this.compasAngle);
 		double sinv = Math.sin(this.compasAngle);
-		this.percepts = new PerceptionSnapshot();
-		//Calculate, set and add position
 		this.position.add(new PVector(Math.round(cosv*this.speedVal), Math.round(sinv*this.speedVal), 0));
-		percepts.addPerception(new PositionPerception(simTime, (double) position.x, (double) position.y, (double) position.z));	
-		//Add velocity
-		percepts.addPerception(new VelocityPerception(simTime, Math.atan(position.x/position.y), 0, speedVal));
-		//Add time
-		percepts.addPerception(new TimePerception(simTime));
-		//Normalize angle between 0 and 2 Pi
-		//compassAngle = compassAngle % 2* Math.PI;
-		if(compasAngle<0) compasAngle+=2*Math.PI;
-		if(compasAngle>2*Math.PI) compasAngle-=2*Math.PI;
-		
-		//calculate what we can see  					
-				
-		//Calculate threats detected
-		//System.out.println("UAS perception ---- threat number:"+threats.size());
-		for(int i=0; i<threats.size(); i++) {   
-			//get relative position to UAS:
-			float deltax = threats.get(i).position.x - getPosition().x;
-			float deltay = threats.get(i).position.y - getPosition().y;
-			//calculate distance
-			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
-			if(dist<perceptionDistance) {
-				double theta = Math.atan2(deltay, deltax);
-				double angle = (theta - this.compasAngle);// % 2* Math.PI; //(adjust to 0, 2pi) interval
-				// to normalize between 0 to 2 Pi
-				if(angle<0) angle+=2*Math.PI;
-				if(angle>2*Math.PI) angle-=2*Math.PI;
-				if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
-					//it's visible 
-					percepts.addPerception(new CameraPerception(threats.get(i).type, simTime, angle, 0, dist));
-				} //else {
-						//	System.out.println("threat " + i + " not visible.");
-						//}
-			}		
-		}
-		//calculate objects detected
-		for(int i=0; i<objects.size(); i++) { 
-			//get relative position of aircraft to object:
-			float deltax = objects.get(i).position.x - getPosition().x;
-			float deltay = objects.get(i).position.y - getPosition().y;
-			//calculate distance
-			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
-			if(dist<perceptionDistance) {
-				double theta = Math.atan2(deltay, deltax);
-				double angle = (theta - this.compasAngle);// % 2* Math.PI; //(adjust to 0, 2pi) interval
-				// to normalize between 0 to 2 Pi
-				//HERE IS THE PROBLEM WITH THE ANGLES, WE ONLY CHECK ONCE - 
-				if(angle<0) angle+=2*Math.PI;
-				if(angle>2*Math.PI) angle-=2*Math.PI;
-				if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
-					//it's visible 
-					percepts.addPerception(new CameraPerception(objects.get(i).type, simTime, angle, 0, dist)); 
-				}
-			}	 
-		} 
+		//Calculate visible items
+		this.visibleItems = new ArrayList<CameraPerception>();
+		//Calculate objects detected with camera	
+		for (CameraPerception c: objectDetection(objects, perceptionDistance)) {
+			visibleItems.add(c);
+		}	
+		//Calculate UAS detected with camera
+		for (CameraPerception c: UASDetection(uas_list, perceptionDistance)) {
+			visibleItems.add(c);
+		}	
 		
 		//Calculate UAS detected for wifi communication
 		Queue<String> myMsgOutCopy = new LinkedList<String>();
@@ -172,34 +104,130 @@ public class UAS extends AgentModel {
 		}
 		
 		
-		 
-		agentState.setPerceptions(percepts);
-		
+		updatePercepts(); //Update percepts
 		this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
 	}
-	// State reset
-	public void reset(){
-		// Initialize data values
-		this.position = initialPosition.copy(); //Assume that the initial position is at the center of the display window
-		this.speedVal = 0;	
-		this.percepts = new PerceptionSnapshot();
-		//Add position
-		percepts.addPerception(new PositionPerception(0, (double) position.x, (double) position.y, (double) position.z));
-		//Add velocity
-		percepts.addPerception(new VelocityPerception(0, Math.atan(position.x/position.y), 0, speedVal));
-		//Add time
-		percepts.addPerception(new TimePerception(0));
-		//Do not see anything			
-		agentState.setPerceptions(percepts);
+	
+	/**
+	 * Detect world objects & threats with the camera
+	 */
+	protected ArrayList<CameraPerception> objectDetection(List<WorldObject> obj, int perceptionDistance) {
+		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
+		for(int i=0; i<obj.size(); i++) {   
+			//get relative position to UAS:
+			float deltax = obj.get(i).position.x - getPosition().x;
+			float deltay = obj.get(i).position.y - getPosition().y;
+			//calculate distance
+			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
+			if(dist<perceptionDistance) {
+				double theta = Math.atan2(deltay, deltax);
+				double angle = (theta - this.compasAngle);// % 2* Math.PI; //(adjust to 0, 2pi) interval
+				// to normalize between 0 to 2 Pi
+				if(angle<0) angle+=2*Math.PI;
+				if(angle>2*Math.PI) angle-=2*Math.PI;
+				if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
+					//it's visible 
+					visibleItems.add(new CameraPerception(obj.get(i).type, this.time, angle, 0, dist));
+				} //else {
+						//	System.out.println(obj.get(i).type + i + " not visible.");
+						//}
+			}		
+		}
+		return visibleItems;
 	}
 	
-	
-	public String getID() {
-		
+	/**
+	 * Detect other UAS with the camera
+	 */
+	protected ArrayList<CameraPerception> UASDetection(List<UAS> obj, int perceptionDistance) {
+		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
+		for(int i=0; i<obj.size(); i++) {   
+			if(! this.ID.equals(obj.get(i).getID())) {
+				//get relative position to UAS:
+				float deltax = obj.get(i).getPosition().x - getPosition().x;
+				float deltay = obj.get(i).getPosition().y - getPosition().y;
+				//calculate distance
+				double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
+				if(dist<perceptionDistance) {
+					double theta = Math.atan2(deltay, deltax);
+					double angle = (theta - this.compasAngle);// % 2* Math.PI; //(adjust to 0, 2pi) interval
+					// to normalize between 0 to 2 Pi
+					if(angle<0) angle+=2*Math.PI;
+					if(angle>2*Math.PI) angle-=2*Math.PI;
+					if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
+						//it's visible 
+						visibleItems.add(new CameraPerception(obj.get(i).getType(),obj.get(i).getID(), this.time, angle, 0, dist));
+					} //else {
+							//	System.out.println(obj.get(i).getType() + i + " not visible.");
+							//}
+				}		
+			}
+			
+		}
+		return visibleItems;
+	}
+	/**
+	 * Process the action in the queue to update the speedVal and compassAngle
+	 */
+	protected void processAgentActions(){
+		List<String> toexec = agentState.getAllActions();   
+		for (String action : toexec) {
+			System.out.println("UAS doing:"+ action);
+			if (action.equals("turn(left)")) //TODO: make these MOD 2 pi ? 
+				this.compasAngle -= Math.PI/16.0;
+				//Normalize compass angle between 0 and 2 Pi
+				if(compasAngle<0) compasAngle+=2*Math.PI;
+			else if (action.equals("turn(right)"))				
+				this.compasAngle += Math.PI/16.0;
+				//Normalize compass angle between 0 and 2 Pi
+				if(compasAngle>2*Math.PI) compasAngle-=2*Math.PI;
+			else if (action.equals( "thrust(on)")) 
+				this.speedVal = SPEED;
+			else if (action.equals("thrust(off)")) 
+				this.speedVal = 0;  
+		}					
+	}	
+	/**
+	 * Reset the UAS state
+	 */
+	public void reset(){
+		this.position = initialPosition.copy();
+		this.speedVal = 0;	
+		this.time = 0;
+		this.compasAngle = 0;
+		agentState = new SyncAgentState();
+		this.visibleItems = new ArrayList<CameraPerception>();
+		updatePercepts();		
+	}	
+	/**
+	 * Get UAS id
+	 * @return
+	 */
+	public String getID() {		
 		return ID;
 	}
-
-
-
-
+	/**
+	 * Get UAS type
+	 * @return
+	 */
+	public String getType() {		
+		return type;
+	}	
+	/**
+	 * Update perception Snapshot in agent state
+	 */
+	protected void updatePercepts() {
+		PerceptionSnapshot P = new PerceptionSnapshot();		
+		//Add position
+		P.addPerception(new PositionPerception(this.time, (double) this.position.x, (double) this.position.y, (double) this.position.z));
+		//Add velocity
+		P.addPerception(new VelocityPerception(this.time, Math.atan(this.position.x/this.position.y), 0, this.speedVal));
+		//Add time
+		P.addPerception(new TimePerception(this.time));
+		//Add Visible items
+		for(CameraPerception cpi : this.visibleItems) {
+			P.addPerception(cpi);
+		}
+		agentState.setPerceptions(P);
+	}
 }
