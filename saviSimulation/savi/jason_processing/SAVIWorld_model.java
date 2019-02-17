@@ -3,10 +3,11 @@ import processing.core.*;
 import processing.data.*; 
 import processing.event.*; 
 import processing.opengl.*;
-import savi.jason_processing.ROBOT_model.Button;
+import savi.jason_processing.SAVIWorld_model.Button;
 import savi.StateSynchronization.*;
 
 import java.util.*;
+import java.util.logging.Logger;
 import java.io.*;
 
 import jason.asSyntax.Literal;
@@ -18,7 +19,7 @@ import jason.infra.centralised.BaseCentralisedMAS;
 
 
 
-public class ROBOT_model extends PApplet {
+public class SAVIWorld_model extends PApplet {
 
 	/********** CONSTANTS TO BE LOADED FROM CONFIG FILE**********/
 	int	NUMBER_TREES;
@@ -36,13 +37,19 @@ public class ROBOT_model extends PApplet {
 	int X_PIXELS = 900;
 	int Y_PIXELS = 700;
 	
+	public static final int TREE_SIZE = 15;
+	public static final int HOUSE_SIZE = 15;
+	public static final int THREAT_SIZE = 10;
+	
+	private static Logger logger = Logger.getLogger(SAVIWorld_model.class.getName());
+	
 	//Load Parameters
 	FileInputStream in = null;	
 	Properties modelProps = new Properties();
 		
 		/************* Global Variables *******************/
-	double simTime;      // stores simulation time (in seconds) 
-	double simTimeDelta; // discrete-time step (in seconds)
+	double simTime;      // stores simulation time (in milliseconds) 
+	double simTimeDelta; // discrete-time step (in milliseconds)
 	boolean simPaused;// simulation paused or not
 
 	List<WorldObject> objects = new ArrayList<WorldObject>();//List of world objects  
@@ -52,12 +59,12 @@ public class ROBOT_model extends PApplet {
 	JasonMAS jasonAgents; // the BDI agents
 
 	Button playButton,stopButton,pauseButton;
-	PShape robot,tree,house,threat,play,pause,restart;
+	PShape robot,treeImage,houseImage,threatImage,play,pause,restart;
 
 	public void settings() { size(X_PIXELS,Y_PIXELS, P3D);  smooth(8); } // 3D environment
 
 	public static void main(String[] passedArgs) {
-		String[] appletArgs = new String[] { "savi.jason_processing.ROBOT_model" };
+		String[] appletArgs = new String[] { "savi.jason_processing.SAVIWorld_model" };
 		if (passedArgs != null) {
 			PApplet.main(concat(appletArgs, passedArgs));
 		} else {
@@ -86,11 +93,11 @@ public void setup() {
 	}
 	NUMBER_TREES = Integer.parseInt(modelProps.getProperty("NUMBER_TREES"));
 	NUMBER_HOUSES = Integer.parseInt(modelProps.getProperty("NUMBER_HOUSES"));
-	NUMBER_THREATS = Integer.parseInt(modelProps.getProperty("NUMBER_TREES"));
+	NUMBER_THREATS = Integer.parseInt(modelProps.getProperty("NUMBER_THREATS"));
 	//X_PIXELS = Integer.parseInt(modelProps.getProperty("X_PIXELS"));
 	//Y_PIXELS = Integer.parseInt(modelProps.getProperty("Y_PIXELS"));
 	FRAME_RATE = Integer.parseInt(modelProps.getProperty("FRAME_RATE"));
-	MAX_SPEED = (double) Integer.parseInt(modelProps.getProperty("MAX_SPEED"));
+	MAX_SPEED = (double) Double.parseDouble(modelProps.getProperty("MAX_SPEED"));
 	PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("PERCEPTION_DISTANCE"));
 	WIFI_PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("WIFI_PERCEPTION_DISTANCE"));
 	NUMBER_UAS = Integer.parseInt(modelProps.getProperty("NUMBER_UAS"));
@@ -100,7 +107,8 @@ public void setup() {
 	
 	// Initialization code goes here
 	simTime = 0;      // seconds
-	simTimeDelta = 1; // seconds
+	simTimeDelta = 1000/FRAME_RATE; // milliseconds
+	
 	simPaused = false;// not paused by default  
    
 	playButton = new Button("play", width/2-20, 10, 40, 40);
@@ -112,12 +120,12 @@ public void setup() {
 	restart=loadShape("SimImages/replay.svg");
 
 	//load images for visualization
-	tree=loadShape("SimImages/tree.svg");
-	house=loadShape("SimImages/home.svg");
+	treeImage=loadShape("SimImages/tree.svg");
+	houseImage=loadShape("SimImages/home.svg");
 	play=loadShape("SimImages/play.svg");
 	pause=loadShape("SimImages/pause.svg");
 	restart=loadShape("SimImages/replay.svg");
-	threat=loadShape("SimImages/warning.svg");
+	threatImage=loadShape("SimImages/warning.svg");
 	
 	Random rand = new Random();
 	for(int i = 0; i < NUMBER_UAS; i++)  { //Put UAS
@@ -133,28 +141,28 @@ public void setup() {
 		if(RANDOM_SEED != -1) {
 			rand = new Random(2*RANDOM_SEED+i);
 		}
-		objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), "tree"));
+		objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), TREE_SIZE, "tree", this, treeImage));
 	}
 	for(int i = 0; i < NUMBER_HOUSES; i++) { //Put houses
 		//_PIXELS is the maximum and the 1 is our minimum.
 		if(RANDOM_SEED != -1) {
 			rand = new Random(3*RANDOM_SEED+i);
 		}
-		objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), "house"));
+		objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), HOUSE_SIZE, "house", this, houseImage));
 	}
 	for(int i = 0; i < NUMBER_THREATS; i++) { //Put threats
 		//_PIXELS is the maximum and the 1 is our minimum.
 		if(RANDOM_SEED != -1) {
 			rand = new Random(4*RANDOM_SEED+i);
 		}
-		objects.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, RANDOM_SEED, MAX_SPEED, "threat"));
+		objects.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, RANDOM_SEED, MAX_SPEED, THREAT_SIZE, "threat", this, threatImage));
 
 	}          
   
   // smoother rendering (optional)
 	frameRate(FRAME_RATE); // max 60 draw() calls per real second. (Can make it a larger value for the simulation to go faster)
-	// At simTimeDelta=1 this means 1 second
-	// of real time = 1 minute of sim time.
+	// simTimeDelta is now 1000/FRAME_RATE, meaning the simulation is in real-time if the processor can manage it.
+
 	//If the processor is not fast enough to maintain the specified rate, the frame rate will not be achieved 
 
 	//======= set up Jason BDI agents ================
@@ -181,8 +189,8 @@ public void setup() {
 				//uasi.getAgentState().pause(); TODO: why was this pause() called?
 			}
 
-			for(int i = 0; i < objects.size(); i++){ //Makes all objects on screen.
-			  drawObject(objects.get(i));
+			for(WorldObject wo: objects){ //Makes all objects on screen.
+			  wo.draw();
 			}		
 			      
 			playButton.label="play";
@@ -193,18 +201,18 @@ public void setup() {
 			return; // don't change anything if sim is paused
 		}
 	
+	
 		// 1. TIME UPDATE
 	simTime += simTimeDelta; // simple discrete-time advance
+	
+	logger.info("== SAVIWorld_Model draw() == at:"+simTime);
 	// 2. STATE UPDATE (SIMULATION)
 	for(UAS uasi:UAS_list){ //Create UAS agents
 		//uasi.getAgentState().run();
 		uasi.update(simTime, PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, objects,UAS_list);
 	}
 	for(WorldObject oi: objects){ //Update threats
-		if(oi.type.contentEquals("threat")){
-			((Threat) oi).update();
-		}
-		
+		oi.update(simTimeDelta); //anything not a threat will update via an empty method.
 	}  
 	// 3. VISUALIZATION
 	//------------------
@@ -213,11 +221,10 @@ public void setup() {
 		drawUAS(UAS_list.get(i));	
 	}  
     
-	for(int i = 0; i < objects.size(); i++){ //Draw worldObjects.
-		drawObject(objects.get(i));
-	}
-    
-    
+	for(WorldObject wo: objects){ //Makes all objects on screen.
+		  wo.draw();
+	}	
+        
 	playButton.label="pause";
 	
 	playButton.drawButton();
@@ -271,29 +278,6 @@ public void drawUAS(UAS uas){
 		ellipse(p1.x,p1.y, 26, 26);
 	}
 }
-
-
-//Visualize
-public void drawObject(WorldObject object){
-	// Draw Object
-	stroke(0);
-
-	shapeMode(CENTER);
-	// translate to center image on sposition.x, position.y
-	//s.translate(-s.width/2,-s.height/2);
-	
-	if(object.type.contentEquals("house")){
-		shape(house, object.position.x, object.position.y,25,25);
-	}
-	if(object.type.contentEquals("tree")){
-		shape(tree, object.position.x, object.position.y,15,15);
-	}
-	if(object.type.contentEquals("threat")){
-		shape(threat, object.position.x, object.position.y,10,10);
-	}
-	
-}
-
 
 
 //************ UTILITY FUNCTIONS *****************/

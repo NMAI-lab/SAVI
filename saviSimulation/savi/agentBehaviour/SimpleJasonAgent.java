@@ -87,7 +87,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 			
 			while (isRunning()) {
 				// calls the Jason engine to perform one reasoning cycle
-				logger.fine("Reasoning....");
+				logger.fine("Agent "+getAgName()+" is reasoning....");
 				getTS().reasoningCycle();
                 
 				if (getTS().canSleep()) {
@@ -117,7 +117,9 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 			this.firstPerception = false;	// No longer the first perception
 			freshData = true;				// There is fresh data
 			this.lastPerceptionId = currentPerceptId;	// Update the perception ID
-		}
+			logger.info("Agent "+ getAgName() + " has fresh perception at "+ this.lastPerceptionId );
+		} else
+			logger.info("Agent "+ getAgName() + " has STALE perception at "+ this.lastPerceptionId );
 
 		// Return the result
 		return freshData;
@@ -138,7 +140,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		List<Literal> perceptionLiterals = new ArrayList<Literal>(this.perceptHistory.updatePerceptions(currentPerceptions));
 		
 		System.out.println("Agent " + getAgName() + " Perceiving perception "+ this.lastPerceptionId);
-		System.out.println(perceptionLiterals.toString());
+		//System.out.println(perceptionLiterals.toString());
 		
 		// Write the perceptions to the perception logfile
 		try {
