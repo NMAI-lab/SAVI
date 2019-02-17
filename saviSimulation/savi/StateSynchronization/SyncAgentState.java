@@ -8,6 +8,11 @@ public class SyncAgentState {
 	private Queue<String> msgOut;				// Messages that the agent is sending
 	private Queue<String> msgIn;				// Messages for the agent
 
+	private double reasoningCyclePeriod = 5;	// How much time it should take to do a reasoning cycle - meaning that this much
+												// time must elapse after a perception is received before a new perception can be received,
+												// any actions can be allowed out of the reasoning cycle, and any mail sent
+	private double lastTimeStamp;				// Last time stamp for a perception or mail check - used for limiting the reasoning cycles
+	
 	/**
 	 *  Constructor for the SyncAgentState class.
 	 */
@@ -18,6 +23,28 @@ public class SyncAgentState {
 		this.msgIn = new LinkedList<String>();
 	}
 	
+	
+	/**
+	 * Check if the reasoning cycle is complete
+	 * Used in order to verify if an action or message is allowed out of the agent
+	 * or if the agent can access new perceptions or messages.
+	 * @param time
+	 * @return
+	 */
+	public boolean reasoningComplete() {
+		if (this.getLatestPerceptionTimeStamp() == -1) {
+			return true;
+		}
+		
+		double currentTime = this.getLatestPerceptionTimeStamp();
+		double reasoningEnd = this.lastTimeStamp + this.reasoningCyclePeriod;
+		
+		if (currentTime > reasoningEnd) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	/**
 	 * Update the perceptions.
@@ -48,6 +75,8 @@ public class SyncAgentState {
 		if (this.perceptions == null) {
 			return null;
 		} else {
+			//while(!this.reasoningComplete());							// Replace this with wait() / notify() technique
+			this.lastTimeStamp = this.perceptions.getLatestTimeStamp();
 			return new PerceptionSnapshot(this.perceptions);
 		}
 	}
@@ -76,6 +105,7 @@ public class SyncAgentState {
 
 
 	public synchronized void setMsgOut(String msgOut) {
+		//while(!this.reasoningComplete());							// Replace this with wait() / notify() technique
 		this.msgOut.add(msgOut);
 	}
 
@@ -84,6 +114,7 @@ public class SyncAgentState {
 	}
 
 	public synchronized void addAction(String action) {
+		//while(!this.reasoningComplete());							// Replace this with wait() / notify() technique
 		this.actions.add(action);
 	}
 

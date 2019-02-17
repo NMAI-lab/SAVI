@@ -93,6 +93,11 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 				if (getTS().canSleep()) {
                 	sleep();
 				}
+				
+				while(!this.agentState.reasoningComplete()) {	// Replace this with wait() / notify() technique
+					sleep();
+				}
+				
 			}
 			logger.fine("Agent "+getAgName()+" stopped.");
 		} catch (Exception e) {
@@ -217,7 +222,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	public void sleep() {
 		System.out.println("Snoozing");
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(100);					// TODO: Need to revisit this
 		} catch (InterruptedException e) {}
 	}
 	
