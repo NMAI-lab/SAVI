@@ -37,7 +37,9 @@ public class SAVIWorld_model extends PApplet {
 	int X_PIXELS = 900;
 	int Y_PIXELS = 700;
 	
+	// TimeStamp file names
 	long lastCycleTimeStamp;
+	String timeStampFileName;
 	
 	public static final int TREE_SIZE = 15;
 	public static final int HOUSE_SIZE = 15;
@@ -176,7 +178,16 @@ public void setup() {
 	jasonAgents.startAgents();
 	//==========================================
 	
+	// Set up the cycle length logfile
 	this.lastCycleTimeStamp = 0;
+	this.timeStampFileName = "SimulationTimeStamps.log";
+	try {
+		BufferedWriter writer = new BufferedWriter(new FileWriter(this.timeStampFileName));
+		writer.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 
 }
 
@@ -212,6 +223,17 @@ public void setup() {
 	long currentSystemTime = System.currentTimeMillis();
 	long simulationCycleTime = currentSystemTime - this.lastCycleTimeStamp;
 	this.lastCycleTimeStamp = currentSystemTime;
+	
+	// Write the timestamp to the timestamp logfile
+	try {
+		BufferedWriter writer = new BufferedWriter(new FileWriter(this.timeStampFileName, true));
+		writer.append(str(simulationCycleTime));
+		writer.newLine();
+		writer.close();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 	
 	logger.info("== SAVIWorld_Model draw() == at:"+simTime);
 	// 2. STATE UPDATE (SIMULATION)
