@@ -118,25 +118,29 @@ public class UAS extends AgentModel {
 		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
 		for(WorldObject wo:obj) {   
 			//get relative position to UAS:
-
+            List<Double> polar = Geometry.relativePositionPolar(wo.position, this.position, this.compasAngle);
+            
 			//calculate distance
-			double dist  = 	this.position.dist(wo.position);//Math.sqrt(deltax*deltax + deltay*deltay);
+            double azimuth = polar.get(Geometry.AZIMUTH);
+            double elevation = polar.get(Geometry.ELEVATION);
+            double dist = polar.get(Geometry.DISTANCE);
+/*			double dist  = 	this.position.dist(wo.position);//Math.sqrt(deltax*deltax + deltay*deltay);
 			if(dist<perceptionDistance) {
 				PVector myXY = new PVector(this.position.x,this.position.y, 0);
 				PVector objXY = new PVector(wo.position.x,wo.position.y, 0);
 				
 				double theta1 = objXY.sub(myXY).heading();   // Math.atan2(deltay, deltax);
-				double azimuth = theta1 - this.compasAngle;// % 2* Math.PI; //(adjust to 0, 2pi) interval
+				double azimuth = theta1 - this.compasAngle ;// % 2* Math.PI; //(adjust to 0, 2pi) interval
 				// to normalize between 0 to 2 Pi
 				if(azimuth<0) 
-					azimuth+=2*Math.PI;
-				if (azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.) {
+					azimuth+=2*Math.PI;*/
+			if (azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.) {
 					//it's visible 
 					visibleItems.add(new CameraPerception(wo.type, this.time, azimuth, 0, dist));
-				} //else {
-						//	System.out.println(obj.get(i).type + i + " not visible.");
-						//}
-			}		
+			} 
+			
+			
+			
 		}
 		return visibleItems;
 	}
