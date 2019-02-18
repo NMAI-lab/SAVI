@@ -80,7 +80,7 @@ public void setup() {
 	/***LOAD SIM PARAMETERS ****/
 	try {
 		String filePath = new File("").getAbsolutePath();
-		filePath = filePath + "/saviSimulation/config.cfg";
+		filePath = filePath + "/config.cfg";
 		System.out.println(filePath);
 		File inFile = new File(filePath);
 		in = new FileInputStream(inFile);
