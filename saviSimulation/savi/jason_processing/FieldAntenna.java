@@ -13,6 +13,7 @@ public class FieldAntenna extends WorldObject implements Communicator{
 	WifiAntenna antenna;
 	
 	double wifi = 100;
+	//TODO: add list of messages here, then implement message delivery
 	
 	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, PShape image) {
 		
