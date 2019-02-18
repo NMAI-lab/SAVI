@@ -108,7 +108,7 @@ public class UAS extends AgentModel {
 		
 		
 		updatePercepts(); //Update percepts
-		this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
+		//this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
 	}
 	
 	/**
@@ -116,21 +116,23 @@ public class UAS extends AgentModel {
 	 */
 	protected ArrayList<CameraPerception> objectDetection(List<WorldObject> obj, int perceptionDistance) {
 		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
-		for(int i=0; i<obj.size(); i++) {   
+		for(WorldObject wo:obj) {   
 			//get relative position to UAS:
-			float deltax = obj.get(i).position.x - getPosition().x;
-			float deltay = obj.get(i).position.y - getPosition().y;
+
 			//calculate distance
-			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
+			double dist  = 	this.position.dist(wo.position);//Math.sqrt(deltax*deltax + deltay*deltay);
 			if(dist<perceptionDistance) {
-				double theta = Math.atan2(deltay, deltax);
-				double angle = (theta - this.compasAngle);// % 2* Math.PI; //(adjust to 0, 2pi) interval
+				PVector myXY = new PVector(this.position.x,this.position.y, 0);
+				PVector objXY = new PVector(wo.position.x,wo.position.y, 0);
+				
+				double theta1 = objXY.sub(myXY).heading();   // Math.atan2(deltay, deltax);
+				double azimuth = theta1 - this.compasAngle;// % 2* Math.PI; //(adjust to 0, 2pi) interval
 				// to normalize between 0 to 2 Pi
-				if(angle<0) angle+=2*Math.PI;
-				if(angle>2*Math.PI) angle-=2*Math.PI;
-				if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
+				if(azimuth<0) 
+					azimuth+=2*Math.PI;
+				if (azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.) {
 					//it's visible 
-					visibleItems.add(new CameraPerception(obj.get(i).type, this.time, angle, 0, dist));
+					visibleItems.add(new CameraPerception(wo.type, this.time, azimuth, 0, dist));
 				} //else {
 						//	System.out.println(obj.get(i).type + i + " not visible.");
 						//}
@@ -175,7 +177,7 @@ public class UAS extends AgentModel {
 	protected void processAgentActions(){
 		List<String> toexec = agentState.getAllActions();   
 		for (String action : toexec) {
-			System.out.println("UAS doing:"+ action);
+			System.out.println("[ process actions]UAS id="+this.ID+" doing:"+ action);
 			if (action.equals("turn(left)")) //TODO: make these MOD 2 pi ? 
 				this.compasAngle -= Math.PI/16.0;
 				//Normalize compass angle between 0 and 2 Pi
