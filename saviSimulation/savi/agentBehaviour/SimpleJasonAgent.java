@@ -1,29 +1,15 @@
 package savi.agentBehaviour;
 
 import jason.architecture.AgArch;
-import jason.asSemantics.ActionExec;
-import jason.asSemantics.Agent;
-import jason.asSemantics.Circumstance;
-import jason.asSemantics.Message;
-import jason.asSemantics.TransitionSystem;
-import jason.asSyntax.Literal;
-import jason.asSyntax.Structure;
-import jason.asSyntax.Term;
+import jason.asSemantics.*;
+import jason.asSyntax.*;
+
 import savi.StateSynchronization.*;
 
+import java.io.*;
+import java.util.*;
+import java.util.logging.*;
 
-
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 /**
  * Example of an agent that only uses Jason BDI engine. It runs without all
@@ -43,6 +29,10 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	private boolean firstPerception;	// Flag for noting if any perceptions have ever been received (deal with the first ID issue)
 	private PerceptionHistory perceptHistory;
 	private String perceptionLogFileName;
+	
+	// TimeStamp file names
+	long lastCycleTimeStamp;
+	String timeStampFileName;
 	
 	public SimpleJasonAgent(String id, String type, SyncAgentState modelAgentState) { //need to make the UAS class public so that the AgArch can refer back to it
 		try {
@@ -77,6 +67,18 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		// Set up the cycle length logfile
+		this.lastCycleTimeStamp = 0;
+		this.timeStampFileName = "AgentTimeStamps_" + this.name + ".log";
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(this.timeStampFileName));
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void run(){
@@ -159,6 +161,23 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
+		long currentSystemTime = System.currentTimeMillis();
+		long simulationCycleTime = currentSystemTime - this.lastCycleTimeStamp;
+		this.lastCycleTimeStamp = currentSystemTime;
+		
+		// Write the timestamp to the timestamp logfile
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(this.timeStampFileName, true));
+			writer.append((new Long(simulationCycleTime)).toString());
+			writer.newLine();
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		return perceptionLiterals;
 	}

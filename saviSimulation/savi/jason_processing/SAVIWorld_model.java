@@ -15,10 +15,6 @@ import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.infra.centralised.BaseCentralisedMAS;
 
-import java.lang.*;
-
-
-
 public class SAVIWorld_model extends PApplet {
 
 	/********** CONSTANTS TO BE LOADED FROM CONFIG FILE**********/
@@ -190,7 +186,6 @@ public void setup() {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-
 }
 
 /************* Main draw() ***********************/
@@ -229,7 +224,7 @@ public void setup() {
 	// Write the timestamp to the timestamp logfile
 	try {
 		BufferedWriter writer = new BufferedWriter(new FileWriter(this.timeStampFileName, true));
-		writer.append(str(simulationCycleTime));
+		writer.append((new Long(simulationCycleTime)).toString());
 		writer.newLine();
 		writer.close();
 	} catch (IOException e) {
