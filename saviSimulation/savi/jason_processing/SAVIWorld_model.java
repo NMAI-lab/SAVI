@@ -34,8 +34,8 @@ public class SAVIWorld_model extends PApplet {
 	int NUMBER_UAS;
 	int RANDOM_SEED;
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
-	int X_PIXELS = 900;
-	int Y_PIXELS = 700;
+	int X_PIXELS = 874;
+	int Y_PIXELS = 699;
 	
 	public static final int TREE_SIZE = 15;
 	public static final int HOUSE_SIZE = 15;
@@ -60,6 +60,7 @@ public class SAVIWorld_model extends PApplet {
 
 	Button playButton,stopButton,pauseButton;
 	PShape robot,treeImage,houseImage,threatImage,play,pause,restart;
+	PImage bg;
 
 	public void settings() { size(X_PIXELS,Y_PIXELS, P3D);  smooth(8); } // 3D environment
 
@@ -126,6 +127,7 @@ public void setup() {
 	pause=loadShape("SimImages/pause.svg");
 	restart=loadShape("SimImages/replay.svg");
 	threatImage=loadShape("SimImages/warning.svg");
+	bg = loadImage("SimImages/OttawaAirport_874_699.PNG");
 	
 	Random rand = new Random();
 	for(int i = 0; i < NUMBER_UAS; i++)  { //Put UAS
@@ -182,7 +184,7 @@ public void setup() {
 //************************************************/
 	public void draw(){
 		if(simPaused){
-			background(240); // white background
+			background(bg); 
 
 			for(UAS uasi: UAS_list){ //Draw UAS agents
 				drawUAS(uasi);
@@ -216,7 +218,7 @@ public void setup() {
 	}  
 	// 3. VISUALIZATION
 	//------------------
-	background(240); // white background
+	background(bg); 
 	for(int i = 0; i < NUMBER_UAS; i++){ //Draw UAS agents
 		drawUAS(UAS_list.get(i));	
 	}  
@@ -252,7 +254,7 @@ public void drawUAS(UAS uas){
 	// Draw UAS
 	stroke(0); 	 
 	PShape s;
-	s=loadShape("SimImages/robot.svg");
+	s=loadShape("SimImages/drone.svg");
 
 	// translate to center image on uasposition.x, uasposition.y
 	s.translate(-s.width/2,-s.height/2);
@@ -261,7 +263,7 @@ public void drawUAS(UAS uas){
 	s.rotate((float) ((float)uas.getCompassAngle()+Math.PI/2));
 
 	//draw image
-	shape(s, uas.getPosition().x, uas.getPosition().y, 26, 26);
+	shape(s, uas.getPosition().x, uas.getPosition().y, 15, 15);
 
 	noFill();
 
