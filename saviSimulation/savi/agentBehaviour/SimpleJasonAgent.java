@@ -94,9 +94,9 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
                 	sleep();
 				}
 				
-				while(!this.agentState.reasoningComplete()) {	// Replace this with wait() / notify() technique
+				/* while(!this.agentState.reasoningComplete()) {	// Replace this with wait() / notify() technique
 					sleep();
-				}
+				}*/
 				
 			}
 			logger.fine("Agent "+getAgName()+" stopped.");
@@ -138,14 +138,14 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		//agentState.buildSnapshot();
 		
 		// Get the perceptions from agentState
-		PerceptionSnapshot currentPerceptions = new PerceptionSnapshot(this.agentState.getPerceptions());
+		PerceptionSnapshot currentPerceptions = new PerceptionSnapshot(this.agentState.getPerceptions(this.lastPerceptionId));
 		this.lastPerceptionId = currentPerceptions.getLatestTimeStamp();
 		
 		// Update the history, get the list of literals to send to the agent
 		List<Literal> perceptionLiterals = new ArrayList<Literal>(this.perceptHistory.updatePerceptions(currentPerceptions));
 		
 		System.out.println("Agent " + getAgName() + " Perceiving perception "+ this.lastPerceptionId);
-		//System.out.println(perceptionLiterals.toString());
+		System.out.println(perceptionLiterals.toString());
 		
 		// Write the perceptions to the perception logfile
 		try {

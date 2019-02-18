@@ -52,6 +52,7 @@ public class SyncAgentState {
 	 */
 	public synchronized void setPerceptions(PerceptionSnapshot newSnapsot) {
 		this.perceptions = new PerceptionSnapshot(newSnapsot);
+		notify(); //notifies agent that new perceptions are available.
 	}
 	
 	
@@ -72,6 +73,28 @@ public class SyncAgentState {
 	 * @return
 	 */
 	public synchronized PerceptionSnapshot getPerceptions() {
+		if (this.perceptions == null) {
+			return null;
+		} else {
+			//while(!this.reasoningComplete());							// Replace this with wait() / notify() technique
+			this.lastTimeStamp = this.perceptions.getLatestTimeStamp();
+			return new PerceptionSnapshot(this.perceptions);
+		}
+	}
+	
+	/**
+	 * Get the perceptions. THis version waits until fresh perceptions are available (defined as: their timestamp is different from ' last' ).
+	 * @return
+	 */
+	public synchronized PerceptionSnapshot getPerceptions(double last) {
+		while(this.perceptions.getLatestTimeStamp()== last)
+			try {
+				System.out.println(" Waiting for new perceptions...");
+				wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		if (this.perceptions == null) {
 			return null;
 		} else {
