@@ -15,7 +15,7 @@ import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.infra.centralised.BaseCentralisedMAS;
 
-
+import java.lang.*;
 
 
 
@@ -37,6 +37,8 @@ public class SAVIWorld_model extends PApplet {
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
 	int X_PIXELS = 900;
 	int Y_PIXELS = 700;
+	
+	long lastCycleTimeStamp;
 	
 	public static final int TREE_SIZE = 15;
 	public static final int HOUSE_SIZE = 15;
@@ -175,6 +177,8 @@ public void setup() {
 	jasonAgents = new JasonMAS(agentList);
 	jasonAgents.startAgents();
 	//==========================================
+	
+	this.lastCycleTimeStamp = 0;
 
 }
 
@@ -206,6 +210,10 @@ public void setup() {
 	
 		// 1. TIME UPDATE
 	simTime += simTimeDelta; // simple discrete-time advance
+	
+	long currentSystemTime = System.currentTimeMillis();
+	long simulationCycleTime = currentSystemTime - this.lastCycleTimeStamp;
+	this.lastCycleTimeStamp = currentSystemTime;
 	
 	logger.info("== SAVIWorld_Model draw() == at:"+simTime);
 	// 2. STATE UPDATE (SIMULATION)
