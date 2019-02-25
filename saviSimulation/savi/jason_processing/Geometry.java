@@ -17,6 +17,9 @@ public class Geometry {
 	 * @param refPosition
 	 * @param refAngle
 	 * @return
+	 * 
+	 * Should implement the equations at the bottom of the first page of this:
+	 * https://computitos.files.wordpress.com/2008/03/cartesian_spherical_transformation.pdf
 	 */
 	public static List<Double> relativePositionPolar(PVector targetPosition, PVector refPosition, double refAngle){
 		
@@ -45,5 +48,32 @@ public class Geometry {
 		toreturn.add(elevation);
 		toreturn.add(dist);
 		return toreturn;
+	}
+	
+	
+	/**
+	 * Returns x,y,z position based on a relative (spherical) position
+	 * @return
+	 * 
+	 * Should implement the equations at the bottom of the first page of this:
+	 * https://computitos.files.wordpress.com/2008/03/cartesian_spherical_transformation.pdf
+	 */
+	public static PVector absolutePositionFromPolar(double azimuth, double elevation, double range, PVector refPosition, double refAngle) {
+		
+		// Account for refAngle
+		double trueAzimuth = azimuth + refAngle;
+		
+		// Calculate relative Cartesian position
+		double targetX = range * Math.cos(trueAzimuth);
+		double targetY = range * Math.sin(trueAzimuth);
+		double targetZ = range * Math.sin(elevation);
+		
+		// Shift to be an absolute Cartesian position
+		float x = refPosition.x + (float)targetX;
+		float y = refPosition.y + (float)targetY;
+		float z = refPosition.z + (float)targetZ;
+		
+		PVector absolutePosition = new PVector(x,y,z);
+		return absolutePosition;
 	}
 }
