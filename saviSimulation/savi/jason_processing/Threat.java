@@ -2,15 +2,18 @@ package savi.jason_processing;
 
 import java.util.Random;
 
+import processing.core.PConstants;
+import processing.core.PShape;
 import processing.core.PVector;
 
-class Threat extends WorldObject{
+public class Threat extends WorldObject{
 	//-----------------------------------------
 	// DATA (or state variables)
 	//-----------------------------------------
 	double maxSpeed;
 	Random rand;
 	double movingAngle = 0;
+	PVector nextRandomDestination;
 	//-----------------------------------------
 	// METHODS (functions that act on the data)
 	//-----------------------------------------
@@ -19,30 +22,36 @@ class Threat extends WorldObject{
 	//              that doesn't have a type (not even void).
 	
 
-	Threat(int id, int x, int y, int seed, double MS, String type) {
+	Threat(int id, int x, int y, int seed, double MS, int pxSize, String type, SAVIWorld_model world, PShape img) {
 		// Initialize data values
-		super(id,new PVector(x,y),type);
+		super(id,new PVector(x,y), pxSize, type, world, img);
 		rand = new Random();
 		if(seed != -1) {
 			rand = new Random(seed + this.ID);
 		}		
 		maxSpeed = MS;// the max speed 
-		this.movingAngle = (double) (rand.nextInt(10)*(Math.PI/4));	
+		this.movingAngle = (double) (rand.nextInt(10)*(Math.PI/4));
+		
+		setRandomDestination();
 		
 	  }
 
 	// State Update: Randomly move up, down, left, right, or stay in one place
-	void update(){
+	@Override
+	public void update(double timestep){
 		
-		double speedValue = (double) (rand.nextFloat() * this.maxSpeed);
-		//double speedValue = 0;
-		//double speedValue = this.maxSpeed ;	
-		this.movingAngle = this.movingAngle + (double) (rand.nextInt(2)*(Math.PI/4));	
-		double cosv = Math.cos(movingAngle);
-		double sinv = Math.sin(movingAngle);  
-		//calculate new position
-		PVector temp = new PVector(Math.round(cosv*speedValue), Math.round(sinv*speedValue));
+		double speedValue = this.maxSpeed *(1 - 0.6*rand.nextDouble()); // speed between 0.4 * maxSpeed and MaxSpeed
+		
+		PVector temp = nextRandomDestination.copy().sub(position).setMag((float) (speedValue * timestep));// new PVector(Math.round(cosv*speedValue * timestep ), Math.round(sinv*speedValue * timestep));
+		// add a bit of noise to the movement
+		float noisex = (float) (speedValue * timestep *0.4*(rand.nextFloat()-1));
+		float noisey = (float) (speedValue * timestep *0.4*(rand.nextFloat()-1));
+		temp.add(noisex, noisey);
 		position.add(temp);		
+		
+		if (position.dist(nextRandomDestination)<5) { //we have arrived at our (random) destination
+			setRandomDestination(); //set a new one.
+		}
 	}
 
 
@@ -50,6 +59,24 @@ class Threat extends WorldObject{
 	void reset(int X_PIXELS, int Y_PIXELS){
 		// Initialize data values
 		position = new PVector(X_PIXELS/2,Y_PIXELS/2); //Assume that the initial position is at the center of the display window
+	}
+
+	
+	private void setRandomDestination() {
+		int rx = rand.nextInt(simulator.X_PIXELS);
+		int ry = rand.nextInt(simulator.Y_PIXELS);
+		nextRandomDestination = new PVector(rx,ry);
+		System.out.println("Threat heading to position "+rx+" / "+ry );
+	}
+	
+	@Override
+	public void draw() {
+		simulator.stroke(0);
+
+		simulator.shapeMode(PConstants.CENTER);
+		simulator.shape(this.image, this.position.x, this.position.y,10,10);
+
+		
 	}
 
 

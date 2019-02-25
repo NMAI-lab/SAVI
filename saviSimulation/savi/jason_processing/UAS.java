@@ -11,7 +11,7 @@ import savi.StateSynchronization.*;
 
 
 public class UAS extends AgentModel {
-	private static final double SPEED = 3; //we move by one unit / pixel at each timestep?
+	private static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
 
 	//-----------------------------------------
 	// DATA (or state variables)
@@ -64,14 +64,17 @@ public class UAS extends AgentModel {
 	 * process actions from the queue, update the UAS state variable and set the new perceptions
 	 */
 	public void update(double simTime, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<UAS> uas_list){
-		//Update simTime
-		this.time = simTime;
 		//Process actions to update speedVal & compassAngle
 		processAgentActions();
 		//Calculate new position
 		double cosv = Math.cos(this.compasAngle);
 		double sinv = Math.sin(this.compasAngle);
-		this.position.add(new PVector(Math.round(cosv*this.speedVal), Math.round(sinv*this.speedVal), 0));
+
+		//Update simTime
+		double timeElapsed =  simTime - this.time; //elapsed time since last update 
+		this.time = simTime;
+
+		this.position.add(new PVector(Math.round(cosv*this.speedVal*timeElapsed), Math.round(sinv*this.speedVal*timeElapsed), 0));
 		//Calculate visible items
 		this.visibleItems = new ArrayList<CameraPerception>();
 		//Calculate objects detected with camera	
