@@ -1,7 +1,7 @@
 /*
  * Simple agent behaviour for the SAVI project
  * @author	Patrick Gavigan
- * @date		25 Jan 2019
+ * @date	25 February 2019
  */
 
 // Set initial beliefs and test goals
