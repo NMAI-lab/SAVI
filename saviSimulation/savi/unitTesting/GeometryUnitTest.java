@@ -61,5 +61,9 @@ class GeometryUnitTest {
 		assertEquals(targetPosition.x, targetPositionPrime.x, tolerance, xMessage);
 		assertEquals(targetPosition.y, targetPositionPrime.y, tolerance, yMessage);
 		assertEquals(targetPosition.z, targetPositionPrime.z, tolerance, zMessage);
+		
+		// Check the ranges
+		assertTrue((0 <= azimuth) && (azimuth <= (2 * Math.PI)));				// azimuth must be between 0 and 2 PI
+		assertTrue(((-Math.PI/2) <= elevation) && (elevation <= (Math.PI/2)));	// elevation must be between -PI/2 and PI/2
 	}
 }
