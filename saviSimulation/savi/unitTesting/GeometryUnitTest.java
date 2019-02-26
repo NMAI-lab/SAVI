@@ -13,7 +13,27 @@ class GeometryUnitTest {
 
 	@Test
 	void test() {
-		selfTestCase(new PVector(6,5,5), new PVector(5,5,5), 0);
+		// Test cases. refPosition is constant, try different relative target positions at different refAngles
+		PVector refPosition = new PVector(5,5,5);
+		for (double refAngle = 0; refAngle <= 2*Math.PI; refAngle += (Math.PI/36)) {
+			selfTestCase(new PVector(5,5,5), refPosition, refAngle);
+			
+			selfTestCase(new PVector(5,5,6), refPosition, refAngle);
+			selfTestCase(new PVector(5,6,5), refPosition, refAngle);
+			selfTestCase(new PVector(5,6,6), refPosition, refAngle);
+			selfTestCase(new PVector(6,5,5), refPosition, refAngle);
+			selfTestCase(new PVector(6,5,6), refPosition, refAngle);
+			selfTestCase(new PVector(6,6,5), refPosition, refAngle);
+			selfTestCase(new PVector(6,6,6), refPosition, refAngle);
+			
+			selfTestCase(new PVector(5,5,4), refPosition, refAngle);
+			selfTestCase(new PVector(5,4,5), refPosition, refAngle);
+			selfTestCase(new PVector(5,4,4), refPosition, refAngle);
+			selfTestCase(new PVector(4,5,5), refPosition, refAngle);
+			selfTestCase(new PVector(4,5,4), refPosition, refAngle);
+			selfTestCase(new PVector(4,4,5), refPosition, refAngle);
+			selfTestCase(new PVector(4,4,4), refPosition, refAngle);
+		}
 	}
 	
 	/**
