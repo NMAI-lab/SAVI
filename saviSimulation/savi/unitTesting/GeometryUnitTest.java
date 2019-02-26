@@ -17,7 +17,7 @@ class GeometryUnitTest {
 		PVector refPosition = new PVector(5,5,5);
 		for (double refAngle = 0; refAngle <= 2*Math.PI; refAngle += (Math.PI/36)) {
 			selfTestCase(new PVector(5,5,5), refPosition, refAngle);
-			
+
 			selfTestCase(new PVector(5,5,6), refPosition, refAngle);
 			selfTestCase(new PVector(5,6,5), refPosition, refAngle);
 			selfTestCase(new PVector(5,6,6), refPosition, refAngle);
