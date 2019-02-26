@@ -43,11 +43,23 @@ class GeometryUnitTest {
 	 * @param refAngle
 	 */
 	void selfTestCase(PVector targetPosition, PVector refPosition, double refAngle) {
+		// Run both methods under test
 		List<Double> resultList = Geometry.relativePositionPolar(targetPosition, refPosition, refAngle);
 		double azimuth = resultList.get(Geometry.AZIMUTH);
 		double elevation = resultList.get(Geometry.ELEVATION);
 		double range = resultList.get(Geometry.DISTANCE);
 		PVector targetPositionPrime = Geometry.absolutePositionFromPolar(azimuth, elevation, range, refPosition, refAngle);
-		assertTrue(targetPosition.equals(targetPositionPrime));
+		
+		// Set up result check
+		float tolerance = (float) 0.1;
+		String messageSuffix = new String(" component check for target at " + targetPosition.toString() + " and refAngle " + refAngle);
+		String xMessage = "X" + messageSuffix;
+		String yMessage = "Y" + messageSuffix;
+		String zMessage = "Z" + messageSuffix;
+				
+		// Check the results
+		assertEquals(targetPosition.x, targetPositionPrime.x, tolerance, xMessage);
+		assertEquals(targetPosition.y, targetPositionPrime.y, tolerance, yMessage);
+		assertEquals(targetPosition.z, targetPositionPrime.z, tolerance, zMessage);
 	}
 }
