@@ -71,8 +71,7 @@ targetFar :-
 // Plan for trying to find a target
 +!findTarget
 	:	noTarget & targetLastRight
-	<-	turn(right);
-		.broadcast(tell,turning(right)).
+	<-	turn(right).
 		
 // Plan for trying to find a target
 +!findTarget
@@ -80,7 +79,9 @@ targetFar :-
 	<-	turn(left);
 		.broadcast(tell,turning(left)).
 	
-+!findTarget.
++!findTarget
+	:	target(threat,TYPE,AZ,EL,RANGE)
+	<-	.broadcast(tell,threatSeen(TYPE,AZ,EL,RANGE).
 
 // Default plan for observing target - force recursion.
 +!observeTarget
@@ -98,21 +99,18 @@ targetFar :-
 	:	targetRight
 	<-	turn(right);
 		+targetLastRight;
-		-targetLastLeft;
-		.broadcast(tell,turning(right)).
+		-targetLastLeft.
 		
 // Face a target to the left
 +!faceTarget
 	:	targetLeft
 	<-	turn(left);
 		+targetLastLeft;
-		-targetLastRight;
-		.broadcast(tell,turning(left)).
+		-targetLastRight.
 		
 // Face a target, goal achieved
 +!faceTarget
-	:	targetAhead
-	<-	.broadcast(tell,targetAhead).
+	:	targetAhead.
 
 // watchTarget - recursive faceTarget
 +!watchTarget
@@ -139,15 +137,13 @@ targetFar :-
 +!move
 	: 	velocity(_,_,SPEED,_) &
 		SPEED == 0.0
-	<-	thrust(on);
-		.broadcast(tell,moving).
+	<-	thrust(on).
 +!move.
 
 // Stop if moving
 +!stopMoving
 	: 	velocity(_,_,SPEED,_) &
 		SPEED \== 0.0
-	<-	thrust(off);
-		.broadcast(tell,stopping).
+	<-	thrust(off).
 +!stopMoving.
 		
