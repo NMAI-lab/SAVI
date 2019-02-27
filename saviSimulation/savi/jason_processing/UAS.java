@@ -126,7 +126,7 @@ public class UAS extends AgentModel {
             double dist = polar.get(Geometry.DISTANCE);
             if ((azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.)&&(dist <perceptionDistance) ) {
 					//it's visible 
-					visibleItems.add(new CameraPerception(wo.type, this.time, azimuth, 0, dist));
+					visibleItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist));
 			} 
 		}
 		return visibleItems;
@@ -134,6 +134,7 @@ public class UAS extends AgentModel {
 	
 	/**
 	 * Detect other UAS with the camera
+	 * TODO: Eliminate this method as the UAS will become a WorldObject.
 	 */
 	protected ArrayList<CameraPerception> UASDetection(List<UAS> obj, int perceptionDistance) {
 		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
