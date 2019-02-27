@@ -42,8 +42,9 @@ public class UAS extends AgentModel {
 	 * @param type
 	 * @param initialPosition
 	 */
-	UAS(String id, String type, PVector initialPosition) {	
+	UAS(String id, String type, PVector initialPosition, double reasoningCyclePeriod) {	
 		// Initialize data values
+		super(reasoningCyclePeriod);
 		this.ID = id;
 		this.type = type;
 		this.initialPosition = initialPosition;

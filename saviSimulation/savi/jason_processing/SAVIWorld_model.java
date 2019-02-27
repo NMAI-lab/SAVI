@@ -33,6 +33,7 @@ public class SAVIWorld_model extends PApplet {
 	int WIFI_PERCEPTION_DISTANCE;
 	int NUMBER_UAS;
 	int RANDOM_SEED;
+	double REASONING_CYCLE_PERIOD;
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
 	int X_PIXELS = 900;
 	int Y_PIXELS = 700;
@@ -102,6 +103,7 @@ public void setup() {
 	WIFI_PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("WIFI_PERCEPTION_DISTANCE"));
 	NUMBER_UAS = Integer.parseInt(modelProps.getProperty("NUMBER_UAS"));
 	RANDOM_SEED = Integer.parseInt(modelProps.getProperty("RANDOM_SEED"));
+	REASONING_CYCLE_PERIOD = (double) Double.parseDouble(modelProps.getProperty("REASONING_CYCLE_PERIOD"));
 	// let's assume a 2D environment
 
 	
@@ -134,7 +136,7 @@ public void setup() {
 		if(RANDOM_SEED != -1) {
 			rand = new Random(RANDOM_SEED+i);
 		}
-		UAS_list.add(new UAS(Integer.toString(i), "demo", new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1)));
+		UAS_list.add(new UAS(Integer.toString(i), "demo", new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1),REASONING_CYCLE_PERIOD));
 	}    
 	for(int i = 0; i < NUMBER_TREES; i++) { //Put trees
 		//_PIXELS is the maximum and the 1 is our minimum.

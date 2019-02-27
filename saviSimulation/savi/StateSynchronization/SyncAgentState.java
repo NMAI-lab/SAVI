@@ -8,7 +8,7 @@ public class SyncAgentState {
 	private Queue<String> msgOut;				// Messages that the agent is sending
 	private Queue<String> msgIn;				// Messages for the agent
 
-	private double reasoningCyclePeriod = 5;	// How much time it should take to do a reasoning cycle - meaning that this much
+	private double reasoningCyclePeriod;		// How much time it should take to do a reasoning cycle - meaning that this much
 												// time must elapse after a perception is received before a new perception can be received,
 												// any actions can be allowed out of the reasoning cycle, and any mail sent
 	private double lastTimeStamp;				// Last time stamp for a perception or mail check - used for limiting the reasoning cycles
@@ -17,10 +17,19 @@ public class SyncAgentState {
 	 *  Constructor for the SyncAgentState class.
 	 */
 	public SyncAgentState() {
+		this(0);		// Set a default value for reasoningCyclePeriod
+	}
+	
+	
+	/**
+	 *  Constructor for the SyncAgentState class.
+	 */
+	public SyncAgentState(double reasoningCyclePeriod) {
 		this.perceptions = null;
 		this.actions = new LinkedList<String>();
 		this.msgOut = new LinkedList<String>();
 		this.msgIn = new LinkedList<String>();
+		this.reasoningCyclePeriod = reasoningCyclePeriod;
 	}
 	
 	
