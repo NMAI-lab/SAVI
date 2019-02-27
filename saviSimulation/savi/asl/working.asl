@@ -5,11 +5,12 @@
  */
 
 // Set initial beliefs and test goals
-pi(3.14159265359).	// Set the constant for PI
+pi(3.14159265359).			// Set the constant for PI
+proximityThreshold(30.0).
 
 /* Rules */
-// Define the turn angle
 
+// Define the turn angle
 turnAngle(A) :-
 	((A = PI/16) & pi(PI)).
 
@@ -44,6 +45,18 @@ targetAhead :-
 	((not noTarget) &
 	(not targetLeft) &
 	(not targetRight)).
+	
+// Target is close
+targetClose :-
+	target(_,_,_,_,RANGE) &
+	proximityThreshold(CLOSE) &
+	(RANGE < CLOSE).
+
+// Target is far
+targetFar :-
+	target(_,_,_,_,RANGE) &
+	proximityThreshold(CLOSE) &
+	(RANGE > CLOSE).
 	
 // Initial goals
 //!findTarget.		// Find a target
@@ -95,16 +108,17 @@ targetAhead :-
 	<-	!faceTarget;
 		!watchTarget.
 		
-// Follow a target that is ahead
+// Follow a target that is ahead but not close
 +!followTarget
-	:	target(_,_,_,_,_)
+	:	targetFar
 	<-	!move;
 		!faceTarget;
 		!followTarget.
 		
-// Can't see a target, stop find one.
+// Follow a target that is close (stop moving, don't want to pass it)
+// OR Can't see a target, stop find one.
 +!followTarget
-	:	noTarget
+	:	noTarget | targetClose
 	<-	!stopMoving;
 		!faceTarget;
 		!followTarget.
