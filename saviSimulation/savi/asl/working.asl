@@ -6,7 +6,8 @@
 
 // Set initial beliefs and test goals
 pi(3.14159265359).			// Set the constant for PI
-proximityThreshold(30.0).
+proximityThreshold(30.0).	// When the agent is closer than this threashold, no need to get closer
+targetLastRight.
 
 /* Rules */
 
@@ -69,9 +70,16 @@ targetFar :-
 
 // Plan for trying to find a target
 +!findTarget
-	:	noTarget
+	:	noTarget & targetLastRight
+	<-	turn(right);
+		.broadcast(tell,turning(right)).
+		
+// Plan for trying to find a target
++!findTarget
+	:	noTarget & targetLastLeft
 	<-	turn(left);
 		.broadcast(tell,turning(left)).
+	
 +!findTarget.
 
 // Default plan for observing target - force recursion.
@@ -89,12 +97,16 @@ targetFar :-
 +!faceTarget
 	:	targetRight
 	<-	turn(right);
+		+targetLastRight;
+		-targetLastLeft;
 		.broadcast(tell,turning(right)).
 		
 // Face a target to the left
 +!faceTarget
 	:	targetLeft
 	<-	turn(left);
+		+targetLastLeft;
+		-targetLastRight;
 		.broadcast(tell,turning(left)).
 		
 // Face a target, goal achieved
