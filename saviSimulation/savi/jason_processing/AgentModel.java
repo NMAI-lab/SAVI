@@ -14,6 +14,14 @@ public abstract class AgentModel {
 
 	protected SyncAgentState agentState; //visible to subclasses
 	
+	public AgentModel() {
+		this(0);
+	}
+	
+	public AgentModel(double reasoningCyclePeriod) {
+		this.agentState = new SyncAgentState(reasoningCyclePeriod);
+	}
+	
 	protected Thread theAgentThread;
 	
 	public void setAgentThread(Thread t) {
