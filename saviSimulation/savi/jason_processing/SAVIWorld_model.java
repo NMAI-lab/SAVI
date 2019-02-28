@@ -33,6 +33,7 @@ public class SAVIWorld_model extends PApplet {
 	int TREE_SIZE;
 	int HOUSE_SIZE;
 	int THREAT_SIZE;
+	int UAS_SIZE;
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
 	int X_PIXELS = 900;
 	int Y_PIXELS = 700;
@@ -58,7 +59,7 @@ public class SAVIWorld_model extends PApplet {
 	JasonMAS jasonAgents; // the BDI agents
 
 	Button playButton,stopButton,pauseButton;
-	PShape robot,treeImage,houseImage,threatImage,play,pause,restart;
+	PShape uasImage,treeImage,houseImage,threatImage,play,pause,restart;
 
 	public void settings() { size(X_PIXELS,Y_PIXELS, P3D);  smooth(8); } // 3D environment
 
@@ -105,7 +106,7 @@ public void setup() {
 	TREE_SIZE = Integer.parseInt(modelProps.getProperty("TREE_SIZE"));
 	HOUSE_SIZE = Integer.parseInt(modelProps.getProperty("HOUSE_SIZE"));
 	THREAT_SIZE = Integer.parseInt(modelProps.getProperty("THREAT_SIZE"));
-
+	UAS_SIZE = Integer.parseInt(modelProps.getProperty("UAS_SIZE"));
 	
 	// Initialization code goes here
 	simTime = 0;      // seconds
@@ -128,6 +129,7 @@ public void setup() {
 	pause=loadShape("SimImages/pause.svg");
 	restart=loadShape("SimImages/replay.svg");
 	threatImage=loadShape("SimImages/warning.svg");
+	uasImage = loadShape("SimImages/robot.svg");
 	
 	Random rand = new Random();
 	for(int i = 0; i < NUMBER_UAS; i++)  { //Put UAS
@@ -136,7 +138,7 @@ public void setup() {
 		if(RANDOM_SEED != -1) {
 			rand = new Random(RANDOM_SEED+i);
 		}
-		UAS_list.add(new UAS(Integer.toString(i), "demo", new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1),REASONING_CYCLE_PERIOD));
+		UAS_list.add(new UAS(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), UAS_SIZE,"demo", this, uasImage, REASONING_CYCLE_PERIOD));
 	}    
 	for(int i = 0; i < NUMBER_TREES; i++) { //Put trees
 		//_PIXELS is the maximum and the 1 is our minimum.
@@ -170,7 +172,7 @@ public void setup() {
 	//======= set up Jason BDI agents ================
 	Map<String,AgentModel> agentList = new HashMap<String,AgentModel>();
 	for(UAS uas: UAS_list) {//Create UAS agents
-		agentList.put(uas.getID(), uas);
+		agentList.put(uas.uasBehavior.getID(), uas.uasBehavior);
 	}  
 	jasonAgents = new JasonMAS(agentList);
 	jasonAgents.startAgents();
@@ -285,22 +287,22 @@ public void drawUAS(UAS uas){
 	s.translate(-s.width/2,-s.height/2);
 
 	// to adjust compassAngle to the image
-	s.rotate((float) ((float)uas.getCompassAngle()+Math.PI/2));
+	s.rotate((float) ((float)uas.uasBehavior.getCompassAngle()+Math.PI/2));
 
 	//draw image
-	shape(s, uas.getPosition().x, uas.getPosition().y, 26, 26);
+	shape(s, uas.uasBehavior.getPosition().x, uas.uasBehavior.getPosition().y, 26, 26);
 
 	noFill();
 
 	//draw perception area
-	arc(uas.getPosition().x, uas.getPosition().y, PERCEPTION_DISTANCE*2, PERCEPTION_DISTANCE*2,(float)uas.getCompassAngle()-(float)Math.PI/2, (float)uas.getCompassAngle()+(float)Math.PI/2);
+	arc(uas.uasBehavior.getPosition().x, uas.uasBehavior.getPosition().y, PERCEPTION_DISTANCE*2, PERCEPTION_DISTANCE*2,(float)uas.uasBehavior.getCompassAngle()-(float)Math.PI/2, (float)uas.uasBehavior.getCompassAngle()+(float)Math.PI/2);
 
 	//draw circle on objects percepted
-	for(CameraPerception cpi : uas.visibleItems){
-		double angle = (uas.getCompassAngle()+cpi.getParameters().get(0));// % 2* Math.PI;
+	for(CameraPerception cpi : uas.uasBehavior.visibleItems){
+		double angle = (uas.uasBehavior.getCompassAngle()+cpi.getParameters().get(0));// % 2* Math.PI;
 		double cosv = Math.cos(angle);
 		double sinv = Math.sin(angle);
-		p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+uas.getPosition().x, Math.round(sinv*cpi.getParameters().get(2))+uas.getPosition().y); 
+		p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+uas.uasBehavior.getPosition().x, Math.round(sinv*cpi.getParameters().get(2))+uas.uasBehavior.getPosition().y); 
 		// draw circle over items visualized
 		ellipse(p1.x,p1.y, 26, 26);
 	}
@@ -329,12 +331,12 @@ public void pauseSimulation(){
 		
 		System.out.println("pausing simulation!-------===================================================");
 		for(UAS uasi:UAS_list){ //unpause all agents
-			uasi.pauseAgent();			
+			uasi.uasBehavior.pauseAgent();			
 		}
 	} else { //the sim was paused, unpause it
 		System.out.println("resuming simulation!-------");
 		for(UAS uasi:UAS_list){ //pause all agents
-			uasi.unPauseAgent();			
+			uasi.uasBehavior.unPauseAgent();			
 		}	
 	}
 	simPaused = !simPaused;
