@@ -53,7 +53,6 @@ public class SAVIWorld_model extends PApplet {
 	boolean simPaused;// simulation paused or not
 
 	List<WorldObject> objects = new ArrayList<WorldObject>();//List of world objects  
-	//List<Threat> threats = new ArrayList<Threat>(); //List of threats
 	List <UAS> UAS_list = new ArrayList<UAS>(); //List of UAS 
 
 	JasonMAS jasonAgents; // the BDI agents
