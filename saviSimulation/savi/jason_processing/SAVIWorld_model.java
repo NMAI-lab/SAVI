@@ -30,6 +30,9 @@ public class SAVIWorld_model extends PApplet {
 	int NUMBER_UAS;
 	int RANDOM_SEED;
 	double REASONING_CYCLE_PERIOD;
+	int TREE_SIZE;
+	int HOUSE_SIZE;
+	int THREAT_SIZE;
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
 	int X_PIXELS = 900;
 	int Y_PIXELS = 700;
@@ -37,10 +40,6 @@ public class SAVIWorld_model extends PApplet {
 	// TimeStamp file names
 	long lastCycleTimeStamp;
 	String timeStampFileName;
-	
-	public static final int TREE_SIZE = 15;
-	public static final int HOUSE_SIZE = 15;
-	public static final int THREAT_SIZE = 10;
 	
 	private static Logger logger = Logger.getLogger(SAVIWorld_model.class.getName());
 	
@@ -104,7 +103,9 @@ public void setup() {
 	NUMBER_UAS = Integer.parseInt(modelProps.getProperty("NUMBER_UAS"));
 	RANDOM_SEED = Integer.parseInt(modelProps.getProperty("RANDOM_SEED"));
 	REASONING_CYCLE_PERIOD = (double) Double.parseDouble(modelProps.getProperty("REASONING_CYCLE_PERIOD"));
-	// let's assume a 2D environment
+	TREE_SIZE = Integer.parseInt(modelProps.getProperty("TREE_SIZE"));
+	HOUSE_SIZE = Integer.parseInt(modelProps.getProperty("HOUSE_SIZE"));
+	THREAT_SIZE = Integer.parseInt(modelProps.getProperty("THREAT_SIZE"));
 
 	
 	// Initialization code goes here
