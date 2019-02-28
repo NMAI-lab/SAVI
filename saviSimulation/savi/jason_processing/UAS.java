@@ -4,7 +4,7 @@ import java.util.*;
 
 import processing.core.*;
 
-import processing.data.*; 
+import processing.data.*;
 import processing.event.*; 
 import processing.opengl.*;
 import savi.StateSynchronization.*;
@@ -16,14 +16,6 @@ public class UAS extends WorldObject {
 	//-----------------------------------------
 	// DATA (or state variables)
 	//-----------------------------------------  
-	//String ID; -- Note: moved to superclass 
-	//String type; -- same
-	//SyncAgentState agentState; --same
-	PVector initialPosition;
-	double speedVal;
-	double compasAngle;
-	double time;	
-	double wifi;
 	UASBehavior uasBehavior;
 	
 	//***********************************************************//
@@ -50,6 +42,10 @@ public class UAS extends WorldObject {
 	
 	public void update(double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<UAS> uas_list) {
 		this.uasBehavior.update(timestep, perceptionDistance, WIFI_PERCEPTION_DISTANCE, objects, uas_list);
+	}
+	
+	public UASBehavior getBehavior() {		
+		return uasBehavior;
 	}
 	
 }

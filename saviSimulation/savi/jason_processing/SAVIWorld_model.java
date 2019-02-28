@@ -172,7 +172,7 @@ public void setup() {
 	//======= set up Jason BDI agents ================
 	Map<String,AgentModel> agentList = new HashMap<String,AgentModel>();
 	for(UAS uas: UAS_list) {//Create UAS agents
-		agentList.put(uas.uasBehavior.getID(), uas.uasBehavior);
+		agentList.put(uas.getBehavior().getID(), uas.getBehavior());
 	}  
 	jasonAgents = new JasonMAS(agentList);
 	jasonAgents.startAgents();
@@ -287,22 +287,22 @@ public void drawUAS(UAS uas){
 	s.translate(-s.width/2,-s.height/2);
 
 	// to adjust compassAngle to the image
-	s.rotate((float) ((float)uas.uasBehavior.getCompassAngle()+Math.PI/2));
+	s.rotate((float) ((float)uas.getBehavior().getCompassAngle()+Math.PI/2));
 
 	//draw image
-	shape(s, uas.uasBehavior.getPosition().x, uas.uasBehavior.getPosition().y, 26, 26);
+	shape(s, uas.getBehavior().getPosition().x, uas.getBehavior().getPosition().y, 26, 26);
 
 	noFill();
 
 	//draw perception area
-	arc(uas.uasBehavior.getPosition().x, uas.uasBehavior.getPosition().y, PERCEPTION_DISTANCE*2, PERCEPTION_DISTANCE*2,(float)uas.uasBehavior.getCompassAngle()-(float)Math.PI/2, (float)uas.uasBehavior.getCompassAngle()+(float)Math.PI/2);
+	arc(uas.getBehavior().getPosition().x, uas.getBehavior().getPosition().y, PERCEPTION_DISTANCE*2, PERCEPTION_DISTANCE*2,(float)uas.getBehavior().getCompassAngle()-(float)Math.PI/2, (float)uas.getBehavior().getCompassAngle()+(float)Math.PI/2);
 
 	//draw circle on objects percepted
-	for(CameraPerception cpi : uas.uasBehavior.visibleItems){
-		double angle = (uas.uasBehavior.getCompassAngle()+cpi.getParameters().get(0));// % 2* Math.PI;
+	for(CameraPerception cpi : uas.getBehavior().visibleItems){
+		double angle = (uas.getBehavior().getCompassAngle()+cpi.getParameters().get(0));// % 2* Math.PI;
 		double cosv = Math.cos(angle);
 		double sinv = Math.sin(angle);
-		p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+uas.uasBehavior.getPosition().x, Math.round(sinv*cpi.getParameters().get(2))+uas.uasBehavior.getPosition().y); 
+		p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+uas.getBehavior().getPosition().x, Math.round(sinv*cpi.getParameters().get(2))+uas.getBehavior().getPosition().y); 
 		// draw circle over items visualized
 		ellipse(p1.x,p1.y, 26, 26);
 	}
@@ -331,12 +331,12 @@ public void pauseSimulation(){
 		
 		System.out.println("pausing simulation!-------===================================================");
 		for(UAS uasi:UAS_list){ //unpause all agents
-			uasi.uasBehavior.pauseAgent();			
+			uasi.getBehavior().pauseAgent();			
 		}
 	} else { //the sim was paused, unpause it
 		System.out.println("resuming simulation!-------");
 		for(UAS uasi:UAS_list){ //pause all agents
-			uasi.uasBehavior.unPauseAgent();			
+			uasi.getBehavior().unPauseAgent();			
 		}	
 	}
 	simPaused = !simPaused;

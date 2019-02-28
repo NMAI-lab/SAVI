@@ -105,7 +105,7 @@ public class UASBehavior extends AgentModel {
 			if(dist < WIFI_PERCEPTION_DISTANCE & wifi > 0) {
 				Queue<String> msg = new LinkedList<String>();
 				msg = myMsgOutCopy;
-				if(this.ID != uas_list.get(i).uasBehavior.ID & uas_list.get(i).wifi > 0 ) {
+				if(this.ID != uas_list.get(i).uasBehavior.ID & uas_list.get(i).uasBehavior.wifi > 0 ) {
 					while(!msg.isEmpty()) {
 						uas_list.get(i).uasBehavior.agentState.setMsgIn(msg.poll());			
 					}
@@ -148,7 +148,7 @@ public class UASBehavior extends AgentModel {
 		for(UAS wo:obj) {   
 			if(! this.ID.equals(wo.uasBehavior.getID())) {
 				//get relative position to UAS:
-	            List<Double> polar = Geometry.relativePositionPolar(wo.position, this.position, this.compasAngle);
+	            List<Double> polar = Geometry.relativePositionPolar(wo.uasBehavior.position, this.position, this.compasAngle);
 	            
 				//calculate distance
 	            double azimuth = polar.get(Geometry.AZIMUTH);
@@ -156,7 +156,7 @@ public class UASBehavior extends AgentModel {
 	            double dist = polar.get(Geometry.DISTANCE);
 	            if ((azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.)&&(dist <perceptionDistance) ) {
 						//it's visible 
-						visibleItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist));
+						visibleItems.add(new CameraPerception(wo.uasBehavior.type, this.time, azimuth, elevation, dist));
 				} 			
 			}
 			
