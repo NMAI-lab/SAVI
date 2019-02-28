@@ -50,7 +50,13 @@ public class UAS extends AgentModel {
 		this.initialPosition = initialPosition;
 		wifi = 100; //Probability of having the wifi working 0-100
 		//TODO: "break the wifi during simulation time		
-		reset();		
+		this.position = initialPosition.copy();
+		this.speedVal = 0;	
+		this.time = 0;
+		this.compasAngle = 0;
+		agentState = new SyncAgentState();
+		this.visibleItems = new ArrayList<CameraPerception>();
+		updatePercepts();	
 	}
 
 	public PVector getPosition() {
@@ -185,18 +191,7 @@ public class UAS extends AgentModel {
 				this.speedVal = 0;  
 		}					
 	}	
-	/**
-	 * Reset the UAS state
-	 */
-	public void reset(){
-		this.position = initialPosition.copy();
-		this.speedVal = 0;	
-		this.time = 0;
-		this.compasAngle = 0;
-		agentState = new SyncAgentState();
-		this.visibleItems = new ArrayList<CameraPerception>();
-		updatePercepts();		
-	}	
+	
 	/**
 	 * Get UAS id
 	 * @return
