@@ -41,9 +41,10 @@ public class SAVIWorld_model extends PApplet {
 	int X_PIXELS = 900;
 	int Y_PIXELS = 700;
 	
-//	public static final int TREE_SIZE = 15;
-//	public static final int HOUSE_SIZE = 15;
-//	public static final int THREAT_SIZE = 10;
+	
+	// TimeStamp file names
+	long lastCycleTimeStamp;
+	String timeStampFileName;
 	
 	private static Logger logger = Logger.getLogger(SAVIWorld_model.class.getName());
 	
