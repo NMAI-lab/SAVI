@@ -76,12 +76,12 @@ targetFar :-
 // Plan for trying to find a target
 +!findTarget
 	:	noTarget & targetLastLeft
-	<-	turn(left);
-		.broadcast(tell,turning(left)).
-	
+	<-	turn(left).
+
+// See a target. Broadcast it.	
 +!findTarget
 	:	target(threat,TYPE,AZ,EL,RANGE)
-	<-	.broadcast(tell,threatSeen(TYPE,AZ,EL,RANGE).
+	<-	.broadcast(tell,threatSeen(TYPE,AZ,EL,RANGE)).
 
 // Default plan for observing target - force recursion.
 +!observeTarget

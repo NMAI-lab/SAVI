@@ -22,6 +22,8 @@ import savi.jason_processing.*;
 
 public class GetRelativePosition extends DefaultInternalAction {
 	
+	private static final long serialVersionUID = 2L;
+	
 	public static final int targetPositionXIndex = 0;
 	public static final int targetPositionYIndex = 1;
 	public static final int targetPositionZIndex = 2;
