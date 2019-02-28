@@ -139,28 +139,20 @@ public class UAS extends AgentModel {
 	 */
 	protected ArrayList<CameraPerception> UASDetection(List<UAS> obj, int perceptionDistance) {
 		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
-		for(int i=0; i<obj.size(); i++) {   
-			if(! this.ID.equals(obj.get(i).getID())) {
+		for(UAS uas:obj) {   
+			if(! this.ID.equals(uas.getID())) {
 				//get relative position to UAS:
-				float deltax = obj.get(i).getPosition().x - getPosition().x;
-				float deltay = obj.get(i).getPosition().y - getPosition().y;
-				//calculate distance
-				double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
-				if(dist<perceptionDistance) {
-					double theta = Math.atan2(deltay, deltax);
-					double angle = (theta - this.compasAngle);// % 2* Math.PI; //(adjust to 0, 2pi) interval
-					// to normalize between 0 to 2 Pi
-					if(angle<0) angle+=2*Math.PI;
-					if(angle>2*Math.PI) angle-=2*Math.PI;
-					if (angle < Math.PI/2. || angle > 3* Math.PI/2.) {
+				List<Double> polar = Geometry.relativePositionPolar(uas.position, this.position, this.compasAngle);
+	            
+	            //calculate distance
+	            double azimuth = polar.get(Geometry.AZIMUTH);
+	            double elevation = polar.get(Geometry.ELEVATION);
+	            double dist = polar.get(Geometry.DISTANCE);
+	            if ((azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.)&&(dist <perceptionDistance) ) {
 						//it's visible 
-						visibleItems.add(new CameraPerception(obj.get(i).getType(),obj.get(i).getID(), this.time, angle, 0, dist));
-					} //else {
-							//	System.out.println(obj.get(i).getType() + i + " not visible.");
-							//}
-				}		
-			}
-			
+						visibleItems.add(new CameraPerception(uas.type, this.time, azimuth, elevation, dist));
+				}
+			}		
 		}
 		return visibleItems;
 	}
