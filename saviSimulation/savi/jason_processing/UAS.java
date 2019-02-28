@@ -40,8 +40,8 @@ public class UAS extends WorldObject {
 		this.uasBehavior = new UASBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod);	
 	}
 	
-	public void update(double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects) {
-		this.uasBehavior.update(timestep, perceptionDistance, WIFI_PERCEPTION_DISTANCE, objects);
+	public void update(double simtime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects) {
+		this.uasBehavior.update(simtime, perceptionDistance, WIFI_PERCEPTION_DISTANCE, objects);
 	}
 	
 	public UASBehavior getBehavior() {		

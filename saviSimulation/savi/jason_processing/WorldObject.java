@@ -42,7 +42,7 @@ public class WorldObject{
 
 		}
 		
-		public void update(double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects) {
+		public void update(double simtime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects) {
 			// most worldObjects do nothing
 		}
 

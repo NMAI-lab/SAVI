@@ -204,8 +204,13 @@ public void setup() {
 			background(240); // white background
 
 			for(WorldObject wo: objects){ //Makes all objects on screen.
-			  wo.draw();
-			}		
+				if(wo instanceof UAS) {
+					drawUAS((UAS)wo);
+				} 
+				else {
+					wo.draw();
+				}
+			}	
 			      
 			playButton.label="play";
 
@@ -237,7 +242,7 @@ public void setup() {
 	logger.info("== SAVIWorld_Model draw() == at:"+simTime);
 	// 2. STATE UPDATE (SIMULATION)
 	for(WorldObject oi: objects){ //Update threats
-			oi.update(simTime, PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, objects);
+			oi.update(simTime, simTimeDelta, PERCEPTION_DISTANCE, WIFI_PERCEPTION_DISTANCE, objects);
 	}  
 //	for(UAS uasi:UAS_list){ //Create UAS agents
 		//uasi.getAgentState().run();
