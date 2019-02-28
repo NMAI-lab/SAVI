@@ -4,7 +4,7 @@ import java.util.*;
 
 import processing.core.*;
 
-import processing.data.*; 
+import processing.data.*;
 import processing.event.*; 
 import processing.opengl.*;
 import savi.StateSynchronization.*;
@@ -70,7 +70,7 @@ public class UASBehavior extends AgentModel {
 	 * update
 	 * process actions from the queue, update the UAS state variable and set the new perceptions
 	 */
-	public void update(double simTime, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<UAS> uas_list){
+	public void update(double simTime, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects){
 		//Process actions to update speedVal & compassAngle
 		processAgentActions();
 		//Calculate new position
@@ -87,12 +87,15 @@ public class UASBehavior extends AgentModel {
 		//Calculate objects detected with camera	
 		for (CameraPerception c: objectDetection(objects, perceptionDistance)) {
 			visibleItems.add(c);
-		}	
+		}
+/*		
 		//Calculate UAS detected with camera
 		for (CameraPerception c: UASDetection(uas_list, perceptionDistance)) {
 			visibleItems.add(c);
 		}	
+*/		
 		
+/*		
 		//Calculate UAS detected for wifi communication
 		Queue<String> myMsgOutCopy = new LinkedList<String>();
 		myMsgOutCopy = this.agentState.getMsgOutAll();
@@ -112,7 +115,7 @@ public class UASBehavior extends AgentModel {
 				}				
 			}		
 		}
-		
+*/		
 		
 		updatePercepts(); //Update percepts
 		//this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
@@ -143,6 +146,7 @@ public class UASBehavior extends AgentModel {
 	 * Detect other UAS with the camera
 	 * TODO: Eliminate this method as the UAS will become a WorldObject.
 	 */
+/*	
 	protected ArrayList<CameraPerception> UASDetection(List<UAS> obj, int perceptionDistance) {
 		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
 		for(UAS wo:obj) {   
@@ -163,6 +167,7 @@ public class UASBehavior extends AgentModel {
 		}
 		return visibleItems;
 	}
+*/	
 	/**
 	 * Process the action in the queue to update the speedVal and compassAngle
 	 */

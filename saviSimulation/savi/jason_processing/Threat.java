@@ -1,5 +1,6 @@
 package savi.jason_processing;
 
+import java.util.List;
 import java.util.Random;
 
 import processing.core.PConstants;
@@ -38,7 +39,7 @@ public class Threat extends WorldObject{
 
 	// State Update: Randomly move up, down, left, right, or stay in one place
 	@Override
-	public void update(double timestep){
+	public void update(double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects){
 		
 		double speedValue = this.maxSpeed *(1 - 0.6*rand.nextDouble()); // speed between 0.4 * maxSpeed and MaxSpeed
 		

@@ -1,5 +1,6 @@
 package savi.jason_processing;
 
+import java.util.List;
 import java.util.Random;
 
 import processing.core.PConstants;
@@ -41,7 +42,7 @@ public class WorldObject{
 
 		}
 		
-		public void update(double timestep) {
+		public void update(double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects) {
 			// most worldObjects do nothing
 		}
 

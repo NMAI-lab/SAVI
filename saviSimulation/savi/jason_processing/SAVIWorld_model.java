@@ -53,8 +53,7 @@ public class SAVIWorld_model extends PApplet {
 	double simTimeDelta; // discrete-time step (in milliseconds)
 	boolean simPaused;// simulation paused or not
 
-	List<WorldObject> objects = new ArrayList<WorldObject>();//List of world objects  
-	List <UAS> UAS_list = new ArrayList<UAS>(); //List of UAS 
+	List<WorldObject> objects = new ArrayList<WorldObject>();//List of world objects
 
 	JasonMAS jasonAgents; // the BDI agents
 
@@ -132,14 +131,16 @@ public void setup() {
 	uasImage = loadShape("SimImages/robot.svg");
 	
 	Random rand = new Random();
+	
 	for(int i = 0; i < NUMBER_UAS; i++)  { //Put UAS
 		//_PIXELS is the maximum and the 1 is our minimum
 		//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
 		if(RANDOM_SEED != -1) {
 			rand = new Random(RANDOM_SEED+i);
 		}
-		UAS_list.add(new UAS(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), UAS_SIZE,"demo", this, uasImage, REASONING_CYCLE_PERIOD));
-	}    
+		objects.add(new UAS(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), UAS_SIZE,"demo", this, uasImage, REASONING_CYCLE_PERIOD));
+	}
+	
 	for(int i = 0; i < NUMBER_TREES; i++) { //Put trees
 		//_PIXELS is the maximum and the 1 is our minimum.
 		if(RANDOM_SEED != -1) {
@@ -162,7 +163,7 @@ public void setup() {
 		objects.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, RANDOM_SEED, MAX_SPEED, THREAT_SIZE, "threat", this, threatImage));
 
 	}          
-  
+
   // smoother rendering (optional)
 	frameRate(FRAME_RATE); // max 60 draw() calls per real second. (Can make it a larger value for the simulation to go faster)
 	// simTimeDelta is now 1000/FRAME_RATE, meaning the simulation is in real-time if the processor can manage it.
@@ -171,9 +172,13 @@ public void setup() {
 
 	//======= set up Jason BDI agents ================
 	Map<String,AgentModel> agentList = new HashMap<String,AgentModel>();
-	for(UAS uas: UAS_list) {//Create UAS agents
-		agentList.put(uas.getBehavior().getID(), uas.getBehavior());
-	}  
+	
+	for(WorldObject wo: objects) {//Create UAS agents
+		if(wo instanceof UAS) {
+			agentList.put(((UAS)wo).getBehavior().getID(), ((UAS)wo).getBehavior());
+		}
+	}
+	
 	jasonAgents = new JasonMAS(agentList);
 	jasonAgents.startAgents();
 	//==========================================
@@ -197,11 +202,6 @@ public void setup() {
 	public void draw(){
 		if(simPaused){
 			background(240); // white background
-
-			for(UAS uasi: UAS_list){ //Draw UAS agents
-				drawUAS(uasi);
-				//uasi.getAgentState().pause(); TODO: why was this pause() called?
-			}
 
 			for(WorldObject wo: objects){ //Makes all objects on screen.
 			  wo.draw();
@@ -237,21 +237,23 @@ public void setup() {
 	logger.info("== SAVIWorld_Model draw() == at:"+simTime);
 	// 2. STATE UPDATE (SIMULATION)
 	for(WorldObject oi: objects){ //Update threats
-		oi.update(simTimeDelta); //anything not a threat will update via an empty method.
+			oi.update(simTime, PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, objects);
 	}  
-	for(UAS uasi:UAS_list){ //Create UAS agents
+//	for(UAS uasi:UAS_list){ //Create UAS agents
 		//uasi.getAgentState().run();
-		uasi.update(simTime, PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, objects,UAS_list);
-	}
+//		uasi.update(simTime, PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, objects,UAS_list);
+//	}
 	// 3. VISUALIZATION
 	//------------------
 	background(240); // white background
-	for(int i = 0; i < NUMBER_UAS; i++){ //Draw UAS agents
-		drawUAS(UAS_list.get(i));	
-	}  
     
 	for(WorldObject wo: objects){ //Makes all objects on screen.
-		  wo.draw();
+		if(wo instanceof UAS) {
+			drawUAS((UAS)wo);
+		} 
+		else {
+			wo.draw();
+		}
 	}	
         
 	playButton.label="pause";
@@ -319,7 +321,6 @@ public void resetSimulation(){
 	simTime = 0;
 
 	objects.removeAll(objects);
-	UAS_list.removeAll(UAS_list);
 	
 	setup();
 	// Unpause the simulation =" use other method to ensure that agents are also unpaused
@@ -330,13 +331,16 @@ public void pauseSimulation(){
 	if(!simPaused) { //the sim is NOT paused and we want to pause it
 		
 		System.out.println("pausing simulation!-------===================================================");
-		for(UAS uasi:UAS_list){ //unpause all agents
-			uasi.getBehavior().pauseAgent();			
+		for(WorldObject wo: objects){ //unpause all agents
+			if(wo instanceof UAS) {
+				((UAS)wo).getBehavior().pauseAgent();
+			}	
 		}
 	} else { //the sim was paused, unpause it
 		System.out.println("resuming simulation!-------");
-		for(UAS uasi:UAS_list){ //pause all agents
-			uasi.getBehavior().unPauseAgent();			
+		for(WorldObject wo: objects){ //pause all agents
+			if(wo instanceof UAS)
+				((UAS)wo).getBehavior().unPauseAgent();			
 		}	
 	}
 	simPaused = !simPaused;
