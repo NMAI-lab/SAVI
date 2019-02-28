@@ -26,7 +26,6 @@ public class UAS extends AgentModel {
 	ArrayList<CameraPerception> visibleItems;
 	double time;	
 	double wifi;
-	PShape uasShape;
 	
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
@@ -51,7 +50,6 @@ public class UAS extends AgentModel {
 		this.initialPosition = initialPosition;
 		wifi = 100; //Probability of having the wifi working 0-100
 		//TODO: "break the wifi during simulation time
-//		uasShape=loadShape("SimImages/robot.svg");
 		this.speedVal = 0;
 		this.time = 0;
 		this.compasAngle = 0;
