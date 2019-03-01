@@ -46,5 +46,7 @@ public class WorldObject{
 			// most worldObjects do nothing
 		}
 
-
+		public PVector getPosition() {		
+			return this.position;
+		}
 }

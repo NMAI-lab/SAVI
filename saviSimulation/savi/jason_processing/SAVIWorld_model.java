@@ -241,13 +241,9 @@ public void setup() {
 	
 	logger.info("== SAVIWorld_Model draw() == at:"+simTime);
 	// 2. STATE UPDATE (SIMULATION)
-	for(WorldObject oi: objects){ //Update threats
-			oi.update(simTime, simTimeDelta, PERCEPTION_DISTANCE, WIFI_PERCEPTION_DISTANCE, objects);
+	for(WorldObject wo: objects){ //Update threats
+			wo.update(simTime, simTimeDelta, PERCEPTION_DISTANCE, WIFI_PERCEPTION_DISTANCE, objects);
 	}  
-//	for(UAS uasi:UAS_list){ //Create UAS agents
-		//uasi.getAgentState().run();
-//		uasi.update(simTime, PERCEPTION_DISTANCE,WIFI_PERCEPTION_DISTANCE, objects,UAS_list);
-//	}
 	// 3. VISUALIZATION
 	//------------------
 	background(240); // white background

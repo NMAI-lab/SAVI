@@ -73,51 +73,29 @@ public class UASBehavior extends AgentModel {
 	public void update(double simTime, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects){
 		//Process actions to update speedVal & compassAngle
 		processAgentActions();
-		//Calculate new position
-		double cosv = Math.cos(this.compasAngle);
-		double sinv = Math.sin(this.compasAngle);
-
+		
 		//Update simTime
 		double timeElapsed =  simTime - this.time; //elapsed time since last update 
 		this.time = simTime;
-
+		
+		//Calculate new position
+		double cosv = Math.cos(this.compasAngle);
+		double sinv = Math.sin(this.compasAngle);
 		this.position.add(new PVector(Math.round(cosv*this.speedVal*timeElapsed), Math.round(sinv*this.speedVal*timeElapsed), 0));
+		
 		//Calculate visible items
 		this.visibleItems = new ArrayList<CameraPerception>();
+		
 		//Calculate objects detected with camera	
 		for (CameraPerception c: objectDetection(objects, perceptionDistance)) {
 			visibleItems.add(c);
-		}
-/*		
-		//Calculate UAS detected with camera
-		for (CameraPerception c: UASDetection(uas_list, perceptionDistance)) {
-			visibleItems.add(c);
 		}	
-*/		
-		
-/*		
-		//Calculate UAS detected for wifi communication
-		Queue<String> myMsgOutCopy = new LinkedList<String>();
-		myMsgOutCopy = this.agentState.getMsgOutAll();
-		for(int i=0; i<uas_list.size(); i++) { 
-			//get relative position of UAS to UAS:
-			float deltax = uas_list.get(i).uasBehavior.getPosition().x - getPosition().x;
-			float deltay = uas_list.get(i).uasBehavior.getPosition().x - getPosition().y;
-			//calculate distance
-			double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
-			if(dist < WIFI_PERCEPTION_DISTANCE & wifi > 0) {
-				Queue<String> msg = new LinkedList<String>();
-				msg = myMsgOutCopy;
-				if(this.ID != uas_list.get(i).uasBehavior.ID & uas_list.get(i).uasBehavior.wifi > 0 ) {
-					while(!msg.isEmpty()) {
-						uas_list.get(i).uasBehavior.agentState.setMsgIn(msg.poll());			
-					}
-				}				
-			}		
-		}
-*/		
-		
-		updatePercepts(); //Update percepts
+
+		//Communicate through Wifi
+		wifiCommunication(WIFI_PERCEPTION_DISTANCE, objects);
+			
+		//Update percepts	
+		updatePercepts();
 		//this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
 	}
 	
@@ -126,48 +104,51 @@ public class UASBehavior extends AgentModel {
 	 */
 	protected ArrayList<CameraPerception> objectDetection(List<WorldObject> obj, int perceptionDistance) {
 		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
-		for(WorldObject wo:obj) {   
-			//get relative position to UAS:
-            List<Double> polar = Geometry.relativePositionPolar(wo.position, this.position, this.compasAngle);
+		for(WorldObject wo:obj) {
+			//shouldn't detect itself. if not (uAS and himself)
+			if( !((wo instanceof UAS) && this.ID.equals(((UAS)wo).getBehavior().getID())) ){
+				
+            	List<Double> polar = Geometry.relativePositionPolar(wo.getPosition(), this.position, this.compasAngle);
             
-			//calculate distance
-            double azimuth = polar.get(Geometry.AZIMUTH);
-            double elevation = polar.get(Geometry.ELEVATION);
-            double dist = polar.get(Geometry.DISTANCE);
-            if ((azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.)&&(dist <perceptionDistance) ) {
+            	//calculate distance
+            	double azimuth = polar.get(Geometry.AZIMUTH);
+            	double elevation = polar.get(Geometry.ELEVATION);
+            	double dist = polar.get(Geometry.DISTANCE);
+            	if ((azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.)&&(dist <perceptionDistance) ) {
 					//it's visible 
 					visibleItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist));
-			} 
+            	}
+			}	
+            	
 		}
 		return visibleItems;
 	}
-	
 	/**
-	 * Detect other UAS with the camera
-	 * TODO: Eliminate this method as the UAS will become a WorldObject.
+	 * Wifi Communication
 	 */
-/*	
-	protected ArrayList<CameraPerception> UASDetection(List<UAS> obj, int perceptionDistance) {
-		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
-		for(UAS wo:obj) {   
-			if(! this.ID.equals(wo.uasBehavior.getID())) {
-				//get relative position to UAS:
-	            List<Double> polar = Geometry.relativePositionPolar(wo.uasBehavior.position, this.position, this.compasAngle);
-	            
-				//calculate distance
-	            double azimuth = polar.get(Geometry.AZIMUTH);
-	            double elevation = polar.get(Geometry.ELEVATION);
-	            double dist = polar.get(Geometry.DISTANCE);
-	            if ((azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.)&&(dist <perceptionDistance) ) {
-						//it's visible 
-						visibleItems.add(new CameraPerception(wo.uasBehavior.type, this.time, azimuth, elevation, dist));
-				} 			
-			}
-			
-		}
-		return visibleItems;
+	protected void wifiCommunication(int WIFI_PERCEPTION_DISTANCE, List<WorldObject> objects) {
+		//Calculate UAS detected for wifi communication
+				Queue<String> myMsgOutCopy = new LinkedList<String>();
+				myMsgOutCopy = this.agentState.getMsgOutAll();
+				for(WorldObject wo:objects) {
+					if(wo instanceof UAS){
+						//get relative position of UAS to UAS:
+						float deltax = ((UAS)wo).getBehavior().getPosition().x - this.getPosition().x;
+						float deltay = ((UAS)wo).getBehavior().getPosition().y - this.getPosition().y;
+						//calculate distance
+						double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
+						if(dist < WIFI_PERCEPTION_DISTANCE & wifi > 0) {
+							Queue<String> msg = new LinkedList<String>();
+							msg = myMsgOutCopy;
+							if(this.ID != ((UAS)wo).getBehavior().ID & ((UAS)wo).getBehavior().wifi > 0 ) {
+								while(!msg.isEmpty()) {
+									((UAS)wo).getBehavior().agentState.setMsgIn(msg.poll());			
+								}
+							}				
+						}		
+					}
+				}
 	}
-*/	
 	/**
 	 * Process the action in the queue to update the speedVal and compassAngle
 	 */
