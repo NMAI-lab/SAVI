@@ -19,13 +19,13 @@ public class UASBehavior extends AgentModel {
 	//String ID; -- Note: moved to superclass 
 	//String type; -- same
 	//SyncAgentState agentState; --same
-	PVector initialPosition;
-	PVector position;
-	double speedVal;
-	double compasAngle;
-	ArrayList<CameraPerception> visibleItems;
-	double time;	
-	double wifiProbWorking;
+	private PVector initialPosition;
+	private PVector position;
+	private double speedVal;
+	private double compasAngle;
+	private ArrayList<CameraPerception> visibleItems;
+	private double time;	
+	private double wifiProbWorking;
 	
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
@@ -42,7 +42,7 @@ public class UASBehavior extends AgentModel {
 	 * @param type
 	 * @param initialPosition
 	 */
-	UASBehavior(String id, String type, PVector initialPosition, double reasoningCyclePeriod) {	
+	public UASBehavior(String id, String type, PVector initialPosition, double reasoningCyclePeriod) {	
 		// Initialize data values
 		super(reasoningCyclePeriod);
 		this.ID = id;
@@ -61,6 +61,9 @@ public class UASBehavior extends AgentModel {
 
 	public PVector getPosition() {
 		return position;
+	}
+	public ArrayList<CameraPerception> getVisibleItems() {
+		return visibleItems;
 	}
 
 	public double getCompassAngle() {
