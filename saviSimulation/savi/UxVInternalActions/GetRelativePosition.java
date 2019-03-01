@@ -8,7 +8,7 @@
  * Outputs: azimuth,elevation,range
  */
 
-package UxVInternalActions;
+package savi.UxVInternalActions;
 
 import java.util.List;
 

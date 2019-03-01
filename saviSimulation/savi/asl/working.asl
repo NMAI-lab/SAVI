@@ -78,12 +78,12 @@ targetFar :-
 	:	noTarget & targetLastLeft
 	<-	turn(left).
 
-// See a target. Broadcast it.	
+// See a target. Broadcast it.
 +!findTarget
 	:	target(threat,TYPE,AZ,EL,RANGE) & 
 		position(X_REF,Y_REF,Z_REF,_) &
 		velocity(BEARING,_,_,_)
-	<-	UxVInternalActions.GetAbsolutePosition(X_TARGET,Y_TARGET,Z_TARGET,X_REF,Y_REF,Z_REF,BEARING,AZ,EL,RANGE)
+	<-	savi.UxVInternalActions.GetAbsolutePosition(X_TARGET,Y_TARGET,Z_TARGET,X_REF,Y_REF,Z_REF,BEARING,AZ,EL,RANGE);
 		.broadcast(tell,threatSeen(X_TARGET,Y_TARGET,Z_TARGET)).
 
 // Default plan for observing target - force recursion.
