@@ -1,6 +1,5 @@
 package savi.jason_processing;
 
-import java.util.List;
 import java.util.Random;
 
 import processing.core.PConstants;
@@ -11,19 +10,19 @@ public class WorldObject{
 		//-----------------------------------------
 		// DATA (or state variables)
 		//-----------------------------------------
-		protected int ID;
-		protected PVector position;
-		protected String type;
-		protected SAVIWorld_model simulator;
-		protected PShape image;
-		protected int pixels;
+		int ID;
+		PVector position;
+		String type;
+		SAVIWorld_model simulator;
+		PShape image;
+		int pixels;
 			//-----------------------------------------
 			// METHODS (functions that act on the data)
 			//-----------------------------------------
 			// Constructor: called when an object is created using
 			//              the "new" keyword. It's the only method
 			//              that doesn't have a type (not even void).
-		public WorldObject(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image) {
+		WorldObject(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image) {
 			// Initialize data values
 			ID = id;
 			position=pos;
@@ -42,11 +41,9 @@ public class WorldObject{
 
 		}
 		
-		public void update(double simtime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects) {
+		public void update(double timestep) {
 			// most worldObjects do nothing
 		}
 
-		public PVector getPosition() {		
-			return this.position;
-		}
+
 }
