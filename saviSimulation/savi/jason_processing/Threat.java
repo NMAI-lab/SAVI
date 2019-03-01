@@ -1,5 +1,6 @@
 package savi.jason_processing;
 
+import java.util.List;
 import java.util.Random;
 
 import processing.core.PConstants;
@@ -10,10 +11,10 @@ public class Threat extends WorldObject{
 	//-----------------------------------------
 	// DATA (or state variables)
 	//-----------------------------------------
-	double maxSpeed;
-	Random rand;
-	double movingAngle = 0;
-	PVector nextRandomDestination;
+	private double maxSpeed;
+	private Random rand;
+	private double movingAngle = 0;
+	private PVector nextRandomDestination;
 	//-----------------------------------------
 	// METHODS (functions that act on the data)
 	//-----------------------------------------
@@ -22,7 +23,7 @@ public class Threat extends WorldObject{
 	//              that doesn't have a type (not even void).
 	
 
-	Threat(int id, int x, int y, int seed, double MS, int pxSize, String type, SAVIWorld_model world, PShape img) {
+	public Threat(int id, int x, int y, int seed, double MS, int pxSize, String type, SAVIWorld_model world, PShape img) {
 		// Initialize data values
 		super(id,new PVector(x,y), pxSize, type, world, img);
 		rand = new Random();
@@ -38,7 +39,7 @@ public class Threat extends WorldObject{
 
 	// State Update: Randomly move up, down, left, right, or stay in one place
 	@Override
-	public void update(double timestep){
+	public void update(double simTime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects){
 		
 		double speedValue = this.maxSpeed *(1 - 0.6*rand.nextDouble()); // speed between 0.4 * maxSpeed and MaxSpeed
 		
@@ -56,7 +57,7 @@ public class Threat extends WorldObject{
 
 
 	// State reset
-	void reset(int X_PIXELS, int Y_PIXELS){
+	public void reset(int X_PIXELS, int Y_PIXELS){
 		// Initialize data values
 		position = new PVector(X_PIXELS/2,Y_PIXELS/2); //Assume that the initial position is at the center of the display window
 	}
@@ -75,9 +76,5 @@ public class Threat extends WorldObject{
 
 		simulator.shapeMode(PConstants.CENTER);
 		simulator.shape(this.image, this.position.x, this.position.y,10,10);
-
-		
 	}
-
-
 }
