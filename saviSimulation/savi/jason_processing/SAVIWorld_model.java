@@ -204,12 +204,7 @@ public void setup() {
 			background(240); // white background
 
 			for(WorldObject wo: objects){ //Makes all objects on screen.
-				if(wo instanceof UAS) {
-					drawUAS((UAS)wo);
-				} 
-				else {
 					wo.draw();
-				}
 			}	
 			      
 			playButton.label="play";
@@ -249,14 +244,9 @@ public void setup() {
 	background(240); // white background
     
 	for(WorldObject wo: objects){ //Makes all objects on screen.
-		if(wo instanceof UAS) {
-			drawUAS((UAS)wo);
-		} 
-		else {
 			wo.draw();
-		}
-	}	
-        
+	}
+	
 	playButton.label="pause";
 	
 	playButton.drawButton();
@@ -274,43 +264,6 @@ public void mousePressed(){
 		resetSimulation();
 	}
 }
-
-
-// Visualize
-public void drawUAS(UAS uas){
-
-	//PVector uasposition, double compassAngle	
-	PVector p1;
-	// Draw UAS
-	stroke(0); 	 
-	PShape s;
-	s=loadShape("SimImages/robot.svg");
-
-	// translate to center image on uasposition.x, uasposition.y
-	s.translate(-s.width/2,-s.height/2);
-
-	// to adjust compassAngle to the image
-	s.rotate((float) ((float)uas.getBehavior().getCompassAngle()+Math.PI/2));
-
-	//draw image
-	shape(s, uas.getBehavior().getPosition().x, uas.getBehavior().getPosition().y, 26, 26);
-
-	noFill();
-
-	//draw perception area
-	arc(uas.getBehavior().getPosition().x, uas.getBehavior().getPosition().y, PERCEPTION_DISTANCE*2, PERCEPTION_DISTANCE*2,(float)uas.getBehavior().getCompassAngle()-(float)Math.PI/2, (float)uas.getBehavior().getCompassAngle()+(float)Math.PI/2);
-
-	//draw circle on objects percepted
-	for(CameraPerception cpi : uas.getBehavior().visibleItems){
-		double angle = (uas.getBehavior().getCompassAngle()+cpi.getParameters().get(0));// % 2* Math.PI;
-		double cosv = Math.cos(angle);
-		double sinv = Math.sin(angle);
-		p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+uas.getBehavior().getPosition().x, Math.round(sinv*cpi.getParameters().get(2))+uas.getBehavior().getPosition().y); 
-		// draw circle over items visualized
-		ellipse(p1.x,p1.y, 26, 26);
-	}
-}
-
 
 //************ UTILITY FUNCTIONS *****************/
 // These are general helper functions that don't
