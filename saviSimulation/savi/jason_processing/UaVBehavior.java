@@ -12,13 +12,13 @@ import savi.StateSynchronization.*;
 
 public class UaVBehavior extends UxVBehavior {
 	private static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
-	
+	private static final double VERTICAL_SPEED = 0.1; // 0.1 something (whatever real-life distance this corresponds to)
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
 	//IF WE WANT TO IMPLEMENTE MALFUNCTION OF SENSORS, THE INFO RECEIVED IN 
 	//SYNCAGENTSTATE IS NOT THE REAL ONE
 	//***********************************************************//
-	
+	private double verticalSpeedVal;
 	//-----------------------------------------
 	// METHODS (functions that act on the data)
 	//-----------------------------------------
@@ -50,6 +50,12 @@ public class UaVBehavior extends UxVBehavior {
 		double sinv = Math.sin(this.compasAngle);
 		this.position.add(new PVector(Math.round(cosv*this.speedVal*timeElapsed), Math.round(sinv*this.speedVal*timeElapsed), 0));
 		
+		//Calculate new altitude
+		this.position.z+=verticalSpeedVal;
+		if(this.position.z<0) {
+			this.position.z=0;
+		}
+		
 		//Calculate visible items
 		this.visibleItems = new ArrayList<CameraPerception>();
 		
@@ -65,57 +71,7 @@ public class UaVBehavior extends UxVBehavior {
 		updatePercepts();
 		//this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
 	}
-	
-	/**
-	 * Detect world objects & threats with the camera
-	 */
-	protected ArrayList<CameraPerception> objectDetection(List<WorldObject> obj, int perceptionDistance) {
-		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
-		for(WorldObject wo:obj) {
-			//shouldn't detect itself. if not (uAS and himself)
-			if( !((wo instanceof UaV) && this.ID.equals(((UaV)wo).getBehavior().getID())) ){
-				
-            	List<Double> polar = Geometry.relativePositionPolar(wo.getPosition(), this.position, this.compasAngle);
-            
-            	//calculate distance
-            	double azimuth = polar.get(Geometry.AZIMUTH);
-            	double elevation = polar.get(Geometry.ELEVATION);
-            	double dist = polar.get(Geometry.DISTANCE);
-            	if ((azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.)&&(dist <perceptionDistance) ) {
-					//it's visible 
-					visibleItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist));
-            	}
-			}	
-            	
-		}
-		return visibleItems;
-	}
-	/**
-	 * Wifi Communication
-	 */
-	protected void wifiCommunication(int WIFI_PERCEPTION_DISTANCE, List<WorldObject> objects) {
-		//Calculate UAS detected for wifi communication
-				Queue<String> myMsgOutCopy = new LinkedList<String>();
-				myMsgOutCopy = this.agentState.getMsgOutAll();
-				for(WorldObject wo:objects) {
-					if(wo instanceof UaV){
-						//get relative position of UAS to UAS:
-						float deltax = ((UaV)wo).getBehavior().getPosition().x - this.getPosition().x;
-						float deltay = ((UaV)wo).getBehavior().getPosition().y - this.getPosition().y;
-						//calculate distance
-						double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
-						if(dist < WIFI_PERCEPTION_DISTANCE & wifiProbWorking > 0) {
-							Queue<String> msg = new LinkedList<String>();
-							msg = myMsgOutCopy;
-							if(this.ID != ((UaV)wo).getBehavior().ID & ((UaV)wo).getBehavior().wifiProbWorking > 0 ) {
-								while(!msg.isEmpty()) {
-									((UaV)wo).getBehavior().agentState.setMsgIn(msg.poll());			
-								}
-							}				
-						}		
-					}
-				}
-	}
+
 	/**
 	 * Process the action in the queue to update the speedVal and compassAngle
 	 */
@@ -134,39 +90,14 @@ public class UaVBehavior extends UxVBehavior {
 			else if (action.equals( "thrust(on)")) 
 				this.speedVal = SPEED;
 			else if (action.equals("thrust(off)")) 
-				this.speedVal = 0;  
+				this.speedVal = 0;
+			else if (action.equals( "thrust(up)")) 
+				this.verticalSpeedVal = VERTICAL_SPEED;
+			else if (action.equals("thrust(down)")) 
+				this.verticalSpeedVal = -VERTICAL_SPEED;
+			else if (action.equals("hover")) 
+				this.verticalSpeedVal = 0;	
+				
 		}					
 	}	
-	
-	/**
-	 * Get UAS id
-	 * @return
-	 */
-	public String getID() {		
-		return ID;
-	}
-	/**
-	 * Get UAS type
-	 * @return
-	 */
-	public String getType() {		
-		return type;
-	}	
-	/**
-	 * Update perception Snapshot in agent state
-	 */
-	protected void updatePercepts() {
-		PerceptionSnapshot P = new PerceptionSnapshot();		
-		//Add position
-		P.addPerception(new PositionPerception(this.time, (double) this.position.x, (double) this.position.y, (double) this.position.z));
-		//Add velocity
-		P.addPerception(new VelocityPerception(this.time, Math.atan(this.position.x/this.position.y), 0, this.speedVal));
-		//Add time
-		P.addPerception(new TimePerception(this.time));
-		//Add Visible items
-		for(CameraPerception cpi : this.visibleItems) {
-			P.addPerception(cpi);
-		}
-		agentState.setPerceptions(P);
-	}
 }
