@@ -26,14 +26,18 @@ public class SAVIWorld_model extends PApplet {
 	private double MAX_SPEED;
 	int PERCEPTION_DISTANCE;
 	private int WIFI_PERCEPTION_DISTANCE;
-	private int NUMBER_UAS;
 	private int RANDOM_SEED;
 	private double REASONING_CYCLE_PERIOD;
 	private int TREE_SIZE;
 	private int HOUSE_SIZE;
 	private int THREAT_SIZE;
-	private int UAS_SIZE;
 	private int ANTENNA_SIZE; //TODO: intialize from config file
+	private int UAS_SIZE;
+	int UAV_SIZE;
+	int UGV_SIZE;
+	int NUMBER_UAV;
+	int NUMBER_UGV;
+	private int NUMBER_UAS;
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
 	public final int X_PIXELS = 900;
 	public final int Y_PIXELS = 700;
@@ -113,17 +117,21 @@ public class SAVIWorld_model extends PApplet {
 		THREAT_SIZE = Integer.parseInt(modelProps.getProperty("THREAT_SIZE"));
 		UAS_SIZE = Integer.parseInt(modelProps.getProperty("UAS_SIZE"));
 		ANTENNA_SIZE = Integer.parseInt(modelProps.getProperty("UAS_SIZE")); //TODO: replace with appropriate antenna size
+	NUMBER_UGV = Integer.parseInt(modelProps.getProperty("NUMBER_UGV"));
+	NUMBER_UAV = Integer.parseInt(modelProps.getProperty("NUMBER_UAV"));
+	UGV_SIZE = Integer.parseInt(modelProps.getProperty("UGV_SIZE"));
+	UAV_SIZE = Integer.parseInt(modelProps.getProperty("UAV_SIZE"));
 
 		// Initialization code goes here
 		simTime = 0; // seconds
 		simTimeDelta = 1000 / FRAME_RATE; // milliseconds
-
 		simPaused = false;// not paused by default
+
 
 		playButton = new Button("play", width / 2 - 20, 10, 40, 40);
 		stopButton = new Button("restart", width / 2 + 20, 10, 40, 40);
-
 		play = loadShape("SimImages/play.svg");
+
 		pause = loadShape("SimImages/pause.svg");
 		restart = loadShape("SimImages/replay.svg");
 
@@ -141,8 +149,8 @@ public class SAVIWorld_model extends PApplet {
 
 		for (int i = 0; i < NUMBER_UAS; i++) { // Put UAS
 			// _PIXELS is the maximum and the 1 is our minimum
-			// TODO: right now agents are initialized with strings "0", "1", "2", ... as
 			// identifiers and a fixed type "demo" which matches their asl file name. This
+			// TODO: right now agents are initialized with strings "0", "1", "2", ... as
 			// should be configurable...
 			if (RANDOM_SEED != -1) {
 				rand = new Random(RANDOM_SEED + i);
@@ -197,22 +205,22 @@ public class SAVIWorld_model extends PApplet {
 		Map<String, AgentModel> agentList = new HashMap<String, AgentModel>();
 
 		for (WorldObject wo : objects) {// Create UAS agents
-			if (wo instanceof UAS) {
-				agentList.put(((UAS) wo).getBehavior().getID(), ((UAS) wo).getBehavior());
+		if(wo instanceof UxV) {
+			agentList.put(((UxV)wo).getBehavior().getID(), ((UxV)wo).getBehavior());
 			}
 		}
 
 		jasonAgents = new JasonMAS(agentList);
 		jasonAgents.startAgents();
+		// Set up the cycle length logfile
 		// ==========================================
 
-		// Set up the cycle length logfile
-		this.lastCycleTimeStamp = 0;
 		this.timeStampFileName = "SimulationTimeStamps.log";
+		this.lastCycleTimeStamp = 0;
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(this.timeStampFileName));
 			writer.close();
 		} catch (IOException e) {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(this.timeStampFileName));
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
