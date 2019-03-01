@@ -19,13 +19,13 @@ public class UASBehavior extends AgentModel {
 	//String ID; -- Note: moved to superclass 
 	//String type; -- same
 	//SyncAgentState agentState; --same
-	private PVector initialPosition;
-	private PVector position;
-	private double speedVal;
-	private double compasAngle;
-	private ArrayList<CameraPerception> visibleItems;
-	private double time;	
-	private double wifiProbWorking;
+	PVector initialPosition;
+	PVector position;
+	double speedVal;
+	double compasAngle;
+	ArrayList<CameraPerception> visibleItems;
+	double time;	
+	double wifiProbWorking;
 	
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
