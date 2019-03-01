@@ -25,7 +25,7 @@ public class UASBehavior extends AgentModel {
 	double compasAngle;
 	ArrayList<CameraPerception> visibleItems;
 	double time;	
-	double wifi;
+	double wifiProbWorking;
 	
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
@@ -48,7 +48,7 @@ public class UASBehavior extends AgentModel {
 		this.ID = id;
 		this.type = type;
 		this.initialPosition = initialPosition;
-		wifi = 100; //Probability of having the wifi working 0-100
+		wifiProbWorking = 100; //Probability of having the wifi working 0-100
 		//TODO: "break the wifi during simulation time		
 		this.position = initialPosition.copy();
 		this.speedVal = 0;	
@@ -137,10 +137,10 @@ public class UASBehavior extends AgentModel {
 						float deltay = ((UAS)wo).getBehavior().getPosition().y - this.getPosition().y;
 						//calculate distance
 						double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
-						if(dist < WIFI_PERCEPTION_DISTANCE & wifi > 0) {
+						if(dist < WIFI_PERCEPTION_DISTANCE & wifiProbWorking > 0) {
 							Queue<String> msg = new LinkedList<String>();
 							msg = myMsgOutCopy;
-							if(this.ID != ((UAS)wo).getBehavior().ID & ((UAS)wo).getBehavior().wifi > 0 ) {
+							if(this.ID != ((UAS)wo).getBehavior().ID & ((UAS)wo).getBehavior().wifiProbWorking > 0 ) {
 								while(!msg.isEmpty()) {
 									((UAS)wo).getBehavior().agentState.setMsgIn(msg.poll());			
 								}
