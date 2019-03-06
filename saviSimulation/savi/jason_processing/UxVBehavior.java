@@ -101,8 +101,7 @@ public class UxVBehavior extends AgentModel {
 					detectedItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
 					visibleItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
             	}
-			}	
-            	
+			}	   	
 		}
 		
 		//remove objects covered by others on the visualization
@@ -126,7 +125,6 @@ public class UxVBehavior extends AgentModel {
 						if(di.getParameters().get(2) < visibleItems.get(i).getParameters().get(2)) {
 							visibleItems.remove(visibleItems.get(i));
 						}
-						
 					}
 				}
 			}	

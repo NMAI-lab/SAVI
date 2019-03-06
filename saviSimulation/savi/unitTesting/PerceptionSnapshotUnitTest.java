@@ -58,10 +58,12 @@ public class PerceptionSnapshotUnitTest {
 		double range = 4.0;
 		double moreRecentTimeStep = 2.0;
 		
+		double radius=0.0;
+		
 		Perception testPerception1 = new TimePerception(timeStamp);
-		Perception testPerception2 = new CameraPerception(perceptionName, moreRecentTimeStep, azumuth, elevation, range);
-		Perception similarPerception = new CameraPerception(perceptionName, timeStamp, azumuth + 0.001, elevation, range);
-		Perception differentPerception = new CameraPerception(perceptionName, timeStamp, azumuth + 10000, elevation, range);
+		Perception testPerception2 = new CameraPerception(perceptionName, moreRecentTimeStep, azumuth, elevation, range, radius);
+		Perception similarPerception = new CameraPerception(perceptionName, timeStamp, azumuth + 0.001, elevation, range, radius);
+		Perception differentPerception = new CameraPerception(perceptionName, timeStamp, azumuth + 10000, elevation, range, radius);
 		Perception samePerception = testPerception2.clone();
 		
 		// addPerceptions to the snapshot
