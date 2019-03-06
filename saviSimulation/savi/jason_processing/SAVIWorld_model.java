@@ -41,6 +41,7 @@ public class SAVIWorld_model extends PApplet {
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
 	public final int X_PIXELS = 900;
 	public final int Y_PIXELS = 700;
+	int Z_PIXELS = 500;
 	String CONSOLE_ID = "console"; //not loaded from config file
 
 	// TimeStamp file names
@@ -130,12 +131,12 @@ public class SAVIWorld_model extends PApplet {
 
 		playButton = new Button("play", width / 2 - 20, 10, 40, 40);
 		stopButton = new Button("restart", width / 2 + 20, 10, 40, 40);
-		play = loadShape("SimImages/play.svg");
 
+		play = loadShape("SimImages/play.svg");
 		pause = loadShape("SimImages/pause.svg");
-		restart = loadShape("SimImages/replay.svg");
 
 		// load images for visualization
+		restart = loadShape("SimImages/replay.svg");
 		treeImage = loadShape("SimImages/tree.svg");
 		houseImage = loadShape("SimImages/home.svg");
 		play = loadShape("SimImages/play.svg");
@@ -146,19 +147,19 @@ public class SAVIWorld_model extends PApplet {
 		antennaImage = loadShape("SimImages/antenna.svg"); //TODO: get an antenna image
 
 		Random rand = new Random();
-
 		for (int i = 0; i < NUMBER_UAS; i++) { // Put UAS
+
 			// _PIXELS is the maximum and the 1 is our minimum
-			// identifiers and a fixed type "demo" which matches their asl file name. This
 			// TODO: right now agents are initialized with strings "0", "1", "2", ... as
+			// identifiers and a fixed type "demo" which matches their asl file name. This
 			// should be configurable...
 			if (RANDOM_SEED != -1) {
-				rand = new Random(RANDOM_SEED + i);
 			}
+				rand = new Random(RANDOM_SEED + i);
 			UAS uas = new UAS(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), UAS_SIZE,
 					"demo", this, uasImage, REASONING_CYCLE_PERIOD);
-			objects.add(uas);
 			wifiParticipants.add(uas.getAntennaRef());
+			objects.add(uas);
 			
 		}
 
@@ -170,9 +171,9 @@ public class SAVIWorld_model extends PApplet {
 			objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1),
 					TREE_SIZE, "tree", this, treeImage));
 		}
-		for (int i = 0; i < NUMBER_HOUSES; i++) { // Put houses
-			// _PIXELS is the maximum and the 1 is our minimum.
 			if (RANDOM_SEED != -1) {
+			// _PIXELS is the maximum and the 1 is our minimum.
+		for (int i = 0; i < NUMBER_HOUSES; i++) { // Put houses
 				rand = new Random(3 * RANDOM_SEED + i);
 			}
 			objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1),
