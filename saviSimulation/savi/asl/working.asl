@@ -17,17 +17,17 @@ turnAngle(A) :-
 
 // There is no target
 noTarget :-
-	not(target(_,_,_,_,_)).
+	not(target(_,_,_,_,_,_)).
 
 // Target is the closest threat
-target(threat,TYPE,AZ,EL,RANGE) :-
-	((threat(AZ,EL,RANGE,TIME,TYPE)) &
-	not (threat(_,_,CLOSER,_,_) &
+target(threat,TYPE,AZ,EL,RANGE,RADIUS) :-
+	((threat(AZ,EL,RANGE,TIME,TYPE,RADIUS)) &
+	not (threat(_,_,CLOSER,_,_,_) &
 	(CLOSER < RANGE))).
 
 // See a target to the right
 targetRight :-
-	(target(threat,TYPE,AZ,EL,RANGE) &
+	(target(threat,TYPE,AZ,EL,RANGE,RADIUS) &
 	turnAngle(ANGLE) &
 	pi(PI) &
 	(ANGLE < AZ) & 
@@ -35,7 +35,7 @@ targetRight :-
 
 // See a target to the left
 targetLeft :-
-	(target(threat,TYPE,AZ,EL,RANGE) &
+	(target(threat,TYPE,AZ,EL,RANGE,RADIUS) &
 	turnAngle(ANGLE) &
 	pi(PI) &
 	((PI < AZ) &
@@ -49,13 +49,13 @@ targetAhead :-
 	
 // Target is close
 targetClose :-
-	target(_,_,_,_,RANGE) &
+	target(_,_,_,_,RANGE,_) &
 	proximityThreshold(CLOSE) &
 	(RANGE < CLOSE).
 
 // Target is far
 targetFar :-
-	target(_,_,_,_,RANGE) &
+	target(_,_,_,_,RANGE,_) &
 	proximityThreshold(CLOSE) &
 	(RANGE > CLOSE).
 	
