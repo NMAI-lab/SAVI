@@ -84,7 +84,7 @@ public class UxV extends WorldObject {
 			double sinv = Math.sin(angle);
 			p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+this.getBehavior().getPosition().x, Math.round(sinv*cpi.getParameters().get(2))+this.getBehavior().getPosition().y); 
 			// draw circle over items visualized
-			simulator.ellipse(p1.x,p1.y, 26, 26);
+			simulator.ellipse(p1.x,p1.y, cpi.getParameters().get(3).floatValue(), cpi.getParameters().get(3).floatValue());
 		}
 		
 		

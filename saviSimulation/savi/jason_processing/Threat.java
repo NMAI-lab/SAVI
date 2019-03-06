@@ -75,7 +75,7 @@ public class Threat extends WorldObject{
 		simulator.stroke(0);
 
 		simulator.shapeMode(PConstants.CENTER);
-		simulator.shape(this.image, this.position.x, this.position.y,10,10);
+		simulator.shape(this.image, this.position.x, this.position.y, this.pixels, this.pixels);
 
 		
 	}
