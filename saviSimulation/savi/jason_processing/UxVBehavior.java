@@ -83,8 +83,11 @@ public class UxVBehavior extends AgentModel {
 	 */
 	protected ArrayList<CameraPerception> objectDetection(List<WorldObject> obj, int perceptionDistance) {
 		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
+		ArrayList<CameraPerception> detectedItems = new ArrayList<CameraPerception>();
+		double distance, angleDeviation, hipotenuse, sin, angle;
+		
 		for(WorldObject wo:obj) {
-			//shouldn't detect itself. if not (uAS and himself)
+			//shouldn't detect itself. if not (UxV and himself)
 			if( !((wo instanceof UxV) && this.ID.equals(((UxV)wo).getBehavior().getID())) ){
 				
             	List<Double> polar = Geometry.relativePositionPolar(wo.getPosition(), this.position, this.compasAngle);
@@ -95,11 +98,40 @@ public class UxVBehavior extends AgentModel {
             	double dist = polar.get(Geometry.DISTANCE);
             	if ((azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.)&&(dist <perceptionDistance) ) {
 					//it's visible 
-					visibleItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist));
+					detectedItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
+					visibleItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
             	}
 			}	
             	
 		}
+		
+		//remove objects covered by others on the visualization
+		for(CameraPerception di:detectedItems) {
+			for(int i=0; i<visibleItems.size();i++) {
+				//to calculate visual angle covered by the object
+				distance = di.getParameters().get(2);
+				//angle deviation from centroid = radius
+				angleDeviation = di.getParameters().get(3);
+				//Math to calculate angle cover
+				hipotenuse=Math.sqrt(Math.pow(distance,2)+Math.pow(angleDeviation,2));
+				sin=angleDeviation/hipotenuse;
+				angle=Math.asin(sin);
+				
+				//if object is covered by di remove
+				//if is covered by azimuth angle
+				if(di.getParameters().get(0)+angle > visibleItems.get(i).getParameters().get(0) && di.getParameters().get(0)-angle < visibleItems.get(i).getParameters().get(0) ) {
+					//if it is covered by elevation angle
+					if(di.getParameters().get(1)+angle > visibleItems.get(i).getParameters().get(1) && di.getParameters().get(1)-angle < visibleItems.get(i).getParameters().get(1) ){
+						//if it's at a mayor distance
+						if(di.getParameters().get(2) < visibleItems.get(i).getParameters().get(2)) {
+							visibleItems.remove(visibleItems.get(i));
+						}
+						
+					}
+				}
+			}	
+		}
+		
 		return visibleItems;
 	}
 	/**
