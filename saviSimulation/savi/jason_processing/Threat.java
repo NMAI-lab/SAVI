@@ -23,9 +23,9 @@ public class Threat extends WorldObject{
 	//              that doesn't have a type (not even void).
 	
 
-	Threat(int id, int x, int y, int seed, double MS, int pxSize, String type, SAVIWorld_model world, PShape img) {
+	Threat(int id, int x, int y, int z, int seed, double MS, int pxSize, String type, SAVIWorld_model world, PShape img) {
 		// Initialize data values
-		super(id,new PVector(x,y), pxSize, type, world, img);
+		super(id,new PVector(x,y,z), pxSize, type, world, img);
 		rand = new Random();
 		if(seed != -1) {
 			rand = new Random(seed + this.ID);
