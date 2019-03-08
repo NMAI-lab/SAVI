@@ -21,7 +21,7 @@ noTarget :-
 
 // Target is the closest threat
 target(threat,TYPE,AZ,EL,RANGE,RADIUS) :-
-	((threat(AZ,EL,RANGE,TIME,TYPE,RADIUS)) &
+	((threat(AZ,EL,RANGE,RADIUS,TIME,TYPE)) &
 	not (threat(_,_,CLOSER,_,_,_) &
 	(CLOSER < RANGE))).
 
