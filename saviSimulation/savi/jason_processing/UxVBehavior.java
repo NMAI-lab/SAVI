@@ -84,7 +84,7 @@ public class UxVBehavior extends AgentModel {
 	protected ArrayList<CameraPerception> objectDetection(List<WorldObject> obj, int perceptionDistance) {
 		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
 		ArrayList<CameraPerception> detectedItems = new ArrayList<CameraPerception>();
-		double distance, angleDeviation, hipotenuse, sin, angle;
+		double distance, oposite, tan, angle;
 		
 		for(WorldObject wo:obj) {
 			//shouldn't detect itself. if not (UxV and himself)
@@ -110,11 +110,10 @@ public class UxVBehavior extends AgentModel {
 				//to calculate visual angle covered by the object
 				distance = di.getParameters().get(2);
 				//angle deviation from centroid = radius
-				angleDeviation = di.getParameters().get(3);
-				//Math to calculate angle cover
-				hipotenuse=Math.sqrt(Math.pow(distance,2)+Math.pow(angleDeviation,2));
-				sin=angleDeviation/hipotenuse;
-				angle=Math.asin(sin);
+				oposite = di.getParameters().get(3);
+				//math to calculate angle cover
+				tan=oposite/distance;
+				angle=Math.abs(Math.atan(tan));
 				
 				//if object is covered by di remove
 				//if is covered by azimuth angle
