@@ -79,7 +79,7 @@ public void setup() {
 	/***LOAD SIM PARAMETERS ****/
 	try {
 		String filePath = new File("").getAbsolutePath();
-		filePath = filePath + "/config.cfg";
+		filePath = filePath + "/target/classes/config.cfg";
 		System.out.println(filePath);
 		File inFile = new File(filePath);
 		in = new FileInputStream(inFile);
