@@ -48,6 +48,11 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		agentState = modelAgentState;
 		running = false;
 
+		// Create logging output directory
+		File outputDir = new File("output");
+		outputDir.mkdir();
+
+
 		// set up the Jason agent
 		try {
 			Agent ag = new Agent();
@@ -59,7 +64,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		}
 		
 		// Set up the perception logfile
-		this.perceptionLogFileName = "PerceptionLog_" + this.name + ".log";
+		this.perceptionLogFileName = outputDir.getName() + "/PerceptionLog_" + this.name + ".log";
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(this.perceptionLogFileName));
 			writer.close();
@@ -70,7 +75,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		
 		// Set up the cycle length logfile
 		this.lastCycleTimeStamp = 0;
-		this.timeStampFileName = "AgentTimeStamps_" + this.name + ".log";
+		this.timeStampFileName = outputDir.getName() + "/AgentTimeStamps_" + this.name + ".log";
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(this.timeStampFileName));
 			writer.close();
