@@ -18,6 +18,20 @@
             <systemPath>${basedir}/libs/processing-3.5.3/core.jar</systemPath>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.jogamp.jogl/jogl-all-main -->
+        <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt-main</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+
+
         <dependency>
             <groupId>org.jason-lang</groupId>
             <artifactId>jason</artifactId>

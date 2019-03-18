@@ -188,7 +188,6 @@ public class SAVIWorld_model extends PApplet {
 // called by Processing in an infinite loop
 //************************************************/
     public void draw() {
-        System.out.println(super.frameRate);
         if (simPaused) {
             background(240); // white background
 
@@ -240,20 +239,12 @@ public class SAVIWorld_model extends PApplet {
             uasi.update(simTime, PERCEPTION_DISTANCE, WIFI_PERCEPTION_DISTANCE, objects, UAS_list);
         }
 
-        System.out.println("Done Updating: " + (System.currentTimeMillis() - updateStart));
-
         // 3. VISUALIZATION
         //------------------
         background(240); // white background
         for (int i = 0; i < NUMBER_UAS; i++) { //Draw UAS agents
-            long start = System.currentTimeMillis();
             drawUAS(UAS_list.get(i));
-            long elap = (System.currentTimeMillis() - start);
-            if(elap > 100)
-                System.out.println("Done Drawing: " + i + " - " + elap);
         }
-
-        System.out.println("Done drawing UAS");
 
         for (WorldObject wo : objects) { //Makes all objects on screen.
             wo.draw();
@@ -263,7 +254,6 @@ public class SAVIWorld_model extends PApplet {
 
         playButton.drawButton();
         stopButton.drawButton();
-        System.out.println("Done drawing");
     }
 
 
@@ -282,18 +272,18 @@ public class SAVIWorld_model extends PApplet {
     // Visualize
     public void drawUAS(UAS uas) {
 
-	//PVector uasposition, double compassAngle	
-	PVector p1;
-	// Draw UAS
-	stroke(0); 	 
-	PShape s;
-	s=loadShape("SimImages/robot.svg");
+        //PVector uasposition, double compassAngle
+        PVector p1;
+        // Draw UAS
+        stroke(0);
+        PShape s;
+        s = loadShape("SimImages/robot.svg");
 
-	// translate to center image on uasposition.x, uasposition.y
-	s.translate(-s.width/2,-s.height/2);
+        // translate to center image on uasposition.x, uasposition.y
+        s.translate(-s.width / 2, -s.height / 2);
 
-	// to adjust compassAngle to the image
-	s.rotate((float) ((float)uas.getCompassAngle()+Math.PI/2));
+        // to adjust compassAngle to the image
+        s.rotate((float) ((float) uas.getCompassAngle() + Math.PI / 2));
 
         //draw image
         shape(s, uas.getPosition().x, uas.getPosition().y, 26, 26);
@@ -311,9 +301,9 @@ public class SAVIWorld_model extends PApplet {
             p1 = new PVector(Math.round(cosv * cpi.getParameters().get(2)) + uas.getPosition().x, Math.round(sinv * cpi.getParameters().get(2)) + uas.getPosition().y);
             // draw circle over items visualized
             ellipse(p1.x, p1.y, 26, 26);
+
         }
     }
-
 
     //************ UTILITY FUNCTIONS *****************/
 // These are general helper functions that don't
