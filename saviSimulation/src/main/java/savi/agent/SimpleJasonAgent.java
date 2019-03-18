@@ -29,7 +29,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	private double lastPerceptionId;		// ID of the last perception received
 	private boolean firstPerception;	// Flag for noting if any perceptions have ever been received (deal with the first ID issue)
 	private PerceptionHistory perceptHistory;
-	private File perceptionLogFileName;
+	private File perceptionLogFile;
 	
 	// TimeStamp file names
 	long lastCycleTimeStamp;
@@ -63,7 +63,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		}
 		
 		// Set up the perception logfile
-		this.perceptionLogFileName = ResourceManager.createOutputFile("PerceptionLog_" + this.name + ".log");
+		this.perceptionLogFile = ResourceManager.createOutputFile("PerceptionLog_" + this.name + ".log");
 
 		// Set up the cycle length logfile
 		this.lastCycleTimeStamp = 0;
@@ -140,7 +140,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		
 		// Write the perceptions to the perception logfile
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(this.perceptionLogFileName, true));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(this.perceptionLogFile, true));
 			for (Literal current : perceptionLiterals) {
 				writer.append(current.toString() + " ");
 			}
