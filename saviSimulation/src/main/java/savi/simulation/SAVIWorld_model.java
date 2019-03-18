@@ -227,7 +227,7 @@ public class SAVIWorld_model extends PApplet {
             e.printStackTrace();
         }
 
-        System.out.println("== SAVIWorld_Model draw() == at:" + simTime);
+        logger.fine("== SAVIWorld_Model draw() == at:" + simTime);
 
         long updateStart = System.currentTimeMillis();
         // 2. STATE UPDATE (SIMULATION)
