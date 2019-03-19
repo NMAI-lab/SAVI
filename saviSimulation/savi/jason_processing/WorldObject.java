@@ -1,5 +1,6 @@
 package savi.jason_processing;
 
+import java.util.List;
 import java.util.Random;
 
 import processing.core.PConstants;
@@ -11,7 +12,7 @@ public class WorldObject{
 		// DATA (or state variables)
 		//-----------------------------------------
 		int ID;
-		PVector position;
+		protected PVector position;
 		String type;
 		SAVIWorld_model simulator;
 		PShape image;
@@ -41,8 +42,14 @@ public class WorldObject{
 
 		}
 		
-		public void update(double timestep) {
+		public void update(double simtime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
 			// most worldObjects do nothing
+		}
+
+
+		public PVector getPosition() {
+			// TODO Auto-generated method stub
+			return position;
 		}
 
 
