@@ -39,7 +39,6 @@ public class Threat extends WorldObject{
 
 	// State Update: Randomly move up, down, left, right, or stay in one place
 	@Override
-
 	public void update(double simTime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants){
 		
 		double speedValue = this.maxSpeed *(1 - 0.6*rand.nextDouble()); // speed between 0.4 * maxSpeed and MaxSpeed

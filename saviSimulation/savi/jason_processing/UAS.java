@@ -117,8 +117,5 @@ public class UAS extends WorldObject implements Communicator {
 	public WifiAntenna getAntennaRef() {		
 		return this.wifiAntenna;
 	}
-
-
 		
-	
 }
