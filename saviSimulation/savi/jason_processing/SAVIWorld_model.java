@@ -140,7 +140,7 @@ public class SAVIWorld_model extends PApplet {
 		restart = loadShape("SimImages/replay.svg");
 		threatImage = loadShape("SimImages/warning.svg");
 		ugvImage = loadShape("SimImages/robot.svg");
-		uavImage = loadShape("SimImages/airplane.svg"); // TODO change to drone
+		uavImage = loadShape("SimImages/airplane.svg");
 		antennaImage = loadShape("SimImages/antenna.svg");
 
 		Random rand = new Random();
