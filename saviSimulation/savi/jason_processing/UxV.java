@@ -45,7 +45,6 @@ public abstract class UxV extends WorldObject implements Communicator {
 	
 	@Override
 	public void update(double simtime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
-		System.out.println("Updating UxV:"+type+" " + ID);
 		this.uxvBehavior.update(this, simtime, perceptionDistance, objects);
 		this.wifiAntenna.update(WIFI_PERCEPTION_DISTANCE, wifiParticipants);
 	}
@@ -56,13 +55,11 @@ public abstract class UxV extends WorldObject implements Communicator {
 	
 	public void setPosition(PVector pos) {		
 		this.position = pos;
-		System.out.println("UxV:"+type+" " + ID + "xpos: " + this.position.x + " pospassed: " + pos.x);
 	}
 	
 	@Override
 	public void draw(PVector position) {
 		PVector p1;
-		System.out.println("Drawing UxV:"+type+" " + ID);
 		simulator.stroke(0);
 
 		//it's easier to load the image every time to rotate it to the compassAngle

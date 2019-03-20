@@ -40,7 +40,6 @@ public class UaVBehavior extends UxVBehavior {
 	@Override
 	public void update(UxV uav, double simTime, int perceptionDistance, List<WorldObject> objects){
 		//Process actions to update speedVal & compassAngle
-		System.out.println("Updating UaV behavior: "+uav.type+" " + uav.ID);
 		processAgentActions();
 		
 		//Update simTime
