@@ -71,7 +71,7 @@ public class Threat extends WorldObject{
 	}
 	
 	@Override
-	public void draw() {
+	public void draw(PVector position) {
 		simulator.stroke(0);
 
 		simulator.shapeMode(PConstants.CENTER);

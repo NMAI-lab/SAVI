@@ -45,7 +45,8 @@ public abstract class UxV extends WorldObject implements Communicator {
 	
 	@Override
 	public void update(double simtime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
-		this.uxvBehavior.update(simtime, perceptionDistance, objects);
+		System.out.println("Updating UxV:"+type+" " + ID);
+		this.uxvBehavior.update(this, simtime, perceptionDistance, objects);
 		this.wifiAntenna.update(WIFI_PERCEPTION_DISTANCE, wifiParticipants);
 	}
 	
@@ -53,15 +54,15 @@ public abstract class UxV extends WorldObject implements Communicator {
 		return uxvBehavior;
 	}
 	
-	@Override
-	public PVector getPosition() {		
-		return this.getBehavior().getPosition();
+	public void setPosition(PVector pos) {		
+		this.position = pos;
+		System.out.println("UxV:"+type+" " + ID + "xpos: " + this.position.x + " pospassed: " + pos.x);
 	}
 	
 	@Override
-	public void draw() {
+	public void draw(PVector position) {
 		PVector p1;
-		
+		System.out.println("Drawing UxV:"+type+" " + ID);
 		simulator.stroke(0);
 
 		//it's easier to load the image every time to rotate it to the compassAngle
@@ -75,19 +76,19 @@ public abstract class UxV extends WorldObject implements Communicator {
 		image.rotate((float) ((float)this.getBehavior().getCompassAngle()+Math.PI/2));
 
 		//draw image
-		simulator.shape(image, this.getBehavior().getPosition().x, this.getBehavior().getPosition().y, 26, 26);
+		simulator.shape(image, position.x, position.y, 26, 26);
 
 		simulator.noFill();
 
 		//draw perception area
-		simulator.arc(this.getBehavior().getPosition().x, this.getBehavior().getPosition().y, simulator.PERCEPTION_DISTANCE*2, simulator.PERCEPTION_DISTANCE*2,(float)this.getBehavior().getCompassAngle()-(float)Math.PI/2, (float)this.getBehavior().getCompassAngle()+(float)Math.PI/2);
+		simulator.arc(position.x, position.y, simulator.PERCEPTION_DISTANCE*2, simulator.PERCEPTION_DISTANCE*2,(float)this.getBehavior().getCompassAngle()-(float)Math.PI/2, (float)this.getBehavior().getCompassAngle()+(float)Math.PI/2);
 
 		//draw circle on objects percepted
 		for(CameraPerception cpi : this.getBehavior().getVisibleItems()){
 			double angle = (this.getBehavior().getCompassAngle()+cpi.getParameters().get(0));// % 2* Math.PI;
 			double cosv = Math.cos(angle);
 			double sinv = Math.sin(angle);
-			p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+this.getBehavior().getPosition().x, Math.round(sinv*cpi.getParameters().get(2))+this.getBehavior().getPosition().y); 
+			p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+this.position.x, Math.round(sinv*cpi.getParameters().get(2))+this.position.y); 
 			// draw circle over items visualized
 			simulator.ellipse(p1.x,p1.y, cpi.getParameters().get(3).floatValue()*2, cpi.getParameters().get(3).floatValue()*2);
 		}
