@@ -64,9 +64,6 @@ public class UgVBehavior extends UxVBehavior {
 			visibleItems.add(c);
 		}	
 
-		//Communicate through Wifi
-		//wifiCommunication(WIFI_PERCEPTION_DISTANCE, objects);
-			
 		//Update percepts	
 		updatePercepts();
 		//this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.

@@ -63,9 +63,6 @@ public class UaVBehavior extends UxVBehavior {
 		for (CameraPerception c: objectDetection(objects, perceptionDistance)) {
 			visibleItems.add(c);
 		}	
-
-		//Communicate through Wifi
-		//wifiCommunication(WIFI_PERCEPTION_DISTANCE, objects);
 			
 		//Update percepts	
 		updatePercepts();

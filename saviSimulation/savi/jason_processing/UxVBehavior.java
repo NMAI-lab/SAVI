@@ -25,7 +25,6 @@ public class UxVBehavior extends AgentModel {
 	protected double compasAngle;
 	protected ArrayList<CameraPerception> visibleItems;
 	protected double time;	
-	protected double wifiProbWorking;
 	
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
@@ -48,7 +47,6 @@ public class UxVBehavior extends AgentModel {
 		this.ID = id;
 		this.type = type;
 		this.initialPosition = initialPosition;
-		this.wifiProbWorking = 100; //Probability of having the wifi working 0-100
 		//TODO: "break the wifi during simulation time		
 		this.position = initialPosition.copy();
 		this.speedVal = 0;	
