@@ -10,7 +10,7 @@ import processing.opengl.*;
 import savi.StateSynchronization.*;
 
 
-public class UxV extends WorldObject implements Communicator {
+public abstract class UxV extends WorldObject implements Communicator {
 	private static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
 
 	//-----------------------------------------
