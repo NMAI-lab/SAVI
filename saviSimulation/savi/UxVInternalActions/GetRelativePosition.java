@@ -73,12 +73,12 @@ public class GetRelativePosition extends DefaultInternalAction {
 		}
 		// Deal with error cases
 		catch (ArrayIndexOutOfBoundsException e) {
-			throw new JasonException("The internal action 'absolutePosition' received the wrong number of arguements.");
+			throw new JasonException("The internal action 'relativePosition' received the wrong number of arguements.");
 		} catch (ClassCastException e) {
 			throw new JasonException(
-					"The internal action 'absolutePosition' received arguements that are of the wrong type.");
+					"The internal action 'relativePosition' received arguements that are of the wrong type.");
 		} catch (Exception e) {
-			throw new JasonException("Error in 'absolutePosition'.");
+			throw new JasonException("Error in 'relativePosition'.");
 		}
 	}
 }
