@@ -131,40 +131,7 @@ public class UxVBehavior extends AgentModel {
 		
 		return visibleItems;
 	}
-	/**
-	 * Wifi Communication
-	 */
 	
-/*	DEPRECATED(?)
-	protected void wifiCommunication(int WIFI_PERCEPTION_DISTANCE, List<WorldObject> objects) {
-		//Calculate UAS detected for wifi communication
-		Queue<String> myMsgOutCopy = new LinkedList<String>();
-		myMsgOutCopy = this.agentState.getMsgOutAll();
-		for(WorldObject wo:objects) {
-			if(wo instanceof UaV){
-				//get relative position of UAS to UAS:
-				float deltax = ((UaV)wo).getBehavior().getPosition().x - this.getPosition().x;
-				float deltay = ((UaV)wo).getBehavior().getPosition().y - this.getPosition().y;
-				//calculate distance
-				double dist  = Math.sqrt(deltax*deltax + deltay*deltay);
-				if(dist < WIFI_PERCEPTION_DISTANCE & wifiProbWorking > 0) {
-					Queue<String> msg = new LinkedList<String>();
-					msg = myMsgOutCopy;
-					//if not same class and id
-					if(!((this.ID ==((UxV)wo).getBehavior().ID) &&(this.getClass().equals(((UxV)wo).getClass())))) {
-						//if Wifi is working
-						if(((UxV)wo).getBehavior().wifiProbWorking > 0 ) {
-						//if not same id and same class amnd wifi is working	
-							while(!msg.isEmpty()) {
-								((UaV)wo).getBehavior().agentState.setMsgIn(msg.poll());			
-							}
-						}	
-					}				
-				}		
-			}
-		}
-	}
-*/	
 	/**
 	 * Process the action in the queue to update the speedVal and compassAngle
 	 */
