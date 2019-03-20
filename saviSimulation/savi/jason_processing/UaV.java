@@ -31,9 +31,9 @@ public class UaV extends UxV {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UaV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod) {			
+	public UaV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod,String imageName) {			
 		// Initializes UAS as WorldObject
-		super(id, pos, pixels, Type, sim, image, reasoningCyclePeriod);
+		super(id, pos, pixels, Type, sim, image, reasoningCyclePeriod, imageName);
 		// Initializes Behaviuor
 		uxvBehavior = new UaVBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod);
 	}

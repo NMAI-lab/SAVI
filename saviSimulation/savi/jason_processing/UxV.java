@@ -10,13 +10,15 @@ import processing.opengl.*;
 import savi.StateSynchronization.*;
 
 
-public class UxV extends WorldObject {
+public class UxV extends WorldObject implements Communicator {
 	private static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
 
 	//-----------------------------------------
 	// DATA (or state variables)
 	//-----------------------------------------  
+	protected WifiAntenna wifiAntenna;
 	protected UxVBehavior uxvBehavior;
+	protected String imageName;
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
 	//IF WE WANT TO IMPLEMENTE MALFUNCTION OF SENSORS, THE INFO RECEIVED IN 
@@ -32,16 +34,19 @@ public class UxV extends WorldObject {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod) {			
+	public UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName) {			
 		// Initializes UAS as WorldObject
 		super(id, pos, pixels, Type, sim, image);
+		this.imageName=imageName;
 		// Initializes Behaviuor
 		this.uxvBehavior = new UxVBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod);
+		this.wifiAntenna = new WifiAntenna (id,this);
 	}
 	
 	@Override
-	public void update(double simtime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects) {
-		this.uxvBehavior.update(simtime, perceptionDistance, WIFI_PERCEPTION_DISTANCE, objects);
+	public void update(double simtime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
+		this.uxvBehavior.update(simtime, perceptionDistance, objects);
+		this.wifiAntenna.update(WIFI_PERCEPTION_DISTANCE, wifiParticipants);
 	}
 	
 	public UxVBehavior getBehavior() {		
@@ -60,7 +65,7 @@ public class UxV extends WorldObject {
 		simulator.stroke(0);
 
 		//it's easier to load the image every time to rotate it to the compassAngle
-		image=simulator.loadShape("SimImages/robot.svg");
+		image=simulator.loadShape("SimImages/"+imageName+".svg");
 		
 		// translate to center image on uasposition.x, uasposition.y
 		//	simulator.shapeMode(PConstants.CENTER); didn't work
@@ -85,10 +90,29 @@ public class UxV extends WorldObject {
 			p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+this.getBehavior().getPosition().x, Math.round(sinv*cpi.getParameters().get(2))+this.getBehavior().getPosition().y); 
 			// draw circle over items visualized
 			simulator.ellipse(p1.x,p1.y, cpi.getParameters().get(3).floatValue()*2, cpi.getParameters().get(3).floatValue()*2);
-//			simulator.ellipse(p1.x,p1.y, 20, 20);
 		}
 		
 		
+	}
+	
+	@Override
+	public  List<String> getOutgoingMessages(){
+		
+		List<String> myMsgOutCopy = new LinkedList<String>();
+		myMsgOutCopy.addAll(getBehavior().agentState.getMsgOutAll());
+		
+		return myMsgOutCopy;
+	}
+
+	@Override
+	public void receiveMessage(String msg) {
+		getBehavior().agentState.setMsgIn(msg);			
+		
+	}
+
+	@Override
+	public WifiAntenna getAntennaRef() {		
+		return this.wifiAntenna;
 	}
 	
 	

@@ -37,7 +37,7 @@ public class UaVBehavior extends UxVBehavior {
 	 * update
 	 * process actions from the queue, update the UAS state variable and set the new perceptions
 	 */
-	public void update(double simTime, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects){
+	public void update(double simTime, int perceptionDistance, List<WorldObject> objects){
 		//Process actions to update speedVal & compassAngle
 		processAgentActions();
 		
@@ -65,7 +65,7 @@ public class UaVBehavior extends UxVBehavior {
 		}	
 
 		//Communicate through Wifi
-		wifiCommunication(WIFI_PERCEPTION_DISTANCE, objects);
+		//wifiCommunication(WIFI_PERCEPTION_DISTANCE, objects);
 			
 		//Update percepts	
 		updatePercepts();

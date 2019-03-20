@@ -48,13 +48,13 @@ public class UxVBehavior extends AgentModel {
 		this.ID = id;
 		this.type = type;
 		this.initialPosition = initialPosition;
-		wifiProbWorking = 100; //Probability of having the wifi working 0-100
+		this.wifiProbWorking = 100; //Probability of having the wifi working 0-100
 		//TODO: "break the wifi during simulation time		
 		this.position = initialPosition.copy();
 		this.speedVal = 0;	
 		this.time = 0;
 		this.compasAngle = 0;
-		agentState = new SyncAgentState();
+		this.agentState = new SyncAgentState();
 		this.visibleItems = new ArrayList<CameraPerception>();
 		updatePercepts();
 	}
@@ -75,7 +75,7 @@ public class UxVBehavior extends AgentModel {
 	 */
 
 	//To be override on derived classes
-	public void update(double simTime, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects){
+	public void update(double simTime, int perceptionDistance, List<WorldObject> objects){
 	}
 	
 	/**
@@ -134,6 +134,8 @@ public class UxVBehavior extends AgentModel {
 	/**
 	 * Wifi Communication
 	 */
+	
+/*	DEPRECATED(?)
 	protected void wifiCommunication(int WIFI_PERCEPTION_DISTANCE, List<WorldObject> objects) {
 		//Calculate UAS detected for wifi communication
 		Queue<String> myMsgOutCopy = new LinkedList<String>();
@@ -162,6 +164,7 @@ public class UxVBehavior extends AgentModel {
 			}
 		}
 	}
+*/	
 	/**
 	 * Process the action in the queue to update the speedVal and compassAngle
 	 */
