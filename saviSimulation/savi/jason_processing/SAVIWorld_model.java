@@ -156,11 +156,11 @@ public class SAVIWorld_model extends PApplet {
 			if(i < NUMBER_UGV)  { //Put UgV
 				//_PIXELS is the maximum and the 1 is our minimum
 				//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
-				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE,"demo", this, ugvImage, REASONING_CYCLE_PERIOD, "robot");
+				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE/2,"demo", this, ugvImage, REASONING_CYCLE_PERIOD, "robot");
 				wifiParticipants.add(ugv.getAntennaRef());
 				objects.add(ugv);
 			}else {
-				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE,"demo", this, uavImage, REASONING_CYCLE_PERIOD, "airplane");
+				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE/2,"demo", this, uavImage, REASONING_CYCLE_PERIOD, "airplane");
 				wifiParticipants.add(uav.getAntennaRef());
 				objects.add(uav);
 			}
@@ -174,7 +174,7 @@ public class SAVIWorld_model extends PApplet {
 			if (RANDOM_SEED != -1) {
 				rand = new Random(2 * RANDOM_SEED + i);
 			}
-			objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1),
+			objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, TREE_SIZE/2),
 					TREE_SIZE, "tree", this, treeImage));
 		}
 			// _PIXELS is the maximum and the 1 is our minimum.
@@ -182,7 +182,7 @@ public class SAVIWorld_model extends PApplet {
 			if (RANDOM_SEED != -1) {
 				rand = new Random(3 * RANDOM_SEED + i);
 			}
-			objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1),
+			objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, HOUSE_SIZE/2),
 					HOUSE_SIZE, "house", this, houseImage));
 		}
 		for (int i = 0; i < NUMBER_THREATS; i++) { // Put threats
@@ -194,7 +194,7 @@ public class SAVIWorld_model extends PApplet {
 					THREAT_SIZE, "threat", this, threatImage));
 		}
 		
-		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), this, ANTENNA_SIZE, antennaImage);
+		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, antennaImage);
 		objects.add(consoleProxy);
 		wifiParticipants.add(consoleProxy.getAntennaRef());
 
