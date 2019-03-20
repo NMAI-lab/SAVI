@@ -39,7 +39,7 @@ public class SAVIWorld_model extends PApplet {
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
 	public final int X_PIXELS = 900;
 	public final int Y_PIXELS = 700;
-	int Z_PIXELS = 500;
+	//int Z_PIXELS = 500;
 	String CONSOLE_ID = "console"; //not loaded from config file
 
 	// TimeStamp file names
