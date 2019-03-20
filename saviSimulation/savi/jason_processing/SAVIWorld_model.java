@@ -146,25 +146,26 @@ public class SAVIWorld_model extends PApplet {
 		Random rand = new Random();
 		
 				
-		for(int i = 0; i < NUMBER_UAV+NUMBER_UGV; i++)  { //Put UxV
+		for(int i = 0; i < NUMBER_UAV; i++)  { //Put UaV
 			//_PIXELS is the maximum and the 1 is our minimum
 			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
 			if(RANDOM_SEED != -1) {
 				rand = new Random(RANDOM_SEED+i);
 			}	
-		
-			if(i < NUMBER_UGV)  { //Put UgV
-				//_PIXELS is the maximum and the 1 is our minimum
-				//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
-				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE/2,"demo", this, ugvImage, REASONING_CYCLE_PERIOD, "robot");
-				wifiParticipants.add(ugv.getAntennaRef());
-				objects.add(ugv);
-			}else {
 				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE/2,"demo", this, uavImage, REASONING_CYCLE_PERIOD, "airplane");
 				wifiParticipants.add(uav.getAntennaRef());
-				objects.add(uav);
+				objects.add(uav);			
 			}
-			
+		for(int i = NUMBER_UAV; i < NUMBER_UAV+NUMBER_UGV; i++)  { //Put UgV 
+			// The way the for loop is set up is to make sure all the UxVs have different ids
+			//_PIXELS is the maximum and the 1 is our minimum
+			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
+			if(RANDOM_SEED != -1) {
+				rand = new Random(RANDOM_SEED+i);
+			}	
+				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE/2,"demo", this, ugvImage, REASONING_CYCLE_PERIOD, "robot");
+				wifiParticipants.add(ugv.getAntennaRef());
+				objects.add(ugv);			
 		}
 		
 		
