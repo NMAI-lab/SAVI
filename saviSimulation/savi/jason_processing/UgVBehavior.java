@@ -43,7 +43,8 @@ public class UgVBehavior extends UxVBehavior {
 	 * update
 	 * process actions from the queue, update the UAS state variable and set the new perceptions
 	 */
-	public void update(double simTime, int perceptionDistance, List<WorldObject> objects){
+	@Override
+	public void update(UxV ugv, double simTime, int perceptionDistance, List<WorldObject> objects){
 		//Process actions to update speedVal & compassAngle
 		processAgentActions();
 		
@@ -54,18 +55,18 @@ public class UgVBehavior extends UxVBehavior {
 		//Calculate new position
 		double cosv = Math.cos(this.compasAngle);
 		double sinv = Math.sin(this.compasAngle);
-		this.position.add(new PVector(Math.round(cosv*this.speedVal*timeElapsed), Math.round(sinv*this.speedVal*timeElapsed), 0));
-		
+		PVector newpos = new PVector(Math.round(cosv*this.speedVal*timeElapsed), Math.round(sinv*this.speedVal*timeElapsed), 0);
+		ugv.setPosition(newpos);
 		//Calculate visible items
 		this.visibleItems = new ArrayList<CameraPerception>();
 		
 		//Calculate objects detected with camera	
-		for (CameraPerception c: objectDetection(objects, perceptionDistance)) {
+		for (CameraPerception c: objectDetection(ugv.position, objects, perceptionDistance)) {
 			visibleItems.add(c);
 		}	
 
 		//Update percepts	
-		updatePercepts();
+		updatePercepts(ugv.position);
 		//this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
 	}
 	

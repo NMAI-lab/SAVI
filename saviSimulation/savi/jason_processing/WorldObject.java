@@ -34,7 +34,7 @@ public class WorldObject{
 		}  
 		
 
-		public void draw() {
+		public void draw(PVector position) {
 			simulator.stroke(0);
 
 			simulator.shapeMode(PConstants.CENTER);

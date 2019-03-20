@@ -234,7 +234,7 @@ public class SAVIWorld_model extends PApplet {
 			background(240); // white background
 
 			for (WorldObject wo : objects) { // Makes all objects on screen.
-				wo.draw();
+				wo.draw(wo.position);
 			}
 
 			playButton.label = "play";
@@ -273,7 +273,7 @@ public class SAVIWorld_model extends PApplet {
 		background(240); // white background
 
 		for (WorldObject wo : objects) { // Makes all objects on screen.
-			wo.draw();
+			wo.draw(wo.position);
 		}
 
 		playButton.label = "pause";

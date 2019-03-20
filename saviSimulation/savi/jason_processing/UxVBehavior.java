@@ -20,7 +20,6 @@ public class UxVBehavior extends AgentModel {
 	//String type; -- same
 	//SyncAgentState agentState; --same
 	protected PVector initialPosition;
-	protected PVector position;
 	protected double speedVal;
 	protected double compasAngle;
 	protected ArrayList<CameraPerception> visibleItems;
@@ -47,19 +46,14 @@ public class UxVBehavior extends AgentModel {
 		this.ID = id;
 		this.type = type;
 		this.initialPosition = initialPosition;
-		//TODO: "break the wifi during simulation time		
-		this.position = initialPosition.copy();
 		this.speedVal = 0;	
 		this.time = 0;
 		this.compasAngle = 0;
 		this.agentState = new SyncAgentState();
 		this.visibleItems = new ArrayList<CameraPerception>();
-		updatePercepts();
+		updatePercepts(initialPosition);
 	}
 
-	public PVector getPosition() {
-		return position;
-	}
 	public ArrayList<CameraPerception> getVisibleItems() {
 		return visibleItems;
 	}
@@ -73,13 +67,13 @@ public class UxVBehavior extends AgentModel {
 	 */
 
 	//To be override on derived classes
-	public void update(double simTime, int perceptionDistance, List<WorldObject> objects){
+	public void update(UxV uxv, double simTime, int perceptionDistance, List<WorldObject> objects){
 	}
 	
 	/**
 	 * Detect world objects & threats with the camera
 	 */
-	protected ArrayList<CameraPerception> objectDetection(List<WorldObject> obj, int perceptionDistance) {
+	protected ArrayList<CameraPerception> objectDetection(PVector mypos, List<WorldObject> obj, int perceptionDistance) {
 		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
 		ArrayList<CameraPerception> detectedItems = new ArrayList<CameraPerception>();
 		double distance, oposite, tan, angle;
@@ -88,7 +82,7 @@ public class UxVBehavior extends AgentModel {
 			//shouldn't detect itself. if not (UxV and himself)
 			if( !((wo instanceof UxV) && this.ID.equals(((UxV)wo).getBehavior().getID())) ){
 				
-            	List<Double> polar = Geometry.relativePositionPolar(wo.getPosition(), this.position, this.compasAngle);
+            	List<Double> polar = Geometry.relativePositionPolar(wo.getPosition(), mypos, this.compasAngle);
             
             	//calculate distance
             	double azimuth = polar.get(Geometry.AZIMUTH);
@@ -139,12 +133,12 @@ public class UxVBehavior extends AgentModel {
 	/**
 	 * Update perception Snapshot in agent state
 	 */
-	protected void updatePercepts() {
+	protected void updatePercepts(PVector mypos) {
 		PerceptionSnapshot P = new PerceptionSnapshot();		
 		//Add position
-		P.addPerception(new PositionPerception(this.time, (double) this.position.x, (double) this.position.y, (double) this.position.z));
+		P.addPerception(new PositionPerception(this.time, (double) mypos.x, (double) mypos.y, (double) mypos.z));
 		//Add velocity
-		P.addPerception(new VelocityPerception(this.time, Math.atan(this.position.x/this.position.y), 0, this.speedVal));
+		P.addPerception(new VelocityPerception(this.time, Math.atan(mypos.x/mypos.y), 0, this.speedVal));
 		//Add time
 		P.addPerception(new TimePerception(this.time));
 		//Add Visible items
