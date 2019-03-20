@@ -56,9 +56,10 @@ public class UgVBehavior extends UxVBehavior {
 		double cosv = Math.cos(this.compasAngle);
 		double sinv = Math.sin(this.compasAngle);
 		PVector newpos = new PVector(Math.round(cosv*this.speedVal*timeElapsed), Math.round(sinv*this.speedVal*timeElapsed), 0);
-		ugv.setPosition(newpos);
+		ugv.setPosition(ugv.getPosition().add(newpos));
 		//Calculate visible items
 		this.visibleItems = new ArrayList<CameraPerception>();
+		
 		
 		//Calculate objects detected with camera	
 		for (CameraPerception c: objectDetection(ugv.position, objects, perceptionDistance)) {

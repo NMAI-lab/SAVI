@@ -56,7 +56,8 @@ public class UaVBehavior extends UxVBehavior {
 		if(newpos.z<0) {
 			newpos.z=0;
 		}
-		uav.setPosition(newpos);
+		
+		uav.setPosition(uav.getPosition().add(newpos));
 		
 		//Calculate visible items
 		this.visibleItems = new ArrayList<CameraPerception>();
