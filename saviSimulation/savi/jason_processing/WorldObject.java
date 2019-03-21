@@ -39,10 +39,11 @@ public class WorldObject{
 
 			simulator.shapeMode(PConstants.CENTER);
 			simulator.shape(this.image, this.position.x, this.position.y,pixels,pixels);
+			simulator.text(position.z+(this.pixels/2), this.position.x, this.position.y);
 
 		}
 		
-		public void update(double simtime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
+		public void update(double simtime, double timestep, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
 			// most worldObjects do nothing
 		}
 
