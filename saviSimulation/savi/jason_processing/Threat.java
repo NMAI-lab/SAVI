@@ -39,7 +39,7 @@ public class Threat extends WorldObject{
 
 	// State Update: Randomly move up, down, left, right, or stay in one place
 	@Override
-	public void update(double simTime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants){
+	public void update(double simTime, double timestep, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants){
 		
 		double speedValue = this.maxSpeed *(1 - 0.6*rand.nextDouble()); // speed between 0.4 * maxSpeed and MaxSpeed
 		
@@ -47,7 +47,7 @@ public class Threat extends WorldObject{
 		// add a bit of noise to the movement
 		float noisex = (float) (speedValue * timestep *0.4*(rand.nextFloat()-1));
 		float noisey = (float) (speedValue * timestep *0.4*(rand.nextFloat()-1));
-		temp.add(noisex, noisey);
+		temp.add(noisex, noisey, 0);
 		position.add(temp);		
 		
 		if (position.dist(nextRandomDestination)<5) { //we have arrived at our (random) destination
@@ -59,14 +59,14 @@ public class Threat extends WorldObject{
 	// State reset
 	void reset(int X_PIXELS, int Y_PIXELS){
 		// Initialize data values
-		position = new PVector(X_PIXELS/2,Y_PIXELS/2); //Assume that the initial position is at the center of the display window
+		position = new PVector(X_PIXELS/2,Y_PIXELS/2,0); //Assume that the initial position is at the center of the display window
 	}
 
 	
 	private void setRandomDestination() {
 		int rx = rand.nextInt(simulator.X_PIXELS);
 		int ry = rand.nextInt(simulator.Y_PIXELS);
-		nextRandomDestination = new PVector(rx,ry);
+		nextRandomDestination = new PVector(rx,ry,pixels/2);
 		System.out.println("Threat heading to position "+rx+" / "+ry );
 	}
 	
@@ -76,7 +76,7 @@ public class Threat extends WorldObject{
 
 		simulator.shapeMode(PConstants.CENTER);
 		simulator.shape(this.image, this.position.x, this.position.y, this.pixels, this.pixels);
-
+		simulator.text(position.z+(this.pixels/2), position.x, position.y);
 		
 	}
 
