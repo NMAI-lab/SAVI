@@ -24,7 +24,9 @@ public class UxVBehavior extends AgentModel {
 	protected double compasAngle;
 	protected ArrayList<CameraPerception> visibleItems;
 	protected double time;	
-	
+	protected double sensorsErrorProb;
+	protected double sensorsErrorStdDev;
+	protected double randomSeed;
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
 	//IF WE WANT TO IMPLEMENTE MALFUNCTION OF SENSORS, THE INFO RECEIVED IN 
@@ -40,7 +42,7 @@ public class UxVBehavior extends AgentModel {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UxVBehavior(String id, String type, PVector initialPosition, double reasoningCyclePeriod) {	
+	public UxVBehavior(String id, String type, PVector initialPosition, double reasoningCyclePeriod, double sensorsErrorProb, double sensorsErrorStdDev, double seed) {	
 		// Initialize data values
 		super(reasoningCyclePeriod);
 		this.ID = id;
@@ -52,6 +54,10 @@ public class UxVBehavior extends AgentModel {
 		this.agentState = new SyncAgentState();
 		this.visibleItems = new ArrayList<CameraPerception>();
 		updatePercepts(initialPosition);
+		
+		this.sensorsErrorProb = sensorsErrorProb;
+		this.sensorsErrorStdDev = sensorsErrorStdDev;
+		this.randomSeed = seed;
 	}
 
 	public ArrayList<CameraPerception> getVisibleItems() {
@@ -134,19 +140,60 @@ public class UxVBehavior extends AgentModel {
 	 * Update perception Snapshot in agent state
 	 */
 	protected void updatePercepts(PVector mypos) {
-		PerceptionSnapshot P = new PerceptionSnapshot();		
-		//Add position
-		P.addPerception(new PositionPerception(this.time, (double) mypos.x, (double) mypos.y, (double) mypos.z));
-		//Add velocity
-		P.addPerception(new VelocityPerception(this.time, Math.atan(mypos.x/mypos.y), 0, this.speedVal));
+		PerceptionSnapshot P = new PerceptionSnapshot();
+		PVector positionWithError = new PVector();
+		
+		//if position sensor is failing
+		if(isSensorFailing(sensorsErrorProb)) {
+			positionWithError.x = (float)calculateFailureValue((double)mypos.x, this.sensorsErrorStdDev);
+			positionWithError.y = (float)calculateFailureValue((double)mypos.y, this.sensorsErrorStdDev);
+			positionWithError.z = (float)calculateFailureValue((double)mypos.z, this.sensorsErrorStdDev);
+				//add position
+				P.addPerception(new PositionPerception(this.time, (double)positionWithError.x, (double)positionWithError.y, (double) positionWithError.z));
+				//Add velocity
+				P.addPerception(new VelocityPerception(this.time, Math.atan(positionWithError.x/positionWithError.y), 0, this.speedVal));			
+		} else { //Value without error
+				//add position
+				P.addPerception(new PositionPerception(this.time, (double) mypos.x, (double) mypos.y, (double) mypos.z));
+				//Add velocity
+				P.addPerception(new VelocityPerception(this.time, Math.atan(mypos.x/mypos.y), 0, this.speedVal));
+		}
+		
 		//Add time
 		P.addPerception(new TimePerception(this.time));
+		
 		//Add Visible items
 		for(CameraPerception cpi : this.visibleItems) {
+			for(int i=0; i<cpi.getParameters().size(); i++) {
+				if(isSensorFailing(sensorsErrorProb)) {
+					cpi.getParameters().set(i, calculateFailureValue(cpi.getParameters().get(i), this.sensorsErrorStdDev));
+				}
+			}	
 			P.addPerception(cpi);
 		}
+		
 		agentState.setPerceptions(P);
 	}
+	
+	
+	// takes probability parameter between 0 and 1 
+	protected boolean isSensorFailing (double probability) {
+		Random rand= new Random(System.currentTimeMillis());
+		if(rand.nextDouble()<probability) {
+			return true;
+		}else {
+			return false;
+		}	
+	}
+
+	
+	// generate random value for a normal distribution (mean, stdDev)
+	protected double calculateFailureValue (double mean, double stdDev) {
+		Random rand= new Random(System.currentTimeMillis());
+		return ((rand.nextGaussian()*stdDev)+mean);
+	}	
+
+	
 	
 	/**
 	 * Get UAS id
