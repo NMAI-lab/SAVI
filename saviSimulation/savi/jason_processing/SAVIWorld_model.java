@@ -281,7 +281,7 @@ public class SAVIWorld_model extends PApplet {
 		logger.info("== SAVIWorld_Model draw() == at:" + simTime);
 		// 2. STATE UPDATE (SIMULATION)
 		for (WorldObject wo : objects) { // Update threats
-			wo.update(simTime, simTimeDelta, WIFI_PERCEPTION_DISTANCE, objects, wifiParticipants);
+			wo.update(simTime, simTimeDelta, objects, wifiParticipants);
 		}
 		// 3. VISUALIZATION
 		// ------------------

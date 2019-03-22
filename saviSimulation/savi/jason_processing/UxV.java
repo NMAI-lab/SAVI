@@ -46,7 +46,7 @@ public abstract class UxV extends WorldObject implements Communicator {
 	}
 	
 	@Override
-	public void update(double simtime, double timestep, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
+	public void update(double simtime, double timestep, List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
 		this.uxvBehavior.update(this, simtime, this.perceptionDistance, objects);
 		this.wifiAntenna.update(wifiParticipants);
 	}

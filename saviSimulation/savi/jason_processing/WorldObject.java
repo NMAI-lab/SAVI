@@ -44,7 +44,7 @@ public class WorldObject{
 			}
 		}
 		
-		public void update(double simtime, double timestep, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
+		public void update(double simtime, double timestep, List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
 			// most worldObjects do nothing
 		}
 
