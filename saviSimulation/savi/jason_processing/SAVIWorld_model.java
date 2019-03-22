@@ -244,9 +244,9 @@ public class SAVIWorld_model extends PApplet {
 //************************************************/
 	public void draw() {
 		if (simPaused) {
-//			background(240); // white background
-			bg.resize(X_PIXELS, Y_PIXELS);
-			background(bg);
+		//	background(240); // white background
+	//		bg.resize(X_PIXELS, Y_PIXELS);
+		background(bg);
 
 			for (WorldObject wo : objects) { // Makes all objects on screen.
 				wo.draw(wo.position);
