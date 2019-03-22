@@ -3,21 +3,23 @@ package savi.jason_processing;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 
 import processing.core.PVector;
 
 public class WifiAntenna {
 	
 	int ID;
-	double wifiProbWorking = 100; //TODO: actually make use of this as a probability in the message transmission
+	double wifiProbWorking = 1; //TODO: actually make use of this as a probability in the message transmission
 	Communicator communicator; //the source and destination of messages exchanged over the wifi
+	int seed;
 	
-	public WifiAntenna(int id, Communicator communicator) {
+	public WifiAntenna(int id, Communicator communicator, double wifiProbWorking, int seed) {
 		
 		this.ID = id;
 		this.communicator = communicator;
-		
-		
+		this.wifiProbWorking= wifiProbWorking;
+		this.seed = seed;
 	}
 	
 	public void update(int wifiPerceptionDistance, List<WifiAntenna> wifiParticipants) {
@@ -36,8 +38,8 @@ public class WifiAntenna {
 			double dist  = this.getPosition().dist(other.getPosition());
 			if (dist < wifiPerceptionDistance 		//reachable
 				&& this.ID!=other.getID()	//not the same
-			    && wifiProbWorking > 0				//wifi working
-			    && other.getWifiValue()>0) 			//TODO make use of probability for this and line above
+			    && isWifiFailing(this.wifiProbWorking, this.seed)	//wifi working
+			    && other.isWifiFailing(this.wifiProbWorking, this.seed)) 			//TODO make use of probability for this and line above
 				
 				receivers.add(other);
 		}
@@ -58,12 +60,7 @@ public class WifiAntenna {
 		return communicator.getPosition();
 	}
 
-	public double getWifiValue() {
-		
-		return wifiProbWorking;
-	}
-
-
+	
 	public int getID() {
 		
 		return ID;
@@ -74,4 +71,17 @@ public class WifiAntenna {
 		communicator.receiveMessage(msg);
 	}
 
+	// takes probability parameter between 0 and 1 
+	protected boolean isWifiFailing(double probability, int seed) {
+		Random rand = new Random();
+		if(seed != -1) {
+			rand = new Random(seed);
+		}
+		if(rand.nextDouble()<probability) {
+			return true;
+		}else {
+			return false;
+		}	
+	}
+	
 }

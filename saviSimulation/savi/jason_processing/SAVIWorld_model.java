@@ -39,6 +39,7 @@ public class SAVIWorld_model extends PApplet {
 	private int NUMBER_UGV;
 	private double SENSORS_ERROR_PROB;
 	private double SENSORS_ERROR_STD_DEV;
+	private double WIFI_ERROR_PROB;
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
 	public final int X_PIXELS = 874;
 	public final int Y_PIXELS = 699;
@@ -125,6 +126,7 @@ public class SAVIWorld_model extends PApplet {
 		UAV_SIZE = Integer.parseInt(modelProps.getProperty("UAV_SIZE"));
 		SENSORS_ERROR_PROB = (double) Double.parseDouble(modelProps.getProperty("SENSORS_ERROR_PROB"));
 		SENSORS_ERROR_STD_DEV = (double) Double.parseDouble(modelProps.getProperty("SENSORS_ERROR_STD_DEV"));
+		WIFI_ERROR_PROB = (double) Double.parseDouble(modelProps.getProperty("WIFI_ERROR_PROB"));
 		
 		// Initialization code goes here
 		simTime = 0; // seconds
@@ -164,7 +166,7 @@ public class SAVIWorld_model extends PApplet {
 				rand = new Random(RANDOM_SEED+i);
 			}	
 				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE,"demo", 
-						this, uavImage, REASONING_CYCLE_PERIOD, "drone", UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, RANDOM_SEED);
+						this, uavImage, REASONING_CYCLE_PERIOD, "drone", UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB, RANDOM_SEED);
 				wifiParticipants.add(uav.getAntennaRef());
 				objects.add(uav);
 				agentList.put(((UxV)uav).getBehavior().getID(), ((UxV)uav).getBehavior());//Create UaV agent
@@ -177,7 +179,7 @@ public class SAVIWorld_model extends PApplet {
 				rand = new Random(RANDOM_SEED+i);
 			}	
 				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE,"demo",
-						this, ugvImage, REASONING_CYCLE_PERIOD, "robot", UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, RANDOM_SEED);
+						this, ugvImage, REASONING_CYCLE_PERIOD, "robot", UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB, RANDOM_SEED);
 				wifiParticipants.add(ugv.getAntennaRef());
 				objects.add(ugv);
 				agentList.put(((UxV)ugv).getBehavior().getID(), ((UxV)ugv).getBehavior());//Create UgV agent
@@ -207,7 +209,7 @@ public class SAVIWorld_model extends PApplet {
 					THREAT_SIZE, "threat", this, threatImage));
 		}
 		
-		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, antennaImage);
+		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, antennaImage, WIFI_ERROR_PROB, RANDOM_SEED);
 		objects.add(consoleProxy);
 		wifiParticipants.add(consoleProxy.getAntennaRef());
 
