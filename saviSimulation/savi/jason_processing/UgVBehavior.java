@@ -45,6 +45,7 @@ public class UgVBehavior extends UxVBehavior {
 	 */
 	@Override
 	public void update(UxV ugv, double simTime, int perceptionDistance, List<WorldObject> objects){
+
 		//Process actions to update speedVal & compassAngle
 		processAgentActions();
 		
@@ -55,7 +56,7 @@ public class UgVBehavior extends UxVBehavior {
 		//Calculate new position
 		double cosv = Math.cos(this.compasAngle);
 		double sinv = Math.sin(this.compasAngle);
-		PVector newpos = new PVector(Math.round(cosv*this.speedVal*timeElapsed), Math.round(sinv*this.speedVal*timeElapsed), 0);
+		PVector newpos = new PVector((float)(cosv*this.speedVal*timeElapsed), (float)(sinv*this.speedVal*timeElapsed), 0);
 		ugv.setPosition(ugv.getPosition().add(newpos));
 		//Calculate visible items
 		this.visibleItems = new ArrayList<CameraPerception>();

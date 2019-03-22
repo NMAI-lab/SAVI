@@ -49,7 +49,7 @@ public class UaVBehavior extends UxVBehavior {
 		//Calculate new x,y position
 		double cosv = Math.cos(this.compasAngle);
 		double sinv = Math.sin(this.compasAngle);
-		PVector newpos = new PVector(Math.round(cosv*this.speedVal*timeElapsed), Math.round(sinv*this.speedVal*timeElapsed), 0);
+		PVector newpos = new PVector((float)(cosv*this.speedVal*timeElapsed), (float)(sinv*this.speedVal*timeElapsed), 0);
 		//Calculate new altitude
 		newpos.z+=verticalSpeedVal;
 		if(newpos.z<0) {
