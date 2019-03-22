@@ -39,8 +39,9 @@ public class WorldObject{
 
 			simulator.shapeMode(PConstants.CENTER);
 			simulator.shape(this.image, this.position.x, this.position.y,pixels,pixels);
-			simulator.text(position.z+(this.pixels/2), this.position.x, this.position.y);
-
+			if(position.z>pixels/2) {// if its a flying object show altitude
+				simulator.text(position.z+(this.pixels/2), this.position.x, this.position.y);
+			}
 		}
 		
 		public void update(double simtime, double timestep, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {

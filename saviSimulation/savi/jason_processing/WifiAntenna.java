@@ -11,23 +11,25 @@ public class WifiAntenna {
 	
 	int ID;
 	double wifiProbWorking = 1; //TODO: actually make use of this as a probability in the message transmission
+	int wifiPerceptionDistance;
 	Communicator communicator; //the source and destination of messages exchanged over the wifi
 	int seed;
 	
-	public WifiAntenna(int id, Communicator communicator, double wifiProbWorking, int seed) {
+	public WifiAntenna(int id, Communicator communicator, int wifiPerceptionDistance, double wifiProbWorking, int seed) {
 		
 		this.ID = id;
 		this.communicator = communicator;
+		this.wifiPerceptionDistance = wifiPerceptionDistance;
 		this.wifiProbWorking= wifiProbWorking;
 		this.seed = seed;
 	}
 	
-	public void update(int wifiPerceptionDistance, List<WifiAntenna> wifiParticipants) {
-		sendMessages(wifiPerceptionDistance, communicator.getOutgoingMessages(), wifiParticipants);
+	public void update(List<WifiAntenna> wifiParticipants) {
+		sendMessages(communicator.getOutgoingMessages(), wifiParticipants);
 	}
 	
 
-	protected void sendMessages(int wifiPerceptionDistance, List<String> outgoingMessages, List<WifiAntenna> others) {
+	protected void sendMessages(List<String> outgoingMessages, List<WifiAntenna> others) {
 		
 		List<WifiAntenna> receivers = new LinkedList<WifiAntenna>();
 		
@@ -36,7 +38,7 @@ public class WifiAntenna {
 			
 			//calculate distance
 			double dist  = this.getPosition().dist(other.getPosition());
-			if (dist < wifiPerceptionDistance 		//reachable
+			if (dist < this.wifiPerceptionDistance 		//reachable
 				&& this.ID!=other.getID()	//not the same
 			    && isWifiFailing(this.wifiProbWorking, this.seed)	//wifi working
 			    && other.isWifiFailing(this.wifiProbWorking, this.seed)) 			//TODO make use of probability for this and line above
