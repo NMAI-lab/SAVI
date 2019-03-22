@@ -76,9 +76,8 @@ public abstract class UxV extends WorldObject implements Communicator {
 
 		//draw image
 		simulator.shape(image, position.x, position.y, pixels, pixels);
-		if(position.z>pixels/2) {// if its a flying object show altitude
-			simulator.text(position.z+(this.pixels/2), position.x, position.y);
-		}	
+		//show height lower and upper
+		simulator.text(Double.toString(position.z+(this.pixels/2))+"\n"+Double.toString(position.z-(this.pixels/2)), position.x, position.y);
 		simulator.noFill();
 
 		//draw perception area
