@@ -70,7 +70,7 @@ public class SAVIWorld_model extends PApplet {
 
 	private Button playButton, stopButton;
 	private PShape ugvImage, treeImage, houseImage, threatImage, play, pause, restart, antennaImage, uavImage;
-	private PImage bg;
+	private PImage backGround;
 	
 	public void settings() {
 		size(X_PIXELS, Y_PIXELS, P3D);
@@ -152,7 +152,7 @@ public class SAVIWorld_model extends PApplet {
 		uavImage = loadShape("SimImages/airplane.svg");
 		antennaImage = loadShape("SimImages/antenna.svg");
 
-		bg = loadImage("SimImages/OttawaAirport_874_699.PNG");
+		backGround = loadImage("SimImages/OttawaAirport_874_699.PNG");
 		
 		Random rand = new Random();
 		// ======= Jason BDI agents ================
@@ -246,7 +246,7 @@ public class SAVIWorld_model extends PApplet {
 		if (simPaused) {
 		//	background(240); // white background
 	//		bg.resize(X_PIXELS, Y_PIXELS);
-		background(bg);
+		background(backGround);
 
 			for (WorldObject wo : objects) { // Makes all objects on screen.
 				wo.draw(wo.position);
@@ -286,7 +286,7 @@ public class SAVIWorld_model extends PApplet {
 		// 3. VISUALIZATION
 		// ------------------
 //		background(240); // white background
-		background(bg);
+		background(backGround);
 		
 		for (WorldObject wo : objects) { // Makes all objects on screen.
 			wo.draw(wo.position);
