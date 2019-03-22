@@ -15,19 +15,19 @@ public class FieldAntenna extends WorldObject implements Communicator{
 	double wifi = 100;
 	//TODO: add list of messages here, then implement message delivery
 	
-	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, PShape image, double wifiProbWorking, int seed) {
+	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, PShape image, int wifiPerceptionDistance, double wifiProbWorking, int seed) {
 		
 		//int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image
 		
 		super(id, position, size, "FieldAntenna", sim, image);
 		
 		this.position = position;
-		antenna = new WifiAntenna(id, this, wifiProbWorking, seed);
+		antenna = new WifiAntenna(id, this, wifiPerceptionDistance, wifiProbWorking, seed);
 		
 	}
 	
-	public void update(int wifiPerceptionDistance, List<WifiAntenna> wifiParticipants) {
-		antenna.update(wifiPerceptionDistance, wifiParticipants);
+	public void update(List<WifiAntenna> wifiParticipants) {
+		antenna.update(wifiParticipants);
 	}
 	
 

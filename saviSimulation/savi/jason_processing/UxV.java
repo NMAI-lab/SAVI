@@ -35,20 +35,20 @@ public abstract class UxV extends WorldObject implements Communicator {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName, int perceptionDistance, double sensorsErrorProb, double sensorsErrorStdDev, double probWifiWorking, int seed) {			
+	public UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName, int perceptionDistance, double sensorsErrorProb, double sensorsErrorStdDev, int wifiPerceptionDistance, double probWifiWorking, int seed) {			
 		// Initializes UAS as WorldObject
 		super(id, pos, pixels, Type, sim, image);
 		this.imageName=imageName;
 		// Initializes Behaviuor
 		//this.uxvBehavior = new UxVBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod);
-		this.wifiAntenna = new WifiAntenna (id,this,probWifiWorking, seed);
+		this.wifiAntenna = new WifiAntenna (id,this,wifiPerceptionDistance,probWifiWorking, seed);
 		this.perceptionDistance=perceptionDistance;
 	}
 	
 	@Override
 	public void update(double simtime, double timestep, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
 		this.uxvBehavior.update(this, simtime, this.perceptionDistance, objects);
-		this.wifiAntenna.update(WIFI_PERCEPTION_DISTANCE, wifiParticipants);
+		this.wifiAntenna.update(wifiParticipants);
 	}
 	
 	public UxVBehavior getBehavior() {		
@@ -76,7 +76,9 @@ public abstract class UxV extends WorldObject implements Communicator {
 
 		//draw image
 		simulator.shape(image, position.x, position.y, pixels, pixels);
-		simulator.text(position.z+(this.pixels/2), position.x, position.y);
+		if(position.z>pixels/2) {// if its a flying object show altitude
+			simulator.text(position.z+(this.pixels/2), position.x, position.y);
+		}	
 		simulator.noFill();
 
 		//draw perception area
