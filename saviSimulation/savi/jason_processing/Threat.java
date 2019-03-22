@@ -23,9 +23,9 @@ public class Threat extends WorldObject{
 	//              that doesn't have a type (not even void).
 	
 
-	Threat(int id, int x, int y, int seed, double MS, int pxSize, String type, SAVIWorld_model world, PShape img) {
+	Threat(int id, PVector initialPosition, int seed, double MS, int pxSize, String type, SAVIWorld_model world, PShape img) {
 		// Initialize data values
-		super(id,new PVector(x,y), pxSize, type, world, img);
+		super(id, initialPosition, pxSize, type, world, img);
 		rand = new Random();
 		if(seed != -1) {
 			rand = new Random(seed + this.ID);
@@ -71,11 +71,11 @@ public class Threat extends WorldObject{
 	}
 	
 	@Override
-	public void draw() {
+	public void draw(PVector position) {
 		simulator.stroke(0);
 
 		simulator.shapeMode(PConstants.CENTER);
-		simulator.shape(this.image, this.position.x, this.position.y,10,10);
+		simulator.shape(this.image, this.position.x, this.position.y, this.pixels, this.pixels);
 
 		
 	}

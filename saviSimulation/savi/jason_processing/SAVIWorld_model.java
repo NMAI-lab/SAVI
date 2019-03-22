@@ -26,17 +26,20 @@ public class SAVIWorld_model extends PApplet {
 	private double MAX_SPEED;
 	int PERCEPTION_DISTANCE;
 	private int WIFI_PERCEPTION_DISTANCE;
-	private int NUMBER_UAS;
 	private int RANDOM_SEED;
 	private double REASONING_CYCLE_PERIOD;
 	private int TREE_SIZE;
 	private int HOUSE_SIZE;
 	private int THREAT_SIZE;
-	private int UAS_SIZE;
-	private int ANTENNA_SIZE; //TODO: intialize from config file
+	private int ANTENNA_SIZE;
+	private int UAV_SIZE;
+	private int UGV_SIZE;
+	private int NUMBER_UAV;
+	private int NUMBER_UGV;
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
 	public final int X_PIXELS = 900;
 	public final int Y_PIXELS = 700;
+	//int Z_PIXELS = 500;
 	String CONSOLE_ID = "console"; //not loaded from config file
 
 	// TimeStamp file names
@@ -62,7 +65,7 @@ public class SAVIWorld_model extends PApplet {
 	private JasonMAS jasonAgents; // the BDI agents
 
 	private Button playButton, stopButton;
-	private PShape uasImage, treeImage, houseImage, threatImage, play, pause, restart, antennaImage;
+	private PShape ugvImage, treeImage, houseImage, threatImage, play, pause, restart, antennaImage, uavImage;
 
 	public void settings() {
 		size(X_PIXELS, Y_PIXELS, P3D);
@@ -105,69 +108,83 @@ public class SAVIWorld_model extends PApplet {
 		MAX_SPEED = (double) Double.parseDouble(modelProps.getProperty("MAX_SPEED"));
 		PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("PERCEPTION_DISTANCE"));
 		WIFI_PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("WIFI_PERCEPTION_DISTANCE"));
-		NUMBER_UAS = Integer.parseInt(modelProps.getProperty("NUMBER_UAS"));
 		RANDOM_SEED = Integer.parseInt(modelProps.getProperty("RANDOM_SEED"));
 		REASONING_CYCLE_PERIOD = (double) Double.parseDouble(modelProps.getProperty("REASONING_CYCLE_PERIOD"));
 		TREE_SIZE = Integer.parseInt(modelProps.getProperty("TREE_SIZE"));
 		HOUSE_SIZE = Integer.parseInt(modelProps.getProperty("HOUSE_SIZE"));
 		THREAT_SIZE = Integer.parseInt(modelProps.getProperty("THREAT_SIZE"));
-		UAS_SIZE = Integer.parseInt(modelProps.getProperty("UAS_SIZE"));
-		ANTENNA_SIZE = Integer.parseInt(modelProps.getProperty("UAS_SIZE")); //TODO: replace with appropriate antenna size
+		ANTENNA_SIZE = Integer.parseInt(modelProps.getProperty("ANTENNA_SIZE"));
+		NUMBER_UGV = Integer.parseInt(modelProps.getProperty("NUMBER_UGV"));
+		NUMBER_UAV = Integer.parseInt(modelProps.getProperty("NUMBER_UAV"));
+		UGV_SIZE = Integer.parseInt(modelProps.getProperty("UGV_SIZE"));
+		UAV_SIZE = Integer.parseInt(modelProps.getProperty("UAV_SIZE"));
 
 		// Initialization code goes here
 		simTime = 0; // seconds
 		simTimeDelta = 1000 / FRAME_RATE; // milliseconds
-
 		simPaused = false;// not paused by default
+
 
 		playButton = new Button("play", width / 2 - 20, 10, 40, 40);
 		stopButton = new Button("restart", width / 2 + 20, 10, 40, 40);
 
 		play = loadShape("SimImages/play.svg");
 		pause = loadShape("SimImages/pause.svg");
-		restart = loadShape("SimImages/replay.svg");
 
 		// load images for visualization
+		restart = loadShape("SimImages/replay.svg");
 		treeImage = loadShape("SimImages/tree.svg");
 		houseImage = loadShape("SimImages/home.svg");
 		play = loadShape("SimImages/play.svg");
 		pause = loadShape("SimImages/pause.svg");
 		restart = loadShape("SimImages/replay.svg");
 		threatImage = loadShape("SimImages/warning.svg");
-		uasImage = loadShape("SimImages/robot.svg");
-		antennaImage = loadShape("SimImages/antenna.svg"); //TODO: get an antenna image
+		ugvImage = loadShape("SimImages/robot.svg");
+		uavImage = loadShape("SimImages/airplane.svg");
+		antennaImage = loadShape("SimImages/antenna.svg");
 
 		Random rand = new Random();
-
-		for (int i = 0; i < NUMBER_UAS; i++) { // Put UAS
-			// _PIXELS is the maximum and the 1 is our minimum
-			// TODO: right now agents are initialized with strings "0", "1", "2", ... as
-			// identifiers and a fixed type "demo" which matches their asl file name. This
-			// should be configurable...
-			if (RANDOM_SEED != -1) {
-				rand = new Random(RANDOM_SEED + i);
+		// ======= Jason BDI agents ================
+		Map<String, AgentModel> agentList = new HashMap<String, AgentModel>();
+		//====================================================
+				
+		for(int i = 0; i < NUMBER_UAV; i++)  { //Put UaV
+			//_PIXELS is the maximum and the 1 is our minimum
+			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
+			if(RANDOM_SEED != -1) {
+				rand = new Random(RANDOM_SEED+i);
+			}	
+				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE/2,"demo", this, uavImage, REASONING_CYCLE_PERIOD, "airplane");
+				wifiParticipants.add(uav.getAntennaRef());
+				objects.add(uav);
+				agentList.put(((UxV)uav).getBehavior().getID(), ((UxV)uav).getBehavior());//Create UaV agent
 			}
-			UAS uas = new UAS(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), UAS_SIZE,
-					"demo", this, uasImage, REASONING_CYCLE_PERIOD);
-			objects.add(uas);
-			wifiParticipants.add(uas.getAntennaRef());
-			
+		for(int i = NUMBER_UAV; i < NUMBER_UAV+NUMBER_UGV; i++)  { //Put UgV 
+			// The way the for loop is set up is to make sure all the UxVs have different ids
+			//_PIXELS is the maximum and the 1 is our minimum
+			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
+			if(RANDOM_SEED != -1) {
+				rand = new Random(RANDOM_SEED+i);
+			}	
+				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE/2,"demo", this, ugvImage, REASONING_CYCLE_PERIOD, "robot");
+				wifiParticipants.add(ugv.getAntennaRef());
+				objects.add(ugv);
+				agentList.put(((UxV)ugv).getBehavior().getID(), ((UxV)ugv).getBehavior());//Create UgV agent
 		}
-
 		for (int i = 0; i < NUMBER_TREES; i++) { // Put trees
 			// _PIXELS is the maximum and the 1 is our minimum.
 			if (RANDOM_SEED != -1) {
 				rand = new Random(2 * RANDOM_SEED + i);
 			}
-			objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1),
+			objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, TREE_SIZE/2),
 					TREE_SIZE, "tree", this, treeImage));
 		}
-		for (int i = 0; i < NUMBER_HOUSES; i++) { // Put houses
 			// _PIXELS is the maximum and the 1 is our minimum.
+		for (int i = 0; i < NUMBER_HOUSES; i++) { // Put houses
 			if (RANDOM_SEED != -1) {
 				rand = new Random(3 * RANDOM_SEED + i);
 			}
-			objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1),
+			objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, HOUSE_SIZE/2),
 					HOUSE_SIZE, "house", this, houseImage));
 		}
 		for (int i = 0; i < NUMBER_THREATS; i++) { // Put threats
@@ -175,12 +192,11 @@ public class SAVIWorld_model extends PApplet {
 			if (RANDOM_SEED != -1) {
 				rand = new Random(4 * RANDOM_SEED + i);
 			}
-			objects.add(new Threat(i, rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, RANDOM_SEED, MAX_SPEED,
+			objects.add(new Threat(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, THREAT_SIZE/2), RANDOM_SEED, MAX_SPEED,
 					THREAT_SIZE, "threat", this, threatImage));
-
 		}
 		
-		consoleProxy = new FieldAntenna(NUMBER_UAS+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1), this, ANTENNA_SIZE, antennaImage);
+		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, antennaImage);
 		objects.add(consoleProxy);
 		wifiParticipants.add(consoleProxy.getAntennaRef());
 
@@ -194,21 +210,12 @@ public class SAVIWorld_model extends PApplet {
 		// rate will not be achieved
 
 		// ======= set up Jason BDI agents ================
-		Map<String, AgentModel> agentList = new HashMap<String, AgentModel>();
-
-		for (WorldObject wo : objects) {// Create UAS agents
-			if (wo instanceof UAS) {
-				agentList.put(((UAS) wo).getBehavior().getID(), ((UAS) wo).getBehavior());
-			}
-		}
-
 		jasonAgents = new JasonMAS(agentList);
-		jasonAgents.startAgents();
+		jasonAgents.startAgents();		
 		// ==========================================
-
 		// Set up the cycle length logfile
-		this.lastCycleTimeStamp = 0;
 		this.timeStampFileName = "SimulationTimeStamps.log";
+		this.lastCycleTimeStamp = 0;
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(this.timeStampFileName));
 			writer.close();
@@ -216,8 +223,8 @@ public class SAVIWorld_model extends PApplet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
 
+}		
 	/************* Main draw() ***********************/
 // Main state update and visualization function
 // called by Processing in an infinite loop
@@ -227,7 +234,7 @@ public class SAVIWorld_model extends PApplet {
 			background(240); // white background
 
 			for (WorldObject wo : objects) { // Makes all objects on screen.
-				wo.draw();
+				wo.draw(wo.position);
 			}
 
 			playButton.label = "play";
@@ -266,7 +273,7 @@ public class SAVIWorld_model extends PApplet {
 		background(240); // white background
 
 		for (WorldObject wo : objects) { // Makes all objects on screen.
-			wo.draw();
+			wo.draw(wo.position);
 		}
 
 		playButton.label = "pause";
@@ -309,15 +316,15 @@ public class SAVIWorld_model extends PApplet {
 
 			System.out.println("pausing simulation!-------===================================================");
 			for (WorldObject wo : objects) { // unpause all agents
-				if (wo instanceof UAS) {
-					((UAS) wo).getBehavior().pauseAgent();
+				if (wo instanceof UxV) {
+					((UxV) wo).getBehavior().pauseAgent();
 				}
 			}
 		} else { // the sim was paused, unpause it
 			System.out.println("resuming simulation!-------");
 			for (WorldObject wo : objects) { // pause all agents
-				if (wo instanceof UAS)
-					((UAS) wo).getBehavior().unPauseAgent();
+				if (wo instanceof UxV)
+					((UxV) wo).getBehavior().unPauseAgent();
 			}
 		}
 		simPaused = !simPaused;

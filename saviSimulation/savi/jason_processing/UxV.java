@@ -1,4 +1,3 @@
-
 package savi.jason_processing;
 
 import java.util.*;
@@ -11,14 +10,15 @@ import processing.opengl.*;
 import savi.StateSynchronization.*;
 
 
-public class UAS extends WorldObject implements Communicator {
+public abstract class UxV extends WorldObject implements Communicator {
 	private static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
 
 	//-----------------------------------------
 	// DATA (or state variables)
 	//-----------------------------------------  
-	private UASBehavior uasBehavior;
-	private WifiAntenna wifiAntenna;
+	protected WifiAntenna wifiAntenna;
+	protected UxVBehavior uxvBehavior;
+	protected String imageName;
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
 	//IF WE WANT TO IMPLEMENTE MALFUNCTION OF SENSORS, THE INFO RECEIVED IN 
@@ -34,41 +34,36 @@ public class UAS extends WorldObject implements Communicator {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UAS(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod) {			
+	public UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName) {			
 		// Initializes UAS as WorldObject
 		super(id, pos, pixels, Type, sim, image);
+		this.imageName=imageName;
 		// Initializes Behaviuor
-		this.uasBehavior = new UASBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod);
-		this.wifiAntenna = new WifiAntenna(id, this);
+		this.uxvBehavior = new UxVBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod);
+		this.wifiAntenna = new WifiAntenna (id,this);
 	}
 	
 	@Override
 	public void update(double simtime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
-		this.uasBehavior.update(simtime, perceptionDistance, objects);
+		this.uxvBehavior.update(this, simtime, perceptionDistance, objects);
 		this.wifiAntenna.update(WIFI_PERCEPTION_DISTANCE, wifiParticipants);
 	}
 	
-	public UASBehavior getBehavior() {		
-		return uasBehavior;
+	public UxVBehavior getBehavior() {		
+		return uxvBehavior;
 	}
 	
-		
-				
-		
-	
-	@Override
-	public PVector getPosition() {		
-		return this.getBehavior().getPosition();
+	public void setPosition(PVector pos) {		
+		this.position = pos;
 	}
 	
 	@Override
-	public void draw() {
+	public void draw(PVector position) {
 		PVector p1;
-		
 		simulator.stroke(0);
 
 		//it's easier to load the image every time to rotate it to the compassAngle
-		image=simulator.loadShape("SimImages/robot.svg");
+		image=simulator.loadShape("SimImages/"+imageName+".svg");
 		
 		// translate to center image on uasposition.x, uasposition.y
 		//	simulator.shapeMode(PConstants.CENTER); didn't work
@@ -78,26 +73,26 @@ public class UAS extends WorldObject implements Communicator {
 		image.rotate((float) ((float)this.getBehavior().getCompassAngle()+Math.PI/2));
 
 		//draw image
-		simulator.shape(image, this.getBehavior().getPosition().x, this.getBehavior().getPosition().y, 26, 26);
-		
+		simulator.shape(image, position.x, position.y, 26, 26);
+
 		simulator.noFill();
 
 		//draw perception area
-		simulator.arc(this.getBehavior().getPosition().x, this.getBehavior().getPosition().y, simulator.PERCEPTION_DISTANCE*2, simulator.PERCEPTION_DISTANCE*2,(float)this.getBehavior().getCompassAngle()-(float)Math.PI/2, (float)this.getBehavior().getCompassAngle()+(float)Math.PI/2);
+		simulator.arc(position.x, position.y, simulator.PERCEPTION_DISTANCE*2, simulator.PERCEPTION_DISTANCE*2,(float)this.getBehavior().getCompassAngle()-(float)Math.PI/2, (float)this.getBehavior().getCompassAngle()+(float)Math.PI/2);
 
 		//draw circle on objects percepted
 		for(CameraPerception cpi : this.getBehavior().getVisibleItems()){
 			double angle = (this.getBehavior().getCompassAngle()+cpi.getParameters().get(0));// % 2* Math.PI;
 			double cosv = Math.cos(angle);
 			double sinv = Math.sin(angle);
-			p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+this.getBehavior().getPosition().x, Math.round(sinv*cpi.getParameters().get(2))+this.getBehavior().getPosition().y); 
+			p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+this.position.x, Math.round(sinv*cpi.getParameters().get(2))+this.position.y); 
 			// draw circle over items visualized
-			simulator.ellipse(p1.x,p1.y, 26, 26);
+			simulator.ellipse(p1.x,p1.y, cpi.getParameters().get(3).floatValue()*2, cpi.getParameters().get(3).floatValue()*2);
 		}
 		
 		
 	}
-
+	
 	@Override
 	public  List<String> getOutgoingMessages(){
 		
@@ -117,5 +112,6 @@ public class UAS extends WorldObject implements Communicator {
 	public WifiAntenna getAntennaRef() {		
 		return this.wifiAntenna;
 	}
-		
+	
+	
 }
