@@ -11,8 +11,9 @@ import savi.StateSynchronization.*;
 
 
 public class UxVBehavior extends AgentModel {
-	//private static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
-
+	private static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
+	private static final double VERTICAL_SPEED = 0.1; // 0.1 something (whatever real-life distance this corresponds to)
+	
 	//-----------------------------------------
 	// DATA (or state variables)
 	//-----------------------------------------  
@@ -70,39 +71,51 @@ public class UxVBehavior extends AgentModel {
 	 * process actions from the queue, update the UAS state variable and set the new perceptions
 	 */
 
-	//To be override on derived classes
-	public void update(UxV uxv, double simTime, int perceptionDistance, List<WorldObject> objects){
+	public void update(UxV uav, double simTime, int perceptionDistance, List<WorldObject> objects){
+		PVector movementVector = new PVector();
+		
+		//Process actions to update speedVal & compassAngle & verticalPosition(if applies)
+		processAgentActions();
+		
+		//Update simTime
+		double timeElapsed =  simTime - this.time; //elapsed time since last update 
+		this.time = simTime;
+		
+		//Calculate new x,y position and z if its flying
+		movementVector = calculateMovementVector(timeElapsed);		
+		uav.setPosition(uav.getPosition().add(movementVector));
+		
+		//Calculate visible items
+		this.visibleItems = new ArrayList<CameraPerception>();
+		
+		//Calculate objects detected with camera	
+		for (CameraPerception c: objectDetection(uav.position, objects, perceptionDistance)) {
+			visibleItems.add(c);
+		}
+			
+		//Update percepts	
+		updatePercepts(uav.position);
+		//this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
+	}
+	
+	//to be Overriden
+	protected void processAgentActions(){
+	}
+	
+	//to be Overriden
+	protected PVector calculateMovementVector (double timeElapsed) {
+		PVector movementVector = new PVector();
+		return movementVector;
 	}
 	
 	/**
-	 * Detect world objects & threats with the camera
-	 */
-	protected ArrayList<CameraPerception> objectDetection(PVector mypos, List<WorldObject> obj, int perceptionDistance) {
-		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
-		ArrayList<CameraPerception> detectedItems = new ArrayList<CameraPerception>();
-		double distance, oposite, tan, angle;
+	 * Removes covered objects from uncoveredObjects list
+	*/
+	protected ArrayList<CameraPerception> removeCoveredObjects (ArrayList<CameraPerception> allObjects, ArrayList<CameraPerception> uncoveredObjects){
+		double distance, oposite, angle, tan;
 		
-		for(WorldObject wo:obj) {
-			//shouldn't detect itself. if not (UxV and himself)
-			if( !((wo instanceof UxV) && this.ID.equals(((UxV)wo).getBehavior().getID())) ){
-				
-            	List<Double> polar = Geometry.relativePositionPolar(wo.getPosition(), mypos, this.compasAngle);
-            
-            	//calculate distance
-            	double azimuth = polar.get(Geometry.AZIMUTH);
-            	double elevation = polar.get(Geometry.ELEVATION);
-            	double dist = polar.get(Geometry.DISTANCE);
-            	if ((azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.)&&(dist <perceptionDistance) ) {
-					//it's visible 
-					detectedItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
-					visibleItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
-            	}
-			}	   	
-		}
-		
-		//remove objects covered by others on the visualization
-		for(CameraPerception di:detectedItems) {
-			for(int i=0; i<visibleItems.size();i++) {
+		for(CameraPerception di:allObjects) {
+			for(int i=0; i<uncoveredObjects.size();i++) {
 				//to calculate visual angle covered by the object
 				distance = di.getParameters().get(2);
 				//angle deviation from centroid = radius
@@ -110,53 +123,48 @@ public class UxVBehavior extends AgentModel {
 				//math to calculate angle cover
 				tan=oposite/distance;
 				angle=Math.abs(Math.atan(tan));
-				
+						
 				//if object is covered by di remove
 				//if is covered by azimuth angle
-				if(di.getParameters().get(0)+angle > visibleItems.get(i).getParameters().get(0) && di.getParameters().get(0)-angle < visibleItems.get(i).getParameters().get(0) ) {
+				if(di.getParameters().get(0)+angle > uncoveredObjects.get(i).getParameters().get(0) 
+					&& di.getParameters().get(0)-angle < uncoveredObjects.get(i).getParameters().get(0) ) {
 					//if it is covered by elevation angle
-					if(di.getParameters().get(1)+angle > visibleItems.get(i).getParameters().get(1) && di.getParameters().get(1)-angle < visibleItems.get(i).getParameters().get(1) ){
+					if(di.getParameters().get(1)+angle > uncoveredObjects.get(i).getParameters().get(1) 
+						&& di.getParameters().get(1)-angle < uncoveredObjects.get(i).getParameters().get(1) ){
 						//if it's at a mayor distance
-						if(di.getParameters().get(2) < visibleItems.get(i).getParameters().get(2)) {
-							visibleItems.remove(visibleItems.get(i));
+						if(di.getParameters().get(2) < uncoveredObjects.get(i).getParameters().get(2)) {
+							uncoveredObjects.remove(uncoveredObjects.get(i));
 						}
 					}
 				}
 			}	
 		}
+		return uncoveredObjects;
+	}
 		
+	/**to be Overriden
+	 * Update perception Snapshot in agent state
+	 */
+	protected ArrayList<CameraPerception> objectDetection(PVector mypos, List<WorldObject> obj, int perceptionDistance) {
+		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
 		return visibleItems;
 	}
 	
-	/**
-	 * Process the action in the queue to update the speedVal and compassAngle
-	 */
-	protected void processAgentActions(){				
-	}	
-	
+
 	/**
 	 * Update perception Snapshot in agent state
 	 */
 	protected void updatePercepts(PVector mypos) {
 		PerceptionSnapshot P = new PerceptionSnapshot();
-		PVector positionWithError = new PVector();
+		PVector myposWithError = new PVector();
 		
-		//if position sensor is failing
-		if(isSensorFailing(sensorsErrorProb)) {
-			positionWithError.x = (float)calculateFailureValue((double)mypos.x, this.sensorsErrorStdDev);
-			positionWithError.y = (float)calculateFailureValue((double)mypos.y, this.sensorsErrorStdDev);
-			positionWithError.z = (float)calculateFailureValue((double)mypos.z, this.sensorsErrorStdDev);
-				//add position
-				P.addPerception(new PositionPerception(this.time, (double)positionWithError.x, (double)positionWithError.y, (double) positionWithError.z));
-				//Add velocity
-				P.addPerception(new VelocityPerception(this.time, Math.atan(positionWithError.x/positionWithError.y), 0, this.speedVal));			
-		} else { //Value without error
-				//add position
-				P.addPerception(new PositionPerception(this.time, (double) mypos.x, (double) mypos.y, (double) mypos.z));
-				//Add velocity
-				P.addPerception(new VelocityPerception(this.time, Math.atan(mypos.x/mypos.y), 0, this.speedVal));
-		}
+		//if position sensor is failing will return an error
+		myposWithError = getPositionWithError(mypos,sensorsErrorProb,seed);
 		
+		P.addPerception(new PositionPerception(this.time, (double)myposWithError.x, (double)myposWithError.y, (double)myposWithError.z));
+		//Add velocity
+		P.addPerception(new VelocityPerception(this.time, Math.atan(myposWithError.x/myposWithError.y), 0, this.speedVal));			
+
 		//Add time
 		P.addPerception(new TimePerception(this.time));
 		
@@ -172,6 +180,21 @@ public class UxVBehavior extends AgentModel {
 		
 		agentState.setPerceptions(P);
 	}
+	
+	
+	/**
+	 * Makes with a random probability, a random error on the UxV position perceived
+	 */
+	protected PVector getPositionWithError(PVector position, double sensorErrorProb, int seed) {
+		PVector positionWithError = new PVector();
+		if(isSensorFailing(sensorsErrorProb, seed)) {
+			positionWithError.x = (float)calculateFailureValue((double)position.x, this.sensorsErrorStdDev);
+			positionWithError.y = (float)calculateFailureValue((double)position.y, this.sensorsErrorStdDev);
+			positionWithError.z = (float)calculateFailureValue((double)position.z, this.sensorsErrorStdDev);
+		}	
+		return positionWithError;
+	}
+	
 	
 	
 	// takes probability parameter between 0 and 1 
