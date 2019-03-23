@@ -47,8 +47,8 @@ public class Threat extends WorldObject{
 		// add a bit of noise to the movement
 		float noisex = (float) (speedValue * timestep *0.4*(rand.nextFloat()-1));
 		float noisey = (float) (speedValue * timestep *0.4*(rand.nextFloat()-1));
-		temp.add(noisex, noisey, 0);
-		position.add(temp);		
+		temp.add(noisex, noisey, 0);// adding 0 in z coordinate as it does not change the altitude
+		position.add(temp);
 		
 		if (position.dist(nextRandomDestination)<5) { //we have arrived at our (random) destination
 			setRandomDestination(); //set a new one.
@@ -59,7 +59,7 @@ public class Threat extends WorldObject{
 	// State reset
 	void reset(int X_PIXELS, int Y_PIXELS){
 		// Initialize data values
-		position = new PVector(X_PIXELS/2,Y_PIXELS/2,0); //Assume that the initial position is at the center of the display window
+		position = new PVector(X_PIXELS/2,Y_PIXELS/2,pixels/2); //Assume that the initial position is at the center of the display window
 	}
 
 	

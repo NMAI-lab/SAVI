@@ -11,15 +11,14 @@ public class WifiAntenna {
 	
 	int ID;
 	double wifiProbWorking = 1; //TODO: actually make use of this as a probability in the message transmission
-	int wifiPerceptionDistance;
 	Communicator communicator; //the source and destination of messages exchanged over the wifi
+	Random rand = new Random();
 	int seed;
 	
-	public WifiAntenna(int id, Communicator communicator, int wifiPerceptionDistance, double wifiProbWorking, int seed) {
+	public WifiAntenna(int id, Communicator communicator, double wifiProbWorking, int seed) {
 		
 		this.ID = id;
 		this.communicator = communicator;
-		this.wifiPerceptionDistance = wifiPerceptionDistance;
 		this.wifiProbWorking= wifiProbWorking;
 		this.seed = seed;
 	}
@@ -38,7 +37,7 @@ public class WifiAntenna {
 			
 			//calculate distance
 			double dist  = this.getPosition().dist(other.getPosition());
-			if (dist < this.wifiPerceptionDistance 		//reachable
+			if (dist < SAVIWorld_model.WIFI_PERCEPTION_DISTANCE //reachable
 				&& this.ID!=other.getID()	//not the same
 			    && isWifiFailing(this.wifiProbWorking, this.seed)	//wifi working
 			    && other.isWifiFailing(this.wifiProbWorking, this.seed)) 			//TODO make use of probability for this and line above
@@ -75,7 +74,6 @@ public class WifiAntenna {
 
 	// takes probability parameter between 0 and 1 
 	protected boolean isWifiFailing(double probability, int seed) {
-		Random rand = new Random();
 		if(seed != -1) {
 			rand = new Random(seed);
 		}

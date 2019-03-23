@@ -26,7 +26,7 @@ public class SAVIWorld_model extends PApplet {
 	private double MAX_SPEED;
 	int UGV_PERCEPTION_DISTANCE;
 	int UAV_PERCEPTION_DISTANCE;
-	private int WIFI_PERCEPTION_DISTANCE;
+	public static int WIFI_PERCEPTION_DISTANCE;
 	private int RANDOM_SEED;
 	private double REASONING_CYCLE_PERIOD;
 	private int TREE_SIZE;
@@ -133,7 +133,6 @@ public class SAVIWorld_model extends PApplet {
 		simTimeDelta = 1000 / FRAME_RATE; // milliseconds
 		simPaused = false;// not paused by default
 
-
 		playButton = new Button("play", width / 2 - 20, 10, 40, 40);
 		stopButton = new Button("restart", width / 2 + 20, 10, 40, 40);
 
@@ -166,7 +165,7 @@ public class SAVIWorld_model extends PApplet {
 				rand = new Random(RANDOM_SEED+i);
 			}	
 				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE,"demo", 
-						this, uavImage, REASONING_CYCLE_PERIOD, "drone", UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_PERCEPTION_DISTANCE, WIFI_ERROR_PROB, RANDOM_SEED);
+						this, uavImage, REASONING_CYCLE_PERIOD, "drone", UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB, RANDOM_SEED);
 				wifiParticipants.add(uav.getAntennaRef());
 				objects.add(uav);
 				agentList.put(((UxV)uav).getBehavior().getID(), ((UxV)uav).getBehavior());//Create UaV agent
@@ -179,7 +178,7 @@ public class SAVIWorld_model extends PApplet {
 				rand = new Random(RANDOM_SEED+i);
 			}	
 				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE,"demo",
-						this, ugvImage, REASONING_CYCLE_PERIOD, "robot", UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_PERCEPTION_DISTANCE, WIFI_ERROR_PROB, RANDOM_SEED);
+						this, ugvImage, REASONING_CYCLE_PERIOD, "robot", UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB, RANDOM_SEED);
 				wifiParticipants.add(ugv.getAntennaRef());
 				objects.add(ugv);
 				agentList.put(((UxV)ugv).getBehavior().getID(), ((UxV)ugv).getBehavior());//Create UgV agent
@@ -209,7 +208,7 @@ public class SAVIWorld_model extends PApplet {
 					THREAT_SIZE, "threat", this, threatImage));
 		}
 		
-		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, antennaImage, WIFI_PERCEPTION_DISTANCE, WIFI_ERROR_PROB, RANDOM_SEED);
+		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, antennaImage, WIFI_ERROR_PROB, RANDOM_SEED);
 		objects.add(consoleProxy);
 		wifiParticipants.add(consoleProxy.getAntennaRef());
 

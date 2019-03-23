@@ -15,15 +15,11 @@ public class FieldAntenna extends WorldObject implements Communicator{
 	double wifi = 100;
 	//TODO: add list of messages here, then implement message delivery
 	
-	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, PShape image, int wifiPerceptionDistance, double wifiProbWorking, int seed) {
-		
-		//int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image
+	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, PShape image, double wifiProbWorking, int seed) {
 		
 		super(id, position, size, "FieldAntenna", sim, image);
-		
 		this.position = position;
-		antenna = new WifiAntenna(id, this, wifiPerceptionDistance, wifiProbWorking, seed);
-		
+		antenna = new WifiAntenna(id, this, wifiProbWorking, seed);
 	}
 	
 	public void update(List<WifiAntenna> wifiParticipants) {
@@ -33,18 +29,13 @@ public class FieldAntenna extends WorldObject implements Communicator{
 
 	@Override
 	public PVector getPosition() {
-		
 		return position;
 	}
 
 	
-
 	@Override
 	public void receiveMessage(String msg) {
-		
-	System.out.println("Console proxy received a message on the wifi:"+msg);
-		
-		
+		System.out.println("Console proxy received a message on the wifi:"+msg);	
 	}
 
 	@Override
@@ -54,8 +45,7 @@ public class FieldAntenna extends WorldObject implements Communicator{
 	}
 
 	@Override
-	public WifiAntenna getAntennaRef() {
-		
+	public WifiAntenna getAntennaRef() {	
 		return antenna;
 	}
 

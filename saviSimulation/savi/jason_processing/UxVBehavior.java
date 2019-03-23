@@ -26,6 +26,7 @@ public class UxVBehavior extends AgentModel {
 	protected double time;	
 	protected double sensorsErrorProb;
 	protected double sensorsErrorStdDev;
+	protected Random rand = new Random();
 	protected int seed;
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
@@ -178,7 +179,6 @@ public class UxVBehavior extends AgentModel {
 	
 	// takes probability parameter between 0 and 1 
 	protected boolean isSensorFailing (double probability, int seed) {
-		Random rand = new Random();
 		if(seed != -1) {
 			rand = new Random(seed);
 		}
@@ -192,9 +192,11 @@ public class UxVBehavior extends AgentModel {
 	
 	// generate random value for a normal distribution (mean, stdDev)
 	protected double calculateFailureValue (double mean, double stdDev) {
-		Random rand= new Random(System.currentTimeMillis());
+		if(seed != -1) {
+			rand = new Random(seed);
+		}
 		return ((rand.nextGaussian()*stdDev)+mean);
-	}	
+	}
 
 	
 	
