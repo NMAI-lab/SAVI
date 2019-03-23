@@ -37,4 +37,9 @@ public class UgV extends UxV {
 		// Initializes Behavior
 		this.uxvBehavior = new UgVBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod, sensorsErrorProb, sensorsErrorStdDev, seed);
 	}
+	
+	public void drawPerceptionArea() {
+		simulator.arc(position.x, position.y, this.perceptionDistance*2, this.perceptionDistance*2, (float)this.getBehavior().getCompassAngle()-(float)Math.PI/2, (float)this.getBehavior().getCompassAngle()+(float)Math.PI/2);
+	}
+	
 }

@@ -39,39 +39,6 @@ public class UgVBehavior extends UxVBehavior {
 		super(id, type, initialPosition,reasoningCyclePeriod, sensorsErrorProb, sensorsErrorStdDev, seed);
 	}
 
-	/**
-	 * update
-	 * process actions from the queue, update the UAS state variable and set the new perceptions
-	 */
-	@Override
-	public void update(UxV ugv, double simTime, int perceptionDistance, List<WorldObject> objects){
-		//Process actions to update speedVal & compassAngle
-		processAgentActions();
-		
-		//Update simTime
-		double timeElapsed =  simTime - this.time; //elapsed time since last update 
-		this.time = simTime;
-		
-		//Calculate new position
-		double cosv = Math.cos(this.compasAngle);
-		double sinv = Math.sin(this.compasAngle);
-		PVector newpos = new PVector(Math.round(cosv*this.speedVal*timeElapsed), Math.round(sinv*this.speedVal*timeElapsed), 0);
-		ugv.setPosition(ugv.getPosition().add(newpos));
-		//Calculate visible items
-		this.visibleItems = new ArrayList<CameraPerception>();
-		
-		
-		//Calculate objects detected with camera	
-		for (CameraPerception c: objectDetection(ugv.position, objects, perceptionDistance)) {
-			visibleItems.add(c);
-		}	
-
-		//Update percepts	
-		updatePercepts(ugv.position);
-		//this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
-	}
-	
-	
 	protected void processAgentActions(){
 		List<String> toexec = agentState.getAllActions();   
 		for (String action : toexec) {
@@ -89,7 +56,44 @@ public class UgVBehavior extends UxVBehavior {
 			else if (action.equals("thrust(off)")) 
 				this.speedVal = 0;  
 		}					
-	}	
+	}
+
 	
+	/**
+	 * Detect world objects & threats with the camera
+	 */
+	protected ArrayList<CameraPerception> objectDetection(PVector mypos, List<WorldObject> obj, int perceptionDistance) {
+		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
+		ArrayList<CameraPerception> detectedItems = new ArrayList<CameraPerception>();
+		double distance, oposite, tan, angle;
+		
+		for(WorldObject wo:obj) {
+			//shouldn't detect itself. if not (UxV and himself)
+			if( !((wo instanceof UxV) && this.ID.equals(((UxV)wo).getBehavior().getID())) ){
+				
+            	List<Double> polar = Geometry.relativePositionPolar(wo.getPosition(), mypos, this.compasAngle);
+            
+            	//calculate distance
+            	double azimuth = polar.get(Geometry.AZIMUTH);
+            	double elevation = polar.get(Geometry.ELEVATION);
+            	double dist = polar.get(Geometry.DISTANCE);
+            	if ((azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.)&&(dist <perceptionDistance) ) {
+					//it's visible 
+					detectedItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
+					visibleItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
+            	}
+			}	   	
+		}
+
+		visibleItems = removeCoveredObjects(detectedItems, visibleItems);
+		return visibleItems;
+	}
 	
+	protected PVector calculateMovementVector (double timeElapsed) {
+		double cosv = Math.cos(this.compasAngle);
+		double sinv = Math.sin(this.compasAngle);
+		PVector movementVector = new PVector((float)(cosv*this.speedVal*timeElapsed), (float)(sinv*this.speedVal*timeElapsed), (float)0.0);
+		return movementVector;
+	}
+
 }
