@@ -3,29 +3,33 @@ package savi.jason_processing;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 
 import processing.core.PVector;
 
 public class WifiAntenna {
 	
 	int ID;
-	double wifiProbWorking = 100; //TODO: actually make use of this as a probability in the message transmission
+	double wifiProbWorking = 1;
 	Communicator communicator; //the source and destination of messages exchanged over the wifi
+	private static Random rand = new Random();
+	private static double wifiPerceptionDistance;
 	
-	public WifiAntenna(int id, Communicator communicator) {
+	public WifiAntenna(int id, Communicator communicator, double wifiProbWorking) {
 		
 		this.ID = id;
 		this.communicator = communicator;
+		this.wifiProbWorking= wifiProbWorking;
 		
-		
+		this.wifiPerceptionDistance=0;
 	}
 	
-	public void update(int wifiPerceptionDistance, List<WifiAntenna> wifiParticipants) {
-		sendMessages(wifiPerceptionDistance, communicator.getOutgoingMessages(), wifiParticipants);
+	public void update(List<WifiAntenna> wifiParticipants) {
+		sendMessages(communicator.getOutgoingMessages(), wifiParticipants);
 	}
 	
 
-	protected void sendMessages(int wifiPerceptionDistance, List<String> outgoingMessages, List<WifiAntenna> others) {
+	protected void sendMessages(List<String> outgoingMessages, List<WifiAntenna> others) {
 		
 		List<WifiAntenna> receivers = new LinkedList<WifiAntenna>();
 		
@@ -34,10 +38,10 @@ public class WifiAntenna {
 			
 			//calculate distance
 			double dist  = this.getPosition().dist(other.getPosition());
-			if (dist < wifiPerceptionDistance 		//reachable
+			if (dist < WifiAntenna.wifiPerceptionDistance //reachable
 				&& this.ID!=other.getID()	//not the same
-			    && wifiProbWorking > 0				//wifi working
-			    && other.getWifiValue()>0) 			//TODO make use of probability for this and line above
+			    && isWifiFailing(this.wifiProbWorking)	//wifi working
+			    && other.isWifiFailing(this.wifiProbWorking)) 			//TODO make use of probability for this and line above
 				
 				receivers.add(other);
 		}
@@ -58,12 +62,7 @@ public class WifiAntenna {
 		return communicator.getPosition();
 	}
 
-	public double getWifiValue() {
-		
-		return wifiProbWorking;
-	}
-
-
+	
 	public int getID() {
 		
 		return ID;
@@ -74,4 +73,23 @@ public class WifiAntenna {
 		communicator.receiveMessage(msg);
 	}
 
+	// takes probability parameter between 0 and 1 
+	protected boolean isWifiFailing(double probability) {
+		if(rand.nextDouble()<probability) {
+			return true;
+		}else {
+			return false;
+		}	
+	}
+	
+	public static void setPerceptionDistance(double value) {
+		wifiPerceptionDistance=value;
+	}
+	
+	public static void setSeed(int seed) {
+		if(seed != -1) {
+			rand = new Random(seed);
+		}
+	}
+	
 }

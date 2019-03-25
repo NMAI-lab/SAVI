@@ -15,6 +15,7 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.infra.centralised.BaseCentralisedMAS;
+import savi.jason_processing.behaviour.UxVBehavior;
 
 public class SAVIWorld_model extends PApplet {
 
@@ -24,8 +25,8 @@ public class SAVIWorld_model extends PApplet {
 	private int NUMBER_THREATS;
 	private int FRAME_RATE;
 	private double MAX_SPEED;
-	int PERCEPTION_DISTANCE;
-	private int WIFI_PERCEPTION_DISTANCE;
+	int UGV_PERCEPTION_DISTANCE;
+	int UAV_PERCEPTION_DISTANCE;
 	private int RANDOM_SEED;
 	private double REASONING_CYCLE_PERIOD;
 	private int TREE_SIZE;
@@ -36,11 +37,14 @@ public class SAVIWorld_model extends PApplet {
 	private int UGV_SIZE;
 	private int NUMBER_UAV;
 	private int NUMBER_UGV;
+	private double SENSORS_ERROR_PROB;
+	private double SENSORS_ERROR_STD_DEV;
+	private double WIFI_PERCEPTION_DISTANCE;
+	private double WIFI_ERROR_PROB;
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
-	public final int X_PIXELS = 900;
-	public final int Y_PIXELS = 700;
+	public final int X_PIXELS = 874;
+	public final int Y_PIXELS = 699;
 	//int Z_PIXELS = 500;
-	String CONSOLE_ID = "console"; //not loaded from config file
 
 	// TimeStamp file names
 	private long lastCycleTimeStamp;
@@ -66,7 +70,8 @@ public class SAVIWorld_model extends PApplet {
 
 	private Button playButton, stopButton;
 	private PShape ugvImage, treeImage, houseImage, threatImage, play, pause, restart, antennaImage, uavImage;
-
+	private PImage backGround;
+	
 	public void settings() {
 		size(X_PIXELS, Y_PIXELS, P3D);
 		smooth(8);
@@ -106,8 +111,8 @@ public class SAVIWorld_model extends PApplet {
 		// Y_PIXELS = Integer.parseInt(modelProps.getProperty("Y_PIXELS"));
 		FRAME_RATE = Integer.parseInt(modelProps.getProperty("FRAME_RATE"));
 		MAX_SPEED = (double) Double.parseDouble(modelProps.getProperty("MAX_SPEED"));
-		PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("PERCEPTION_DISTANCE"));
-		WIFI_PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("WIFI_PERCEPTION_DISTANCE"));
+		UAV_PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("UAV_PERCEPTION_DISTANCE"));
+		UGV_PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("UGV_PERCEPTION_DISTANCE"));
 		RANDOM_SEED = Integer.parseInt(modelProps.getProperty("RANDOM_SEED"));
 		REASONING_CYCLE_PERIOD = (double) Double.parseDouble(modelProps.getProperty("REASONING_CYCLE_PERIOD"));
 		TREE_SIZE = Integer.parseInt(modelProps.getProperty("TREE_SIZE"));
@@ -118,12 +123,14 @@ public class SAVIWorld_model extends PApplet {
 		NUMBER_UAV = Integer.parseInt(modelProps.getProperty("NUMBER_UAV"));
 		UGV_SIZE = Integer.parseInt(modelProps.getProperty("UGV_SIZE"));
 		UAV_SIZE = Integer.parseInt(modelProps.getProperty("UAV_SIZE"));
-
+		SENSORS_ERROR_PROB = (double) Double.parseDouble(modelProps.getProperty("SENSORS_ERROR_PROB"));
+		SENSORS_ERROR_STD_DEV = (double) Double.parseDouble(modelProps.getProperty("SENSORS_ERROR_STD_DEV"));
+		WIFI_ERROR_PROB = (double) Double.parseDouble(modelProps.getProperty("WIFI_ERROR_PROB"));
+		WIFI_PERCEPTION_DISTANCE = Double.parseDouble(modelProps.getProperty("WIFI_PERCEPTION_DISTANCE"));
 		// Initialization code goes here
 		simTime = 0; // seconds
 		simTimeDelta = 1000 / FRAME_RATE; // milliseconds
 		simPaused = false;// not paused by default
-
 
 		playButton = new Button("play", width / 2 - 20, 10, 40, 40);
 		stopButton = new Button("restart", width / 2 + 20, 10, 40, 40);
@@ -143,6 +150,8 @@ public class SAVIWorld_model extends PApplet {
 		uavImage = loadShape("SimImages/airplane.svg");
 		antennaImage = loadShape("SimImages/antenna.svg");
 
+		backGround = loadImage("SimImages/OttawaAirport_874_699.PNG");
+		
 		Random rand = new Random();
 		// ======= Jason BDI agents ================
 		Map<String, AgentModel> agentList = new HashMap<String, AgentModel>();
@@ -154,7 +163,8 @@ public class SAVIWorld_model extends PApplet {
 			if(RANDOM_SEED != -1) {
 				rand = new Random(RANDOM_SEED+i);
 			}	
-				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE/2,"demo", this, uavImage, REASONING_CYCLE_PERIOD, "airplane");
+				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE,"demo", 
+						this, uavImage, REASONING_CYCLE_PERIOD, "drone", UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
 				wifiParticipants.add(uav.getAntennaRef());
 				objects.add(uav);
 				agentList.put(uav.getBehavior().getID(), uav.getBehavior());//Create UaV agent
@@ -166,7 +176,8 @@ public class SAVIWorld_model extends PApplet {
 			if(RANDOM_SEED != -1) {
 				rand = new Random(RANDOM_SEED+i);
 			}	
-				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE/2,"demo", this, ugvImage, REASONING_CYCLE_PERIOD, "robot");
+				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE,"demo",
+						this, ugvImage, REASONING_CYCLE_PERIOD, "robot", UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
 				wifiParticipants.add(ugv.getAntennaRef());
 				objects.add(ugv);
 				agentList.put(ugv.getBehavior().getID(), ugv.getBehavior());//Create UgV agent
@@ -196,7 +207,12 @@ public class SAVIWorld_model extends PApplet {
 					THREAT_SIZE, "threat", this, threatImage));
 		}
 		
-		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, antennaImage);
+		//set classes values
+		WifiAntenna.setPerceptionDistance(WIFI_PERCEPTION_DISTANCE);
+		WifiAntenna.setSeed(RANDOM_SEED);
+		UxVBehavior.setSeed(RANDOM_SEED);
+		
+		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, antennaImage, WIFI_ERROR_PROB);
 		objects.add(consoleProxy);
 		wifiParticipants.add(consoleProxy.getAntennaRef());
 
@@ -231,7 +247,9 @@ public class SAVIWorld_model extends PApplet {
 //************************************************/
 	public void draw() {
 		if (simPaused) {
-			background(240); // white background
+		//	background(240); // white background
+	//		bg.resize(X_PIXELS, Y_PIXELS);
+		background(backGround);
 
 			for (WorldObject wo : objects) { // Makes all objects on screen.
 				wo.draw(wo.position);
@@ -266,12 +284,13 @@ public class SAVIWorld_model extends PApplet {
 		logger.info("== SAVIWorld_Model draw() == at:" + simTime);
 		// 2. STATE UPDATE (SIMULATION)
 		for (WorldObject wo : objects) { // Update threats
-			wo.update(simTime, simTimeDelta, PERCEPTION_DISTANCE, WIFI_PERCEPTION_DISTANCE, objects, wifiParticipants);
+			wo.update(simTime, simTimeDelta, objects, wifiParticipants);
 		}
 		// 3. VISUALIZATION
 		// ------------------
-		background(240); // white background
-
+//		background(240); // white background
+		background(backGround);
+		
 		for (WorldObject wo : objects) { // Makes all objects on screen.
 			wo.draw(wo.position);
 		}

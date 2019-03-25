@@ -25,6 +25,9 @@ public abstract class UxVBehavior extends AgentModel {
     protected double time;
     protected Map<String, AgentAction> actionMap;
     protected final double maxSpeed;
+    protected double sensorsErrorProb;
+    protected double sensorsErrorStdDev;
+    protected static Random rand = new Random();
 
     //***********************************************************//
     //I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
@@ -43,7 +46,7 @@ public abstract class UxVBehavior extends AgentModel {
      * @param type
      * @param initialPosition
      */
-    public UxVBehavior(String id, String type, double maxSpeed, PVector initialPosition, double reasoningCyclePeriod) {
+    public UxVBehavior(String id, String type, double maxSpeed, PVector initialPosition, double reasoningCyclePeriod, double sensorsErrorProb, double sensorsErrorStdDev) {
         // Initialize data values
         super(reasoningCyclePeriod);
         this.maxSpeed = maxSpeed;
@@ -56,6 +59,8 @@ public abstract class UxVBehavior extends AgentModel {
         this.agentState = new SyncAgentState();
         this.visibleItems = new ArrayList<CameraPerception>();
         this.actionMap = new HashMap<String, AgentAction>();
+        this.sensorsErrorProb = sensorsErrorProb;
+        this.sensorsErrorStdDev = sensorsErrorStdDev;
         this.createActionMap();
         updatePercepts(initialPosition);
     }
@@ -159,6 +164,7 @@ public abstract class UxVBehavior extends AgentModel {
 
     /**
      * Adds to the current compass angle and normalizes the value between 0 and 2 * PI
+     *
      * @param val
      */
     protected void addNormalizedCompassAngle(double val) {
@@ -188,7 +194,7 @@ public abstract class UxVBehavior extends AgentModel {
         for (String action : actionsToExecute) {
             System.out.println("[ process actions] UAS id=" + this.ID + " doing: " + action);
             AgentAction agentAction = actionMap.get(action);
-            if(agentAction == null) {
+            if (agentAction == null) {
                 System.out.println("No Action defined for '" + action + "'");
                 continue;
             }
@@ -201,17 +207,57 @@ public abstract class UxVBehavior extends AgentModel {
      */
     protected void updatePercepts(PVector mypos) {
         PerceptionSnapshot P = new PerceptionSnapshot();
-        //Add position
+
+        //if position sensor is failing, we overwrite the position values with bad values
+        if (isSensorFailing(sensorsErrorProb)) {
+            mypos.x = (float) calculateFailureValue((double) mypos.x, this.sensorsErrorStdDev);
+            mypos.y = (float) calculateFailureValue((double) mypos.y, this.sensorsErrorStdDev);
+            mypos.z = (float) calculateFailureValue((double) mypos.z, this.sensorsErrorStdDev);
+
+        }
+
+        //add position
         P.addPerception(new PositionPerception(this.time, (double) mypos.x, (double) mypos.y, (double) mypos.z));
         //Add velocity
-        P.addPerception(new VelocityPerception(this.time, Math.atan(mypos.x / mypos.y), 0, speedVal));
+        P.addPerception(new VelocityPerception(this.time, Math.atan(mypos.x / mypos.y), 0, this.speedVal));
+
+
         //Add time
         P.addPerception(new TimePerception(this.time));
+
         //Add Visible items
         for (CameraPerception cpi : this.visibleItems) {
+            for (int i = 0; i < cpi.getParameters().size(); i++) {
+                if (isSensorFailing(sensorsErrorProb)) {
+                    cpi.getParameters().set(i, calculateFailureValue(cpi.getParameters().get(i), this.sensorsErrorStdDev));
+                }
+            }
             P.addPerception(cpi);
         }
+
         agentState.setPerceptions(P);
+    }
+
+
+    // takes probability parameter between 0 and 1
+    protected boolean isSensorFailing(double probability) {
+        if (rand.nextDouble() < probability) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    // generate random value for a normal distribution (mean, stdDev)
+    protected double calculateFailureValue(double mean, double stdDev) {
+        return ((rand.nextGaussian() * stdDev) + mean);
+    }
+
+    public static void setSeed(int seed) {
+        if (seed != -1) {
+            rand = new Random(seed);
+        }
     }
 
     /**

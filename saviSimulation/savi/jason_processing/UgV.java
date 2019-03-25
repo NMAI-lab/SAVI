@@ -27,14 +27,14 @@ public class UgV extends UxV {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UgV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName) {
+	public UgV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName, int perceptionDistance, double sensorsErrorProb, double sensorsErrorStdDev, double probWifiWorking) {
 		// Initializes UAS as WorldObject
-		super(id, pos, pixels, Type, sim, image, reasoningCyclePeriod, imageName);
+		super(id, pos, pixels, Type, sim, image, reasoningCyclePeriod, imageName, perceptionDistance, sensorsErrorProb, sensorsErrorStdDev, probWifiWorking);
 	}
 
 	@Override
 	protected UxVBehavior createBehaviour(double reasoningCyclePeriod)
 	{
-		return new UgVBehavior(Integer.toString(this.ID), this.type, this.position, reasoningCyclePeriod);
+		return new UgVBehavior(Integer.toString(this.ID), this.type, this.position, reasoningCyclePeriod, this.sensorsErrorProb, this.sensorsErrorStdDev);
 	}
 }
