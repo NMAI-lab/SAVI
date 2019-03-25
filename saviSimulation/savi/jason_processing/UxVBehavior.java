@@ -5,7 +5,7 @@ import java.util.*;
 import processing.core.*;
 
 import processing.data.*;
-import processing.event.*; 
+import processing.event.*;
 import processing.opengl.*;
 import savi.StateSynchronization.*;
 

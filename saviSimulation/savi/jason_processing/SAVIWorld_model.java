@@ -24,8 +24,8 @@ public class SAVIWorld_model extends PApplet {
 	private int NUMBER_THREATS;
 	private int FRAME_RATE;
 	private double MAX_SPEED;
-	int UGV_PERCEPTION_DISTANCE;
-	int UAV_PERCEPTION_DISTANCE;
+	private int UGV_PERCEPTION_DISTANCE;
+	private int UAV_PERCEPTION_DISTANCE;
 	private int RANDOM_SEED;
 	private double REASONING_CYCLE_PERIOD;
 	private int TREE_SIZE;
@@ -335,14 +335,15 @@ public class SAVIWorld_model extends PApplet {
 			System.out.println("pausing simulation!-------===================================================");
 			for (WorldObject wo : objects) { // unpause all agents
 				if (wo instanceof UxV) {
-					((UxV) wo).getBehavior().pauseAgent();
+					//((UxV) wo).getBehavior().pauseAgent();
 				}
 			}
 		} else { // the sim was paused, unpause it
 			System.out.println("resuming simulation!-------");
 			for (WorldObject wo : objects) { // pause all agents
-				if (wo instanceof UxV)
+				if (wo instanceof UxV) {
 					((UxV) wo).getBehavior().unPauseAgent();
+				}	
 			}
 		}
 		simPaused = !simPaused;
