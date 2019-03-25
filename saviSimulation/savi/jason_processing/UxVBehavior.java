@@ -159,7 +159,7 @@ public class UxVBehavior extends AgentModel {
 		PVector myposWithError = new PVector();
 		
 		//if position sensor is failing will return an error
-		myposWithError = getPositionWithError(mypos,sensorsErrorProb,seed);
+		myposWithError = getPositionWithError(mypos,sensorsErrorProb);
 		
 		P.addPerception(new PositionPerception(this.time, (double)myposWithError.x, (double)myposWithError.y, (double)myposWithError.z));
 		//Add velocity
@@ -185,9 +185,9 @@ public class UxVBehavior extends AgentModel {
 	/**
 	 * Makes with a random probability, a random error on the UxV position perceived
 	 */
-	protected PVector getPositionWithError(PVector position, double sensorErrorProb, int seed) {
+	protected PVector getPositionWithError(PVector position, double sensorErrorProb) {
 		PVector positionWithError = new PVector();
-		if(isSensorFailing(sensorsErrorProb, seed)) {
+		if(isSensorFailing(sensorsErrorProb)) {
 			positionWithError.x = (float)calculateFailureValue((double)position.x, this.sensorsErrorStdDev);
 			positionWithError.y = (float)calculateFailureValue((double)position.y, this.sensorsErrorStdDev);
 			positionWithError.z = (float)calculateFailureValue((double)position.z, this.sensorsErrorStdDev);
