@@ -70,7 +70,7 @@ public abstract class UxVBehavior extends AgentModel {
 	 * process actions from the queue, update the UAS state variable and set the new perceptions
 	 */
 
-	public void update(UxV uav, double simTime, int perceptionDistance, List<WorldObject> objects){
+	public void update(UxV uxv, double simTime, int perceptionDistance, List<WorldObject> objects){
 		PVector movementVector = new PVector();
 		
 		//Process actions to update speedVal & compassAngle & verticalPosition(if applies)
@@ -82,18 +82,18 @@ public abstract class UxVBehavior extends AgentModel {
 		
 		//Calculate new x,y position and z if its flying
 		movementVector = calculateMovementVector(timeElapsed);		
-		uav.setPosition(uav.getPosition().add(movementVector));
+		uxv.setPosition(uxv.getPosition().add(movementVector));
 		
 		//Calculate visible items
 		this.visibleItems = new ArrayList<CameraPerception>();
 		
 		//Calculate objects detected with camera	
-		for (CameraPerception c: objectDetection(uav.position, objects, perceptionDistance)) {
+		for (CameraPerception c: objectDetection(uxv.getPosition(), objects, perceptionDistance)) {
 			visibleItems.add(c);
 		}
 			
 		//Update percepts	
-		updatePercepts(uav.position);
+		updatePercepts(uxv.position);
 		//this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
 	}
 	
@@ -105,14 +105,13 @@ public abstract class UxVBehavior extends AgentModel {
 	
 	
 	/**
-	 * Detect world objects & threats with the camera
-	 */
-	protected ArrayList<CameraPerception> objectDetection(PVector mypos, List<WorldObject> obj, int perceptionDistance) {
-		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
-		ArrayList<CameraPerception> detectedItems = new ArrayList<CameraPerception>();
-		double distance, oposite, tan, angle;
+	 * Removes covered objects from uncoveredObjects list
+	*/
+	protected ArrayList<CameraPerception> objectDetection (PVector mypos, List<WorldObject> allObjects, double perceptionDistance){
+		ArrayList<CameraPerception> uncoveredObjects = new ArrayList<CameraPerception>(); 
+		ArrayList<CameraPerception> detectedObjects = new ArrayList<CameraPerception>(); 
 		
-		for(WorldObject wo:obj) {
+		for(WorldObject wo:allObjects) {
 			//shouldn't detect itself. if not (UxV and himself)
 			if( !((wo instanceof UxV) && this.ID.equals(((UxV)wo).getBehavior().getID())) ){
 				
@@ -124,14 +123,14 @@ public abstract class UxVBehavior extends AgentModel {
             	double dist = polar.get(Geometry.DISTANCE);
             	if (isObjectDetected (azimuth, elevation, dist, perceptionDistance) ) {
 					//it's visible 
-					detectedItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
-					visibleItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
+					detectedObjects.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
+					uncoveredObjects.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
             	}
 			}	   	
 		}
 
-		visibleItems = removeCoveredObjects(detectedItems, visibleItems);
-		return visibleItems;
+		uncoveredObjects = removeCoveredObjects(detectedObjects, uncoveredObjects);
+		return uncoveredObjects;
 	}
 	
 	
