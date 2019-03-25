@@ -83,8 +83,11 @@ targetFar :-
 	:	target(threat,TYPE,AZ,EL,RANGE) & 
 		position(X_REF,Y_REF,Z_REF,_) &
 		velocity(BEARING,_,_,_)
-	<-	savi.UxVInternalActions.GetAbsolutePosition(X_TARGET,Y_TARGET,Z_TARGET,X_REF,Y_REF,Z_REF,BEARING,AZ,EL,RANGE);
-		.broadcast(tell,threatSeen(X_TARGET,Y_TARGET,Z_TARGET)).
+	<-	.broadcast(tell,threatSeen(3,4));
+		.print("Agent saying something").
+	//savi.UxVInternalActions.GetAbsolutePosition(X_TARGET,Y_TARGET,Z_TARGET,X_REF,Y_REF,Z_REF,BEARING,AZ,EL,RANGE);
+		//.broadcast(tell,threatSeen(X_TARGET,Y_TARGET,Z_TARGET)).
+		
 
 // Default plan for observing target - force recursion.
 +!observeTarget
@@ -119,7 +122,8 @@ targetFar :-
 +!watchTarget
 	:	true
 	<-	!faceTarget;
-		!watchTarget.
+		!watchTarget;
+		.print("tell,turning(left)").
 		
 // Follow a target that is ahead but not close
 +!followTarget

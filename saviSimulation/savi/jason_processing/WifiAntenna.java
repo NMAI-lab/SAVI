@@ -31,6 +31,9 @@ public class WifiAntenna {
 
 	protected void sendMessages(List<String> outgoingMessages, List<WifiAntenna> others) {
 		
+		if (outgoingMessages.isEmpty())
+			return;
+		
 		List<WifiAntenna> receivers = new LinkedList<WifiAntenna>();
 		
 		//figure out who will receive the messages

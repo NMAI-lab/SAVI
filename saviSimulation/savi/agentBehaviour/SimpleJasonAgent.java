@@ -217,6 +217,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		// Add the action to agentState
 		agentState.addAction(actionString);
 		
+		
 		// Set that the execution was OK and flag it as complete.
 		action.setResult(true);
 		actionExecuted(action);
