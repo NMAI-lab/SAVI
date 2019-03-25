@@ -9,7 +9,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.BadLocationException;
 
 import processing.core.PShape;
 import processing.core.PVector;
@@ -21,11 +24,12 @@ public class FieldAntenna extends WorldObject implements Communicator, ActionLis
 	WifiAntenna antenna;
 	
 	private List<String> outbox = new LinkedList<String>();
+	private static int MAXLINES = 100;
 	
 	//TODO: add list of messages here, then implement message delivery
 	private JFrame frame;
 	private JTextField commands;
-	private JLabel fromWifi;
+	private JTextArea fromWifi;
 	
 	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, PShape image, double wifiProbWorking) {
 		
@@ -49,7 +53,9 @@ public class FieldAntenna extends WorldObject implements Communicator, ActionLis
  
         
         // create a label to display text 
-        fromWifi = new JLabel("Nothing heard on wifi");
+        fromWifi = new JTextArea(10, 40);
+        JScrollPane scrollPane = new JScrollPane(fromWifi); 
+        fromWifi.setEditable(false);
   
         // create a new button 
         JButton button = new JButton("submit"); 
@@ -59,12 +65,12 @@ public class FieldAntenna extends WorldObject implements Communicator, ActionLis
         button.addActionListener(this); 
   
         // create a object of JTextField with 16 columns 
-        commands = new JTextField(64);
+        commands = new JTextField(40);
   
         
         // add buttons and textfield to panel 
         frame.getContentPane().add(commands, BorderLayout.NORTH);
-        frame.getContentPane().add(fromWifi, BorderLayout.SOUTH); 
+        frame.getContentPane().add(scrollPane, BorderLayout.SOUTH); 
         frame.getContentPane().add(button, BorderLayout.CENTER); 
   
       
@@ -99,7 +105,20 @@ public class FieldAntenna extends WorldObject implements Communicator, ActionLis
 	@Override
 	public void receiveMessage(String msg) {
 		
-	fromWifi.setText(msg);
+	fromWifi.append(msg+"\n");
+	fromWifi.setCaretPosition(fromWifi.getDocument().getLength());
+	
+	if (fromWifi.getLineCount()>MAXLINES) {
+		
+		try {
+			int endLine1 = fromWifi.getLineEndOffset(1);
+			fromWifi.replaceRange("", 0, endLine1);
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 		
 		
 	}
