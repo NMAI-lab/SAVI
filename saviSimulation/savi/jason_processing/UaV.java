@@ -41,4 +41,8 @@ public class UaV extends UxV {
 	public void drawPerceptionArea() {
 		simulator.arc(position.x, position.y, this.perceptionDistance*2, this.perceptionDistance*2, (float)0.0, (float)(2*Math.PI));
 	}
+	
+	public void drawPerceptionArea() {
+		simulator.arc(position.x, position.y, this.perceptionDistance*2, this.perceptionDistance*2, (float)0.0, (float)(2*Math.PI));
+	}
 }

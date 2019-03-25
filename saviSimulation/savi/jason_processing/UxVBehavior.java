@@ -105,12 +105,10 @@ public abstract class UxVBehavior extends AgentModel {
 	
 	
 	/**
-	 * Detect world objects & threats with the camera
-	 */
-	protected ArrayList<CameraPerception> objectDetection(PVector mypos, List<WorldObject> obj, int perceptionDistance) {
-		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
-		ArrayList<CameraPerception> detectedItems = new ArrayList<CameraPerception>();
-		double distance, oposite, tan, angle;
+	 * Removes covered objects from uncoveredObjects list
+	*/
+	protected ArrayList<CameraPerception> removeCoveredObjects (ArrayList<CameraPerception> allObjects, ArrayList<CameraPerception> uncoveredObjects){
+		double distance, oposite, angle, tan;
 		
 		for(WorldObject wo:obj) {
 			//shouldn't detect itself. if not (UxV and himself)
