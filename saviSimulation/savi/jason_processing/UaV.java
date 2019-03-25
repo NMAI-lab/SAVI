@@ -31,9 +31,9 @@ public class UaV extends UxV {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UaV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName, int perceptionDistance,  double sensorsErrorProb, double sensorsErrorStdDev, double proWifiWorking) {			
+	public UaV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName, int perceptionDistance,  double sensorsErrorProb, double sensorsErrorStdDev, double probWifiFailing) {			
 		// Initializes UAS as WorldObject
-		super(id, pos, pixels, Type, sim, image, reasoningCyclePeriod, imageName, perceptionDistance, sensorsErrorProb, sensorsErrorStdDev, proWifiWorking);
+		super(id, pos, pixels, Type, sim, image, reasoningCyclePeriod, imageName, perceptionDistance, sensorsErrorProb, sensorsErrorStdDev, probWifiFailing);
 		// Initializes Behaviuor
 		this.uxvBehavior = new UaVBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod, sensorsErrorProb, sensorsErrorStdDev);
 	}

@@ -31,11 +31,11 @@ public class FieldAntenna extends WorldObject implements Communicator, ActionLis
 	private JTextField commands;
 	private JTextArea fromWifi;
 	
-	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, PShape image, double wifiProbWorking) {
+	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, PShape image, double wifiProbFailure) {
 		
 		super(id, position, size, "FieldAntenna", sim, image);
 		this.position = position;
-		antenna = new WifiAntenna(id, this, wifiProbWorking);
+		antenna = new WifiAntenna(id, this, wifiProbFailure);
 		
 		createAndShowGUI();
 		
