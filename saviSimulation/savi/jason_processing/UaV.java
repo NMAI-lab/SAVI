@@ -1,13 +1,9 @@
 package savi.jason_processing;
 
-import java.util.*;
-
 import processing.core.*;
 
-import processing.data.*;
-import processing.event.*; 
-import processing.opengl.*;
-import savi.StateSynchronization.*;
+import savi.jason_processing.behaviour.UaVBehavior;
+import savi.jason_processing.behaviour.UxVBehavior;
 
 
 public class UaV extends UxV {
@@ -31,10 +27,14 @@ public class UaV extends UxV {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UaV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod,String imageName) {			
+	public UaV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName) {
 		// Initializes UAS as WorldObject
 		super(id, pos, pixels, Type, sim, image, reasoningCyclePeriod, imageName);
-		// Initializes Behaviuor
-		uxvBehavior = new UaVBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod);
+	}
+
+	@Override
+	protected UxVBehavior createBehaviour(double reasoningCyclePeriod)
+	{
+		return new UaVBehavior(Integer.toString(this.ID), this.type, this.position, reasoningCyclePeriod);
 	}
 }

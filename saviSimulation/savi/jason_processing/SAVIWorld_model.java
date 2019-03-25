@@ -157,7 +157,7 @@ public class SAVIWorld_model extends PApplet {
 				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE/2,"demo", this, uavImage, REASONING_CYCLE_PERIOD, "airplane");
 				wifiParticipants.add(uav.getAntennaRef());
 				objects.add(uav);
-				agentList.put(((UxV)uav).getBehavior().getID(), ((UxV)uav).getBehavior());//Create UaV agent
+				agentList.put(uav.getBehavior().getID(), ((UxV)uav).getBehavior());//Create UaV agent
 			}
 		for(int i = NUMBER_UAV; i < NUMBER_UAV+NUMBER_UGV; i++)  { //Put UgV 
 			// The way the for loop is set up is to make sure all the UxVs have different ids

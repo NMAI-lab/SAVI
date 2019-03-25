@@ -4,10 +4,8 @@ import java.util.*;
 
 import processing.core.*;
 
-import processing.data.*;
-import processing.event.*; 
-import processing.opengl.*;
 import savi.StateSynchronization.*;
+import savi.jason_processing.behaviour.UxVBehavior;
 
 
 public abstract class UxV extends WorldObject implements Communicator {
@@ -34,15 +32,16 @@ public abstract class UxV extends WorldObject implements Communicator {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName) {			
+	protected UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName) {
 		// Initializes UAS as WorldObject
 		super(id, pos, pixels, Type, sim, image);
 		this.imageName=imageName;
-		// Initializes Behaviuor
-		this.uxvBehavior = new UxVBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod);
 		this.wifiAntenna = new WifiAntenna (id,this);
+		this.uxvBehavior = createBehaviour(reasoningCyclePeriod);
 	}
-	
+
+	protected abstract UxVBehavior createBehaviour(double reasoningCyclePeriod);
+
 	@Override
 	public void update(double simtime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
 		this.uxvBehavior.update(this, simtime, perceptionDistance, objects);
