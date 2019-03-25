@@ -33,6 +33,6 @@ public class UgVBehavior extends UxVBehavior {
      */
     public UgVBehavior(String id, String type, PVector initialPosition, double reasoningCyclePeriod) {
         // Initialize data values
-        super(id, type, initialPosition, reasoningCyclePeriod);
+        super(id, type, SPEED, initialPosition, reasoningCyclePeriod);
     }
 }

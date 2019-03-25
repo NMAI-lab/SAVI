@@ -4,6 +4,7 @@ import processing.core.*;
 
 
 public class UaVBehavior extends UxVBehavior {
+    private static final float SPEED = 0.1f; // 0.1 pixels (whatever real-life distance this corresponds to)
     private static final float VERTICAL_SPEED = 0.1f; // 0.1 something (whatever real-life distance this corresponds to)
     //***********************************************************//
     //I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
@@ -26,7 +27,7 @@ public class UaVBehavior extends UxVBehavior {
      */
     public UaVBehavior(String id, String type, PVector initialPosition, double reasoningCyclePeriod) {
         // Initialize data values
-        super(id, type, initialPosition, reasoningCyclePeriod);
+        super(id, type, SPEED, initialPosition, reasoningCyclePeriod);
         verticalSpeedVal = 0;
     }
 

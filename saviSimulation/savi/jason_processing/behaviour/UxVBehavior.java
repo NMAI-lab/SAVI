@@ -12,8 +12,6 @@ import savi.jason_processing.WorldObject;
 
 
 public abstract class UxVBehavior extends AgentModel {
-    private static final float SPEED = 0.1f; // 0.1 pixels (whatever real-life distance this corresponds to)
-
     //-----------------------------------------
     // DATA (or state variables)
     //-----------------------------------------
@@ -26,6 +24,7 @@ public abstract class UxVBehavior extends AgentModel {
     protected ArrayList<CameraPerception> visibleItems;
     protected double time;
     protected Map<String, AgentAction> actionMap;
+    protected final double maxSpeed;
 
     //***********************************************************//
     //I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
@@ -44,9 +43,10 @@ public abstract class UxVBehavior extends AgentModel {
      * @param type
      * @param initialPosition
      */
-    public UxVBehavior(String id, String type, PVector initialPosition, double reasoningCyclePeriod) {
+    public UxVBehavior(String id, String type, double maxSpeed, PVector initialPosition, double reasoningCyclePeriod) {
         // Initialize data values
         super(reasoningCyclePeriod);
+        this.maxSpeed = maxSpeed;
         this.ID = id;
         this.type = type;
         this.initialPosition = initialPosition;
@@ -177,7 +177,7 @@ public abstract class UxVBehavior extends AgentModel {
     protected void createActionMap() {
         actionMap.put("turn(left)", (() -> this.addNormalizedCompassAngle(-Math.PI / 16.0)));
         actionMap.put("turn(right)", (() -> this.addNormalizedCompassAngle(Math.PI / 16.0)));
-        actionMap.put("thrust(on)", (() -> this.speedVal = SPEED));
+        actionMap.put("thrust(on)", (() -> this.speedVal = maxSpeed));
         actionMap.put("thrust(off)", (() -> this.speedVal = 0));
     }
 
