@@ -26,8 +26,7 @@ public class UxVBehavior extends AgentModel {
 	protected double time;	
 	protected double sensorsErrorProb;
 	protected double sensorsErrorStdDev;
-	protected Random rand = new Random();
-	protected int seed;
+	protected static Random rand = new Random();
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
 	//IF WE WANT TO IMPLEMENTE MALFUNCTION OF SENSORS, THE INFO RECEIVED IN 
@@ -43,7 +42,7 @@ public class UxVBehavior extends AgentModel {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UxVBehavior(String id, String type, PVector initialPosition, double reasoningCyclePeriod, double sensorsErrorProb, double sensorsErrorStdDev, int seed) {	
+	public UxVBehavior(String id, String type, PVector initialPosition, double reasoningCyclePeriod, double sensorsErrorProb, double sensorsErrorStdDev) {	
 		// Initialize data values
 		super(reasoningCyclePeriod);
 		this.ID = id;
@@ -54,11 +53,9 @@ public class UxVBehavior extends AgentModel {
 		this.compasAngle = 0;
 		this.agentState = new SyncAgentState();
 		this.visibleItems = new ArrayList<CameraPerception>();
-		updatePercepts(initialPosition);
-		
+		updatePercepts(initialPosition);		
 		this.sensorsErrorProb = sensorsErrorProb;
 		this.sensorsErrorStdDev = sensorsErrorStdDev;
-		this.seed = seed;
 	}
 
 	public ArrayList<CameraPerception> getVisibleItems() {
@@ -145,7 +142,7 @@ public class UxVBehavior extends AgentModel {
 		PVector positionWithError = new PVector();
 		
 		//if position sensor is failing
-		if(isSensorFailing(sensorsErrorProb, seed)) {
+		if(isSensorFailing(sensorsErrorProb)) {
 			positionWithError.x = (float)calculateFailureValue((double)mypos.x, this.sensorsErrorStdDev);
 			positionWithError.y = (float)calculateFailureValue((double)mypos.y, this.sensorsErrorStdDev);
 			positionWithError.z = (float)calculateFailureValue((double)mypos.z, this.sensorsErrorStdDev);
@@ -166,7 +163,7 @@ public class UxVBehavior extends AgentModel {
 		//Add Visible items
 		for(CameraPerception cpi : this.visibleItems) {
 			for(int i=0; i<cpi.getParameters().size(); i++) {
-				if(isSensorFailing(sensorsErrorProb, seed)) {
+				if(isSensorFailing(sensorsErrorProb)) {
 					cpi.getParameters().set(i, calculateFailureValue(cpi.getParameters().get(i), this.sensorsErrorStdDev));
 				}
 			}	
@@ -178,27 +175,25 @@ public class UxVBehavior extends AgentModel {
 	
 	
 	// takes probability parameter between 0 and 1 
-	protected boolean isSensorFailing (double probability, int seed) {
-		if(seed != -1) {
-			rand = new Random(seed);
-		}
+	protected boolean isSensorFailing (double probability) {
 		if(rand.nextDouble()<probability) {
 			return true;
 		}else {
 			return false;
-		}	
+		}
 	}
 
 	
 	// generate random value for a normal distribution (mean, stdDev)
 	protected double calculateFailureValue (double mean, double stdDev) {
-		if(seed != -1) {
-			rand = new Random(seed);
-		}
 		return ((rand.nextGaussian()*stdDev)+mean);
 	}
 
-	
+	public static void setSeed(int seed) {
+		if(seed != -1) {
+			rand = new Random(seed);
+		}
+	}
 	
 	/**
 	 * Get UAS id

@@ -10,17 +10,18 @@ import processing.core.PVector;
 public class WifiAntenna {
 	
 	int ID;
-	double wifiProbWorking = 1; //TODO: actually make use of this as a probability in the message transmission
+	double wifiProbWorking = 1;
 	Communicator communicator; //the source and destination of messages exchanged over the wifi
-	Random rand = new Random();
-	int seed;
+	private static Random rand = new Random();
+	private static double wifiPerceptionDistance;
 	
-	public WifiAntenna(int id, Communicator communicator, double wifiProbWorking, int seed) {
+	public WifiAntenna(int id, Communicator communicator, double wifiProbWorking) {
 		
 		this.ID = id;
 		this.communicator = communicator;
 		this.wifiProbWorking= wifiProbWorking;
-		this.seed = seed;
+		
+		this.wifiPerceptionDistance=0;
 	}
 	
 	public void update(List<WifiAntenna> wifiParticipants) {
@@ -37,10 +38,10 @@ public class WifiAntenna {
 			
 			//calculate distance
 			double dist  = this.getPosition().dist(other.getPosition());
-			if (dist < SAVIWorld_model.WIFI_PERCEPTION_DISTANCE //reachable
+			if (dist < WifiAntenna.wifiPerceptionDistance //reachable
 				&& this.ID!=other.getID()	//not the same
-			    && isWifiFailing(this.wifiProbWorking, this.seed)	//wifi working
-			    && other.isWifiFailing(this.wifiProbWorking, this.seed)) 			//TODO make use of probability for this and line above
+			    && isWifiFailing(this.wifiProbWorking)	//wifi working
+			    && other.isWifiFailing(this.wifiProbWorking)) 			//TODO make use of probability for this and line above
 				
 				receivers.add(other);
 		}
@@ -73,15 +74,22 @@ public class WifiAntenna {
 	}
 
 	// takes probability parameter between 0 and 1 
-	protected boolean isWifiFailing(double probability, int seed) {
-		if(seed != -1) {
-			rand = new Random(seed);
-		}
+	protected boolean isWifiFailing(double probability) {
 		if(rand.nextDouble()<probability) {
 			return true;
 		}else {
 			return false;
 		}	
+	}
+	
+	public static void setPerceptionDistance(double value) {
+		wifiPerceptionDistance=value;
+	}
+	
+	public static void setSeed(int seed) {
+		if(seed != -1) {
+			rand = new Random(seed);
+		}
 	}
 	
 }

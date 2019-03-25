@@ -26,7 +26,6 @@ public class SAVIWorld_model extends PApplet {
 	private double MAX_SPEED;
 	int UGV_PERCEPTION_DISTANCE;
 	int UAV_PERCEPTION_DISTANCE;
-	public static int WIFI_PERCEPTION_DISTANCE;
 	private int RANDOM_SEED;
 	private double REASONING_CYCLE_PERIOD;
 	private int TREE_SIZE;
@@ -39,12 +38,12 @@ public class SAVIWorld_model extends PApplet {
 	private int NUMBER_UGV;
 	private double SENSORS_ERROR_PROB;
 	private double SENSORS_ERROR_STD_DEV;
+	private double WIFI_PERCEPTION_DISTANCE;
 	private double WIFI_ERROR_PROB;
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
 	public final int X_PIXELS = 874;
 	public final int Y_PIXELS = 699;
 	//int Z_PIXELS = 500;
-	String CONSOLE_ID = "console"; //not loaded from config file
 
 	// TimeStamp file names
 	private long lastCycleTimeStamp;
@@ -113,7 +112,6 @@ public class SAVIWorld_model extends PApplet {
 		MAX_SPEED = (double) Double.parseDouble(modelProps.getProperty("MAX_SPEED"));
 		UAV_PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("UAV_PERCEPTION_DISTANCE"));
 		UGV_PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("UGV_PERCEPTION_DISTANCE"));
-		WIFI_PERCEPTION_DISTANCE = Integer.parseInt(modelProps.getProperty("WIFI_PERCEPTION_DISTANCE"));
 		RANDOM_SEED = Integer.parseInt(modelProps.getProperty("RANDOM_SEED"));
 		REASONING_CYCLE_PERIOD = (double) Double.parseDouble(modelProps.getProperty("REASONING_CYCLE_PERIOD"));
 		TREE_SIZE = Integer.parseInt(modelProps.getProperty("TREE_SIZE"));
@@ -127,7 +125,7 @@ public class SAVIWorld_model extends PApplet {
 		SENSORS_ERROR_PROB = (double) Double.parseDouble(modelProps.getProperty("SENSORS_ERROR_PROB"));
 		SENSORS_ERROR_STD_DEV = (double) Double.parseDouble(modelProps.getProperty("SENSORS_ERROR_STD_DEV"));
 		WIFI_ERROR_PROB = (double) Double.parseDouble(modelProps.getProperty("WIFI_ERROR_PROB"));
-		
+		WIFI_PERCEPTION_DISTANCE = Double.parseDouble(modelProps.getProperty("WIFI_PERCEPTION_DISTANCE"));
 		// Initialization code goes here
 		simTime = 0; // seconds
 		simTimeDelta = 1000 / FRAME_RATE; // milliseconds
@@ -165,7 +163,7 @@ public class SAVIWorld_model extends PApplet {
 				rand = new Random(RANDOM_SEED+i);
 			}	
 				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE,"demo", 
-						this, uavImage, REASONING_CYCLE_PERIOD, "drone", UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB, RANDOM_SEED);
+						this, uavImage, REASONING_CYCLE_PERIOD, "drone", UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
 				wifiParticipants.add(uav.getAntennaRef());
 				objects.add(uav);
 				agentList.put(((UxV)uav).getBehavior().getID(), ((UxV)uav).getBehavior());//Create UaV agent
@@ -178,7 +176,7 @@ public class SAVIWorld_model extends PApplet {
 				rand = new Random(RANDOM_SEED+i);
 			}	
 				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE,"demo",
-						this, ugvImage, REASONING_CYCLE_PERIOD, "robot", UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB, RANDOM_SEED);
+						this, ugvImage, REASONING_CYCLE_PERIOD, "robot", UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
 				wifiParticipants.add(ugv.getAntennaRef());
 				objects.add(ugv);
 				agentList.put(((UxV)ugv).getBehavior().getID(), ((UxV)ugv).getBehavior());//Create UgV agent
@@ -208,7 +206,12 @@ public class SAVIWorld_model extends PApplet {
 					THREAT_SIZE, "threat", this, threatImage));
 		}
 		
-		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, antennaImage, WIFI_ERROR_PROB, RANDOM_SEED);
+		//set classes values
+		WifiAntenna.setPerceptionDistance(WIFI_PERCEPTION_DISTANCE);
+		WifiAntenna.setSeed(RANDOM_SEED);
+		UxVBehavior.setSeed(RANDOM_SEED);
+		
+		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, antennaImage, WIFI_ERROR_PROB);
 		objects.add(consoleProxy);
 		wifiParticipants.add(consoleProxy.getAntennaRef());
 

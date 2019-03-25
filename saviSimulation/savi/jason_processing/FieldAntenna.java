@@ -8,18 +8,16 @@ import processing.core.PVector;
 
 public class FieldAntenna extends WorldObject implements Communicator{
 	
-	
-	PVector position;
 	WifiAntenna antenna;
 	
 	double wifi = 100;
 	//TODO: add list of messages here, then implement message delivery
 	
-	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, PShape image, double wifiProbWorking, int seed) {
+	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, PShape image, double wifiProbWorking) {
 		
 		super(id, position, size, "FieldAntenna", sim, image);
 		this.position = position;
-		antenna = new WifiAntenna(id, this, wifiProbWorking, seed);
+		antenna = new WifiAntenna(id, this, wifiProbWorking);
 	}
 	
 	public void update(List<WifiAntenna> wifiParticipants) {
