@@ -10,9 +10,8 @@ import processing.opengl.*;
 import savi.StateSynchronization.*;
 
 
-public class UxVBehavior extends AgentModel {
-	private static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
-	private static final double VERTICAL_SPEED = 0.1; // 0.1 something (whatever real-life distance this corresponds to)
+public abstract class UxVBehavior extends AgentModel {
+	protected static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
 	
 	//-----------------------------------------
 	// DATA (or state variables)
@@ -99,14 +98,43 @@ public class UxVBehavior extends AgentModel {
 	}
 	
 	//to be Overriden
-	protected void processAgentActions(){
+	protected abstract void processAgentActions();
+	protected abstract boolean isObjectDetected (double azimuth, double elevation, double dist, double perceptionDistance);
+	protected abstract PVector calculateMovementVector (double timeElapsed);
+	
+	
+	
+	/**
+	 * Detect world objects & threats with the camera
+	 */
+	protected ArrayList<CameraPerception> objectDetection(PVector mypos, List<WorldObject> obj, int perceptionDistance) {
+		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
+		ArrayList<CameraPerception> detectedItems = new ArrayList<CameraPerception>();
+		double distance, oposite, tan, angle;
+		
+		for(WorldObject wo:obj) {
+			//shouldn't detect itself. if not (UxV and himself)
+			if( !((wo instanceof UxV) && this.ID.equals(((UxV)wo).getBehavior().getID())) ){
+				
+            	List<Double> polar = Geometry.relativePositionPolar(wo.getPosition(), mypos, this.compasAngle);
+            
+            	//calculate distance
+            	double azimuth = polar.get(Geometry.AZIMUTH);
+            	double elevation = polar.get(Geometry.ELEVATION);
+            	double dist = polar.get(Geometry.DISTANCE);
+            	if (isObjectDetected (azimuth, elevation, dist, perceptionDistance) ) {
+					//it's visible 
+					detectedItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
+					visibleItems.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
+            	}
+			}	   	
+		}
+
+		visibleItems = removeCoveredObjects(detectedItems, visibleItems);
+		return visibleItems;
 	}
 	
-	//to be Overriden
-	protected PVector calculateMovementVector (double timeElapsed) {
-		PVector movementVector = new PVector();
-		return movementVector;
-	}
+	
 	
 	/**
 	 * Removes covered objects from uncoveredObjects list
@@ -141,16 +169,8 @@ public class UxVBehavior extends AgentModel {
 		}
 		return uncoveredObjects;
 	}
-		
-	/**to be Overriden
-	 * Update perception Snapshot in agent state
-	 */
-	protected ArrayList<CameraPerception> objectDetection(PVector mypos, List<WorldObject> obj, int perceptionDistance) {
-		ArrayList<CameraPerception> visibleItems = new ArrayList<CameraPerception>();
-		return visibleItems;
-	}
 	
-
+	
 	/**
 	 * Update perception Snapshot in agent state
 	 */
@@ -212,6 +232,7 @@ public class UxVBehavior extends AgentModel {
 		return ((rand.nextGaussian()*stdDev)+mean);
 	}
 
+	
 	public static void setSeed(int seed) {
 		if(seed != -1) {
 			rand = new Random(seed);
