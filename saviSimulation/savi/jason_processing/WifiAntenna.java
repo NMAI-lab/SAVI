@@ -77,7 +77,7 @@ public class WifiAntenna {
 	}
 
 	// takes probability parameter between 0 and 1 
-	protected boolean isWifiFailing(double probability) {
+	protected boolean isWifiFailing(double probability) { //prob is prob of error
 		if(rand.nextDouble()>probability) { 
 			return true;
 		}else {

@@ -42,7 +42,8 @@ public class FieldAntenna extends WorldObject implements Communicator, ActionLis
 
 	}
 	
-	public void update(List<WifiAntenna> wifiParticipants) {
+	@Override
+	public void update(double simtime, double timestep, List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
 		antenna.update(wifiParticipants);
 		
 	}
@@ -85,8 +86,11 @@ public class FieldAntenna extends WorldObject implements Communicator, ActionLis
     public synchronized void actionPerformed(ActionEvent e) 
     { 
        
-            // set the text of the label to the text of the field 
-            outbox.add(commands.getText()); 
+            // set the text of the label to the text of the field
+    		long mid= System.currentTimeMillis()%20000; //this is a really crude message id!
+    		String message = "<"+mid+","+this.ID+",tell,BROADCAST,"+commands.getText()+">";
+    		
+            outbox.add(message); 
   
             // set the text of field to blank 
             commands.setText("  "); 
@@ -126,6 +130,9 @@ public class FieldAntenna extends WorldObject implements Communicator, ActionLis
 	@Override
 	public synchronized List<String> getOutgoingMessages() {
 		// This is where messages should be read from the console
+		if (outbox.isEmpty())
+			return new LinkedList<String>();
+		
 		List<String> outcopy = outbox;
 		outbox = new LinkedList<String>();
 		return outcopy; 
