@@ -204,7 +204,7 @@ public abstract class UxVBehavior extends AgentModel {
         //Add position
         P.addPerception(new PositionPerception(this.time, (double) mypos.x, (double) mypos.y, (double) mypos.z));
         //Add velocity
-        P.addPerception(new VelocityPerception(this.time, Math.atan(mypos.x / mypos.y), 0, SPEED));
+        P.addPerception(new VelocityPerception(this.time, Math.atan(mypos.x / mypos.y), 0, speedVal));
         //Add time
         P.addPerception(new TimePerception(this.time));
         //Add Visible items
