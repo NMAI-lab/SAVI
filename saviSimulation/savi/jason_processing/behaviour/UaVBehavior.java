@@ -11,6 +11,8 @@ public class UaVBehavior extends UxVBehavior {
     //SYNCAGENTSTATE IS NOT THE REAL ONE
     //***********************************************************//
 
+    private double verticalSpeedVal;
+
     //-----------------------------------------
     // METHODS (functions that act on the data)
     //-----------------------------------------
@@ -25,6 +27,21 @@ public class UaVBehavior extends UxVBehavior {
     public UaVBehavior(String id, String type, PVector initialPosition, double reasoningCyclePeriod) {
         // Initialize data values
         super(id, type, initialPosition, reasoningCyclePeriod);
+        verticalSpeedVal = 0;
+    }
+
+    @Override
+    protected PVector updatePosition(PVector currentPosition, double simTime)
+    {
+        PVector newPos = super.updatePosition(currentPosition, simTime);
+
+        //Calculate new altitude
+        newPos.z += verticalSpeedVal;
+
+        if (newPos.z < 0)
+            newPos.z = 0;
+
+        return newPos;
     }
 
     /**
@@ -36,8 +53,8 @@ public class UaVBehavior extends UxVBehavior {
         super.createActionMap();
 
         // Add additional UAV actions
-        actionMap.put("thrust(up)", () -> this.speedVector.z = VERTICAL_SPEED);
-        actionMap.put("thrust(down)", () -> this.speedVector.z = -VERTICAL_SPEED);
-        actionMap.put("hover", () -> this.speedVector.z = 0);
+        actionMap.put("thrust(up)", () -> this.verticalSpeedVal = VERTICAL_SPEED);
+        actionMap.put("thrust(down)", () -> this.verticalSpeedVal = -VERTICAL_SPEED);
+        actionMap.put("hover", () -> this.verticalSpeedVal = 0);
     }
 }

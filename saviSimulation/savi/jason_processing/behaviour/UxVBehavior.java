@@ -21,7 +21,7 @@ public abstract class UxVBehavior extends AgentModel {
     //String type; -- same
     //SyncAgentState agentState; --same
     protected PVector initialPosition;
-    protected PVector speedVector;
+    protected double speedVal;
     protected double compasAngle;
     protected ArrayList<CameraPerception> visibleItems;
     protected double time;
@@ -50,9 +50,9 @@ public abstract class UxVBehavior extends AgentModel {
         this.ID = id;
         this.type = type;
         this.initialPosition = initialPosition;
-        this.speedVector = new PVector();
         this.time = 0;
         this.compasAngle = 0;
+        this.speedVal = 0;
         this.agentState = new SyncAgentState();
         this.visibleItems = new ArrayList<CameraPerception>();
         this.actionMap = new HashMap<>();
@@ -99,14 +99,8 @@ public abstract class UxVBehavior extends AgentModel {
         //Calculate new x,y position
         double cosv = Math.cos(this.compasAngle);
         double sinv = Math.sin(this.compasAngle);
-        PVector deltaPos = new PVector((float) (cosv * this.speedVector.x * timeElapsed), (float) (sinv * this.speedVector.y * timeElapsed), this.speedVector.z);
-        PVector newPos = currentPosition.add(deltaPos);
-
-        //Calculate new altitude
-        if (newPos.z < 0)
-            newPos.z = 0;
-
-        return newPos;
+        PVector deltaPos = new PVector((float) (cosv * this.speedVal * timeElapsed), (float) (sinv * this.speedVal * timeElapsed), 0);
+        return currentPosition.add(deltaPos);
     }
 
     /**
@@ -183,8 +177,8 @@ public abstract class UxVBehavior extends AgentModel {
     protected void createActionMap() {
         actionMap.put("turn(left)", (() -> this.addNormalizedCompassAngle(-Math.PI / 16.0)));
         actionMap.put("turn(right)", (() -> this.addNormalizedCompassAngle(Math.PI / 16.0)));
-        actionMap.put("thrust(on)", (() -> this.speedVector.set(SPEED, SPEED)));
-        actionMap.put("thrust(off)", (() -> this.speedVector.set(0, 0)));
+        actionMap.put("thrust(on)", (() -> this.speedVal = SPEED));
+        actionMap.put("thrust(off)", (() -> this.speedVal = 0));
     }
 
     /**
@@ -210,7 +204,7 @@ public abstract class UxVBehavior extends AgentModel {
         //Add position
         P.addPerception(new PositionPerception(this.time, (double) mypos.x, (double) mypos.y, (double) mypos.z));
         //Add velocity
-        P.addPerception(new VelocityPerception(this.time, Math.atan(mypos.x / mypos.y), 0, speedVector.x));
+        P.addPerception(new VelocityPerception(this.time, Math.atan(mypos.x / mypos.y), 0, SPEED));
         //Add time
         P.addPerception(new TimePerception(this.time));
         //Add Visible items
