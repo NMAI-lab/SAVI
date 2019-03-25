@@ -19,6 +19,8 @@ public abstract class UxV extends WorldObject implements Communicator {
 	protected WifiAntenna wifiAntenna;
 	protected UxVBehavior uxvBehavior;
 	protected String imageName;
+	protected int perceptionDistance;
+	private static Random rand = new Random();
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
 	//IF WE WANT TO IMPLEMENTE MALFUNCTION OF SENSORS, THE INFO RECEIVED IN 
@@ -34,19 +36,20 @@ public abstract class UxV extends WorldObject implements Communicator {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName) {			
+	public UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName, int perceptionDistance, double sensorsErrorProb, double sensorsErrorStdDev, double probWifiWorking) {			
 		// Initializes UAS as WorldObject
 		super(id, pos, pixels, Type, sim, image);
 		this.imageName=imageName;
 		// Initializes Behaviuor
-		this.uxvBehavior = new UxVBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod);
-		this.wifiAntenna = new WifiAntenna (id,this);
+		//this.uxvBehavior = new UxVBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod);
+		this.wifiAntenna = new WifiAntenna (id, this, probWifiWorking);
+		this.perceptionDistance=perceptionDistance;
 	}
 	
 	@Override
-	public void update(double simtime, double timestep, int perceptionDistance, int WIFI_PERCEPTION_DISTANCE,  List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
-		this.uxvBehavior.update(this, simtime, perceptionDistance, objects);
-		this.wifiAntenna.update(WIFI_PERCEPTION_DISTANCE, wifiParticipants);
+	public void update(double simtime, double timestep, List<WorldObject> objects, List<WifiAntenna> wifiParticipants) {
+		this.uxvBehavior.update(this, simtime, this.perceptionDistance, objects);
+		this.wifiAntenna.update(wifiParticipants);
 	}
 	
 	public UxVBehavior getBehavior() {		
@@ -73,12 +76,13 @@ public abstract class UxV extends WorldObject implements Communicator {
 		image.rotate((float) ((float)this.getBehavior().getCompassAngle()+Math.PI/2));
 
 		//draw image
-		simulator.shape(image, position.x, position.y, 26, 26);
-
+		simulator.shape(image, position.x, position.y, pixels, pixels);
+		//show height lower and upper
+		simulator.text(Double.toString(position.z+(this.pixels/2))+"\n"+Double.toString(position.z-(this.pixels/2)), position.x, position.y);
 		simulator.noFill();
 
 		//draw perception area
-		simulator.arc(position.x, position.y, simulator.PERCEPTION_DISTANCE*2, simulator.PERCEPTION_DISTANCE*2,(float)this.getBehavior().getCompassAngle()-(float)Math.PI/2, (float)this.getBehavior().getCompassAngle()+(float)Math.PI/2);
+		simulator.arc(position.x, position.y, this.perceptionDistance*2, this.perceptionDistance*2, (float)this.getBehavior().getCompassAngle()-(float)Math.PI/2, (float)this.getBehavior().getCompassAngle()+(float)Math.PI/2);
 
 		//draw circle on objects percepted
 		for(CameraPerception cpi : this.getBehavior().getVisibleItems()){
@@ -89,8 +93,6 @@ public abstract class UxV extends WorldObject implements Communicator {
 			// draw circle over items visualized
 			simulator.ellipse(p1.x,p1.y, cpi.getParameters().get(3).floatValue()*2, cpi.getParameters().get(3).floatValue()*2);
 		}
-		
-		
 	}
 	
 	@Override
@@ -112,6 +114,5 @@ public abstract class UxV extends WorldObject implements Communicator {
 	public WifiAntenna getAntennaRef() {		
 		return this.wifiAntenna;
 	}
-	
 	
 }
