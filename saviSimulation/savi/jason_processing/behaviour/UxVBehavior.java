@@ -55,7 +55,7 @@ public abstract class UxVBehavior extends AgentModel {
         this.speedVal = 0;
         this.agentState = new SyncAgentState();
         this.visibleItems = new ArrayList<CameraPerception>();
-        this.actionMap = new HashMap<>();
+        this.actionMap = new HashMap<String, AgentAction>();
         this.createActionMap();
         updatePercepts(initialPosition);
     }
