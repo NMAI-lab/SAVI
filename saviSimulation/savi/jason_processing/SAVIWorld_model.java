@@ -157,7 +157,7 @@ public class SAVIWorld_model extends PApplet {
 				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE/2,"demo", this, uavImage, REASONING_CYCLE_PERIOD, "airplane");
 				wifiParticipants.add(uav.getAntennaRef());
 				objects.add(uav);
-				agentList.put(uav.getBehavior().getID(), ((UxV)uav).getBehavior());//Create UaV agent
+				agentList.put(uav.getBehavior().getID(), uav.getBehavior());//Create UaV agent
 			}
 		for(int i = NUMBER_UAV; i < NUMBER_UAV+NUMBER_UGV; i++)  { //Put UgV 
 			// The way the for loop is set up is to make sure all the UxVs have different ids
@@ -169,7 +169,7 @@ public class SAVIWorld_model extends PApplet {
 				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE/2,"demo", this, ugvImage, REASONING_CYCLE_PERIOD, "robot");
 				wifiParticipants.add(ugv.getAntennaRef());
 				objects.add(ugv);
-				agentList.put(((UxV)ugv).getBehavior().getID(), ((UxV)ugv).getBehavior());//Create UgV agent
+				agentList.put(ugv.getBehavior().getID(), ugv.getBehavior());//Create UgV agent
 		}
 		for (int i = 0; i < NUMBER_TREES; i++) { // Put trees
 			// _PIXELS is the maximum and the 1 is our minimum.
