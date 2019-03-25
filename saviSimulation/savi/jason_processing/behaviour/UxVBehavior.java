@@ -78,7 +78,11 @@ public abstract class UxVBehavior extends AgentModel {
         //Process actions to update speedVector & compassAngle
         processAgentActions(actionsToExecute);
 
-        PVector newPos = this.updatePosition(uxv.getPosition(), simTime);
+        //Update simTime
+        double timeElapsed = simTime - this.time; //elapsed time since last update
+        this.time = simTime;
+
+        PVector newPos = this.updatePosition(uxv.getPosition(), timeElapsed);
         uxv.setPosition(newPos);
 
         //Calculate visible items
@@ -91,11 +95,7 @@ public abstract class UxVBehavior extends AgentModel {
         updatePercepts(uxv.getPosition());
     }
 
-    protected PVector updatePosition(PVector currentPosition, double simTime) {
-        //Update simTime
-        double timeElapsed = simTime - this.time; //elapsed time since last update
-        this.time = simTime;
-
+    protected PVector updatePosition(PVector currentPosition, double timeElapsed) {
         //Calculate new x,y position
         double cosv = Math.cos(this.compasAngle);
         double sinv = Math.sin(this.compasAngle);

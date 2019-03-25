@@ -31,12 +31,12 @@ public class UaVBehavior extends UxVBehavior {
     }
 
     @Override
-    protected PVector updatePosition(PVector currentPosition, double simTime)
+    protected PVector updatePosition(PVector currentPosition, double timeElapsed)
     {
-        PVector newPos = super.updatePosition(currentPosition, simTime);
+        PVector newPos = super.updatePosition(currentPosition, timeElapsed);
 
         //Calculate new altitude
-        newPos.z += verticalSpeedVal;
+        newPos.z += verticalSpeedVal * timeElapsed;
 
         if (newPos.z < 0)
             newPos.z = 0;
