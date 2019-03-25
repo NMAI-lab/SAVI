@@ -207,20 +207,21 @@ public abstract class UxVBehavior extends AgentModel {
      */
     protected void updatePercepts(PVector mypos) {
         PerceptionSnapshot P = new PerceptionSnapshot();
+        PVector posPercept = mypos.copy();
 
         //if position sensor is failing, we overwrite the position values with bad values
         if (isSensorFailing(sensorsErrorProb)) {
-            mypos.x = (float) calculateFailureValue((double) mypos.x, this.sensorsErrorStdDev);
-            mypos.y = (float) calculateFailureValue((double) mypos.y, this.sensorsErrorStdDev);
-            mypos.z = (float) calculateFailureValue((double) mypos.z, this.sensorsErrorStdDev);
+            posPercept.x = (float) calculateFailureValue((double) mypos.x, this.sensorsErrorStdDev);
+            posPercept.y = (float) calculateFailureValue((double) mypos.y, this.sensorsErrorStdDev);
+            posPercept.z = (float) calculateFailureValue((double) mypos.z, this.sensorsErrorStdDev);
 
         }
 
         //add position
-        P.addPerception(new PositionPerception(this.time, (double) mypos.x, (double) mypos.y, (double) mypos.z));
-        //Add velocity
-        P.addPerception(new VelocityPerception(this.time, Math.atan(mypos.x / mypos.y), 0, this.speedVal));
+        P.addPerception(new PositionPerception(this.time, (double) posPercept.x, (double) posPercept.y, (double) posPercept.z));
 
+        //Add velocity
+        P.addPerception(new VelocityPerception(this.time, Math.atan(posPercept.x / posPercept.y), 0, this.speedVal));
 
         //Add time
         P.addPerception(new TimePerception(this.time));
