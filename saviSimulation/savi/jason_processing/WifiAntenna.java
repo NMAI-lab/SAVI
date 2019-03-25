@@ -21,7 +21,7 @@ public class WifiAntenna {
 		this.communicator = communicator;
 		this.wifiProbWorking= wifiProbWorking;
 		
-		this.wifiPerceptionDistance=0;
+		//this.wifiPerceptionDistance=0;
 	}
 	
 	public void update(List<WifiAntenna> wifiParticipants) {
@@ -78,7 +78,7 @@ public class WifiAntenna {
 
 	// takes probability parameter between 0 and 1 
 	protected boolean isWifiFailing(double probability) {
-		if(rand.nextDouble()<probability) {
+		if(rand.nextDouble()>probability) { 
 			return true;
 		}else {
 			return false;
