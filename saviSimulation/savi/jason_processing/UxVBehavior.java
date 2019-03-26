@@ -11,7 +11,7 @@ import savi.StateSynchronization.*;
 
 
 public class UxVBehavior extends AgentModel {
-	private static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
+	//private static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
 
 	//-----------------------------------------
 	// DATA (or state variables)
@@ -51,7 +51,7 @@ public class UxVBehavior extends AgentModel {
 		this.speedVal = 0;	
 		this.time = 0;
 		this.compasAngle = 0;
-		this.agentState = new SyncAgentState();
+		//this.agentState = new SyncAgentState();
 		this.visibleItems = new ArrayList<CameraPerception>();
 		updatePercepts(initialPosition);		
 		this.sensorsErrorProb = sensorsErrorProb;

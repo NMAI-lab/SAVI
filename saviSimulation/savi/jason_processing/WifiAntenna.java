@@ -10,18 +10,18 @@ import processing.core.PVector;
 public class WifiAntenna {
 	
 	int ID;
-	double wifiProbWorking = 1;
+	double wifiProbFailing = 1;
 	Communicator communicator; //the source and destination of messages exchanged over the wifi
 	private static Random rand = new Random();
 	private static double wifiPerceptionDistance;
 	
-	public WifiAntenna(int id, Communicator communicator, double wifiProbWorking) {
+	public WifiAntenna(int id, Communicator communicator, double failureProb) {
 		
 		this.ID = id;
 		this.communicator = communicator;
-		this.wifiProbWorking= wifiProbWorking;
+		this.wifiProbFailing= failureProb;
 		
-		this.wifiPerceptionDistance=0;
+		//this.wifiPerceptionDistance=0;
 	}
 	
 	public void update(List<WifiAntenna> wifiParticipants) {
@@ -30,6 +30,9 @@ public class WifiAntenna {
 	
 
 	protected void sendMessages(List<String> outgoingMessages, List<WifiAntenna> others) {
+		
+		if (outgoingMessages.isEmpty())
+			return;
 		
 		List<WifiAntenna> receivers = new LinkedList<WifiAntenna>();
 		
@@ -40,8 +43,8 @@ public class WifiAntenna {
 			double dist  = this.getPosition().dist(other.getPosition());
 			if (dist < WifiAntenna.wifiPerceptionDistance //reachable
 				&& this.ID!=other.getID()	//not the same
-			    && isWifiFailing(this.wifiProbWorking)	//wifi working
-			    && other.isWifiFailing(this.wifiProbWorking)) 			//TODO make use of probability for this and line above
+			    && isWifiFailing(this.wifiProbFailing)	//wifi working
+			    && other.isWifiFailing(this.wifiProbFailing)) 			//TODO make use of probability for this and line above
 				
 				receivers.add(other);
 		}
@@ -74,12 +77,8 @@ public class WifiAntenna {
 	}
 
 	// takes probability parameter between 0 and 1 
-	protected boolean isWifiFailing(double probability) {
-		if(rand.nextDouble()<probability) {
-			return true;
-		}else {
-			return false;
-		}	
+	protected boolean isWifiFailing(double probability) { 
+		return (rand.nextDouble()>probability); //prob is prob of error
 	}
 	
 	public static void setPerceptionDistance(double value) {

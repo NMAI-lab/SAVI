@@ -1,33 +1,31 @@
 /*
  * Simple agent behaviour for the SAVI project
  * @author	Patrick Gavigan
- * @date	25 February 2019
+ * @date		25 Jan 2019
  */
 
 // Set initial beliefs and test goals
-pi(3.14159265359).			// Set the constant for PI
-proximityThreshold(30.0).	// When the agent is closer than this threashold, no need to get closer
-targetLastRight.
+pi(3.14159265359).	// Set the constant for PI
 
 /* Rules */
-
 // Define the turn angle
+
 turnAngle(A) :-
 	((A = PI/16) & pi(PI)).
 
 // There is no target
 noTarget :-
-	not(target(_,_,_,_,_,_)).
+	not(target(_,_,_,_,_)).
 
 // Target is the closest threat
-target(threat,TYPE,AZ,EL,RANGE,RADIUS) :-
-	((threat(AZ,EL,RANGE,RADIUS,TIME,TYPE)) &
-	not (threat(_,_,CLOSER,_,_,_) &
+target(threat,TYPE,AZ,EL,RANGE) :-
+	((threat(AZ,EL,RANGE,TIME,TYPE)) &
+	not (threat(_,_,CLOSER,_,_) &
 	(CLOSER < RANGE))).
 
 // See a target to the right
 targetRight :-
-	(target(threat,TYPE,AZ,EL,RANGE,RADIUS) &
+	(target(threat,TYPE,AZ,EL,RANGE) &
 	turnAngle(ANGLE) &
 	pi(PI) &
 	(ANGLE < AZ) & 
@@ -35,7 +33,7 @@ targetRight :-
 
 // See a target to the left
 targetLeft :-
-	(target(threat,TYPE,AZ,EL,RANGE,RADIUS) &
+	(target(threat,TYPE,AZ,EL,RANGE) &
 	turnAngle(ANGLE) &
 	pi(PI) &
 	((PI < AZ) &
@@ -46,18 +44,6 @@ targetAhead :-
 	((not noTarget) &
 	(not targetLeft) &
 	(not targetRight)).
-	
-// Target is close
-targetClose :-
-	target(_,_,_,_,RANGE,_) &
-	proximityThreshold(CLOSE) &
-	(RANGE < CLOSE).
-
-// Target is far
-targetFar :-
-	target(_,_,_,_,RANGE,_) &
-	proximityThreshold(CLOSE) &
-	(RANGE > CLOSE).
 	
 // Initial goals
 //!findTarget.		// Find a target
@@ -70,24 +56,10 @@ targetFar :-
 
 // Plan for trying to find a target
 +!findTarget
-	:	noTarget & targetLastRight
-	<-	turn(right).
-		
-// Plan for trying to find a target
-+!findTarget
-	:	noTarget & targetLastLeft
-	<-	turn(left).
-
-// See a target. Broadcast it.
-+!findTarget
-	:	target(threat,TYPE,AZ,EL,RANGE) & 
-		position(X_REF,Y_REF,Z_REF,_) &
-		velocity(BEARING,_,_,_)
-	<-	.broadcast(tell,threatSeen(3,4));
-		.print("Agent saying something").
-	//savi.UxVInternalActions.GetAbsolutePosition(X_TARGET,Y_TARGET,Z_TARGET,X_REF,Y_REF,Z_REF,BEARING,AZ,EL,RANGE);
-		//.broadcast(tell,threatSeen(X_TARGET,Y_TARGET,Z_TARGET)).
-		
+	:	noTarget
+	<-	turn(left);
+		.broadcast(tell,turning(left)).
++!findTarget.
 
 // Default plan for observing target - force recursion.
 +!observeTarget
@@ -104,38 +76,35 @@ targetFar :-
 +!faceTarget
 	:	targetRight
 	<-	turn(right);
-		+targetLastRight;
-		-targetLastLeft.
+		.broadcast(tell,turning(right)).
 		
 // Face a target to the left
 +!faceTarget
 	:	targetLeft
 	<-	turn(left);
-		+targetLastLeft;
-		-targetLastRight.
+		.broadcast(tell,turning(left)).
 		
 // Face a target, goal achieved
 +!faceTarget
-	:	targetAhead.
+	:	targetAhead
+	<-	.broadcast(tell,targetAhead).
 
 // watchTarget - recursive faceTarget
 +!watchTarget
 	:	true
 	<-	!faceTarget;
-		!watchTarget;
-		.print("tell,turning(left)").
+		!watchTarget.
 		
-// Follow a target that is ahead but not close
+// Follow a target that is ahead
 +!followTarget
-	:	targetFar
+	:	target(_,_,_,_,_)
 	<-	!move;
 		!faceTarget;
 		!followTarget.
 		
-// Follow a target that is close (stop moving, don't want to pass it)
-// OR Can't see a target, stop find one.
+// Can't see a target, stop find one.
 +!followTarget
-	:	noTarget | targetClose
+	:	noTarget
 	<-	!stopMoving;
 		!faceTarget;
 		!followTarget.
@@ -144,13 +113,15 @@ targetFar :-
 +!move
 	: 	velocity(_,_,SPEED,_) &
 		SPEED == 0.0
-	<-	thrust(on).
+	<-	thrust(on);
+		.broadcast(tell,moving).
 +!move.
 
 // Stop if moving
 +!stopMoving
 	: 	velocity(_,_,SPEED,_) &
 		SPEED \== 0.0
-	<-	thrust(off).
+	<-	thrust(off);
+		.broadcast(tell,stopping).
 +!stopMoving.
 		

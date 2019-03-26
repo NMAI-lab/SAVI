@@ -36,13 +36,13 @@ public abstract class UxV extends WorldObject implements Communicator {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName, int perceptionDistance, double sensorsErrorProb, double sensorsErrorStdDev, double probWifiWorking) {			
+	public UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName, int perceptionDistance, double sensorsErrorProb, double sensorsErrorStdDev, double probWifiFailure) {			
 		// Initializes UAS as WorldObject
 		super(id, pos, pixels, Type, sim, image);
 		this.imageName=imageName;
 		// Initializes Behaviuor
 		//this.uxvBehavior = new UxVBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod);
-		this.wifiAntenna = new WifiAntenna (id, this, probWifiWorking);
+		this.wifiAntenna = new WifiAntenna (id, this, probWifiFailure);
 		this.perceptionDistance=perceptionDistance;
 	}
 	
