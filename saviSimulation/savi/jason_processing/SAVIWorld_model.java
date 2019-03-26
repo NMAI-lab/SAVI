@@ -185,7 +185,129 @@ public class SAVIWorld_model extends PApplet {
 		// ======= Jason BDI agents ================
 		Map<String, AgentModel> agentList = new HashMap<String, AgentModel>();
 		//====================================================
-
+		
+		//set trees for this particular scenario
+		
+		objects.add(new WorldObject(1, new PVector(90, 200, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(130, 150, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(160, 120, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(220, 100, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(330, 120, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(510, 140, 120/2),
+				120, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(530, 75, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(530, 30, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(400, 10, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(275, 60, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(30, 250, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(80, 310, 75/2),
+				75, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(50, 410, 120/2),
+				120, "tree", this, treeImage));
+				
+		objects.add(new WorldObject(1, new PVector(50, 460, 120/2),
+				120, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(5, 520, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(100, 610, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(275, 510, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(275, 560, 76/2),
+				75, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(250, 700, 76/2),
+				75, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(50, 860, 120/2),
+				120, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(120, 900, 120/2),
+				120, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(200, 950, 120/2),
+				120, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1250, 730, 300/2),
+				300, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(750, 725, 70/2),
+				70, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(720, 860, 70/2),
+				70, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(900, 600, 80/2),
+				80, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1000, 575, 80/2),
+				80, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1080, 550, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1030, 650, 70/2),
+				70, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1000, 775, 70/2),
+				70, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1075, 760, 80/2),
+				80, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1100, 860, 80/2),
+				80, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1550, 650, 80/2),
+				80, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1500, 700, 120/2),
+				120, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1150, 125, 100/2),
+				100, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1330, 225, 150/2),
+				150, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1250, 110, 60/2),
+				60, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1440, 175, 80/2),
+				80, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1500, 100, 140/2),
+				140, "tree", this, treeImage));
+		
+		objects.add(new WorldObject(1, new PVector(1370, 1, 80/2),
+				80, "tree", this, treeImage));
+		
 		
 		for (int i = 0; i < NUMBER_TREES; i++) { // Put trees
 			// _PIXELS is the maximum and the 1 is our minimum.
