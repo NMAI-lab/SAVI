@@ -98,7 +98,7 @@ public class SyncAgentState {
 	public synchronized PerceptionSnapshot getPerceptions(double last) {
 		while(this.perceptions.getLatestTimeStamp()== last)
 			try {
-				System.out.println(" Waiting for new perceptions...");
+				//System.out.println(" Waiting for new perceptions...");
 				wait();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block

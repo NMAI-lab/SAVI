@@ -128,8 +128,8 @@ public abstract class UxVBehavior extends AgentModel {
             	double dist = polar.get(Geometry.DISTANCE);
             	if (isObjectDetected (azimuth, elevation, dist, perceptionDistance) ) {
 					//it's visible 
-					detectedObjects.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
-					uncoveredObjects.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
+					detectedObjects.add(new CameraPerception(wo.type, wo.ID, this.time, azimuth, elevation, dist, wo.pixels/2));
+					uncoveredObjects.add(new CameraPerception(wo.type, wo.ID, this.time, azimuth, elevation, dist, wo.pixels/2));
             	}
 			}	   	
 		}
@@ -187,7 +187,8 @@ public abstract class UxVBehavior extends AgentModel {
 		
 		P.addPerception(new PositionPerception(this.time, (double)myposWithError.x, (double)myposWithError.y, (double)myposWithError.z));
 		//Add velocity
-		P.addPerception(new VelocityPerception(this.time, Math.atan(myposWithError.x/myposWithError.y), 0, this.speedVal));			
+		P.addPerception(new VelocityPerception(this.time, Math.atan(myposWithError.x/myposWithError.y), 0, this.speedVal));
+		P.addPerception(new CompassAnglePerception(this.time, this.compasAngle));
 
 		//Add time
 		P.addPerception(new TimePerception(this.time));
@@ -210,7 +211,7 @@ public abstract class UxVBehavior extends AgentModel {
 	 * Makes with a random probability, a random error on the UxV position perceived
 	 */
 	protected PVector getPositionWithError(PVector position, double sensorErrorProb) {
-		PVector positionWithError = new PVector();
+		PVector positionWithError = position.copy();
 		if(isSensorFailing(sensorsErrorProb)) {
 			positionWithError.x = (float)calculateFailureValue((double)position.x, this.sensorsErrorStdDev);
 			positionWithError.y = (float)calculateFailureValue((double)position.y, this.sensorsErrorStdDev);

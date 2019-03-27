@@ -94,14 +94,14 @@ public class SAVIWorld_model extends PApplet {
 		try {
 			String filePath = new File("").getAbsolutePath();
 			filePath = filePath + "/config.cfg";
-			System.out.println(filePath);
+			//System.out.println(filePath);
 			File inFile = new File(filePath);
 			in = new FileInputStream(inFile);
 			modelProps.load(in);
 		} catch (FileNotFoundException e) {
-			System.out.println("File not found");
+			//System.out.println("File not found");
 		} catch (Exception e) {
-			System.out.println("Exception occurred");
+			//System.out.println("Exception occurred");
 		}
 		NUMBER_TREES = Integer.parseInt(modelProps.getProperty("NUMBER_TREES"));
 		NUMBER_HOUSES = Integer.parseInt(modelProps.getProperty("NUMBER_HOUSES"));
@@ -155,26 +155,38 @@ public class SAVIWorld_model extends PApplet {
 		// ======= Jason BDI agents ================
 		Map<String, AgentModel> agentList = new HashMap<String, AgentModel>();
 		//====================================================
-				
+
+
+		createUGV(agentList, 300, 300);
+		createTree(250, 300);
+		createTree(300, 250);
+		createTree(250, 250);
+		createTree(250, 350);
+//		createTree(350, 250);
+//		createTree(350, 300);
+//		createTree(300, 350);
+//		createTree(350, 350);
+//
+
 		for(int i = 0; i < NUMBER_UAV; i++)  { //Put UaV
 			//_PIXELS is the maximum and the 1 is our minimum
 			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
 			if(RANDOM_SEED != -1) {
 				rand = new Random(RANDOM_SEED+i);
-			}	
-				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE,"demo", 
+			}
+				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE,"demo",
 						this, uavImage, REASONING_CYCLE_PERIOD, "drone", UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
 				wifiParticipants.add(uav.getAntennaRef());
 				objects.add(uav);
 				agentList.put(((UxV)uav).getBehavior().getID(), ((UxV)uav).getBehavior());//Create UaV agent
 			}
-		for(int i = NUMBER_UAV; i < NUMBER_UAV+NUMBER_UGV; i++)  { //Put UgV 
+		for(int i = NUMBER_UAV; i < NUMBER_UAV+NUMBER_UGV; i++)  { //Put UgV
 			// The way the for loop is set up is to make sure all the UxVs have different ids
 			//_PIXELS is the maximum and the 1 is our minimum
 			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
 			if(RANDOM_SEED != -1) {
 				rand = new Random(RANDOM_SEED+i);
-			}	
+			}
 				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE,"demo",
 						this, ugvImage, REASONING_CYCLE_PERIOD, "robot", UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
 				wifiParticipants.add(ugv.getAntennaRef());
@@ -239,7 +251,22 @@ public class SAVIWorld_model extends PApplet {
 			e.printStackTrace();
 		}
 
-}		
+}
+int ugv_id = 0;
+	int tree_id = 0;
+public void createUGV(Map<String, AgentModel> agentList, int x, int y) {
+	UgV ugv= new UgV(ugv_id++, new PVector(x, y, UGV_SIZE/2), UGV_SIZE,"demo",
+			this, ugvImage, REASONING_CYCLE_PERIOD, "robot", UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
+	wifiParticipants.add(ugv.getAntennaRef());
+	objects.add(ugv);
+	agentList.put(((UxV)ugv).getBehavior().getID(), ((UxV)ugv).getBehavior());//Create UgV agent
+}
+
+	public void createTree(int x, int y) {
+		objects.add(new WorldObject(tree_id++, new PVector(x, y, TREE_SIZE/2),
+				TREE_SIZE, "tree", this, treeImage));
+	}
+
 	/************* Main draw() ***********************/
 // Main state update and visualization function
 // called by Processing in an infinite loop
@@ -302,6 +329,8 @@ public class SAVIWorld_model extends PApplet {
 
 	public void mousePressed() {
 
+		System.out.println("Mouse: " + mouseX + ", " + mouseY);
+
 		if (playButton.MouseIsOver()) {
 			pauseSimulation();
 		}
@@ -332,14 +361,14 @@ public class SAVIWorld_model extends PApplet {
 	public void pauseSimulation() {
 		if (!simPaused) { // the sim is NOT paused and we want to pause it
 
-			System.out.println("pausing simulation!-------===================================================");
+			//System.out.println("pausing simulation!-------===================================================");
 			for (WorldObject wo : objects) { // unpause all agents
 				if (wo instanceof UxV) {
 					//((UxV) wo).getBehavior().pauseAgent();
 				}
 			}
 		} else { // the sim was paused, unpause it
-			System.out.println("resuming simulation!-------");
+			//System.out.println("resuming simulation!-------");
 			for (WorldObject wo : objects) { // pause all agents
 				if (wo instanceof UxV) {
 					((UxV) wo).getBehavior().unPauseAgent();

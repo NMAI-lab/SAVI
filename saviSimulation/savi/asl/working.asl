@@ -89,6 +89,34 @@ targetFar :-
 		//.broadcast(tell,threatSeen(X_TARGET,Y_TARGET,Z_TARGET)).
 		
 
++tree(_,_,_,_,ID, _, _)
+    :   not avoidObstacleID(ID)
+    <-  !stopMoving;
+        +avoidObstacleID(ID);
+        !avoidObstacle.
+
+
++!avoidObstacle
+    : avoidObstacleID(ID) &
+      tree(AZ,EL,RANGE,RADIUS,ID,TIME,TYPE)
+    <- .print("Avoiding: ", ID);
+       .drop_all_intentions;
+       !stopMoving;
+       turn(right);
+       !avoidObstacle.
+
++!avoidObstacle
+    : avoidObstacleID(ID) &
+      not tree(AZ,EL,RANGE,RADIUS,ID,TIME,TYPE)
+    <-  .print("Evading Tree! ", ID);
+        !move;
+        !avoidObstacle.
+
++!avoidObstacle .
+
+
+
+
 // Default plan for observing target - force recursion.
 +!observeTarget
 	: 	true

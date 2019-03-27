@@ -61,9 +61,9 @@ public class PerceptionSnapshotUnitTest {
 		double radius=0.0;
 		
 		Perception testPerception1 = new TimePerception(timeStamp);
-		Perception testPerception2 = new CameraPerception(perceptionName, moreRecentTimeStep, azumuth, elevation, range, radius);
-		Perception similarPerception = new CameraPerception(perceptionName, timeStamp, azumuth + 0.001, elevation, range, radius);
-		Perception differentPerception = new CameraPerception(perceptionName, timeStamp, azumuth + 10000, elevation, range, radius);
+		Perception testPerception2 = new CameraPerception(perceptionName, 1, moreRecentTimeStep, azumuth, elevation, range, radius);
+		Perception similarPerception = new CameraPerception(perceptionName, 1, timeStamp, azumuth + 0.001, elevation, range, radius);
+		Perception differentPerception = new CameraPerception(perceptionName, 1, timeStamp, azumuth + 10000, elevation, range, radius);
 		Perception samePerception = testPerception2.clone();
 		
 		// addPerceptions to the snapshot
@@ -122,7 +122,7 @@ public class PerceptionSnapshotUnitTest {
 	@Test
 	void test() {
 		
-		System.out.println(new String());
+		//System.out.println(new String());
 		
 		// Test the case where there is an empty PerceptionSnapshot involved.
 		this.emptyTest();

@@ -21,8 +21,8 @@ class CameraPerceptionTests {
 		double elevation = 3.0;
 		double range = 4.0;
 		double radius = 0.0;
-		Perception testCase = new CameraPerception(perceptionName, timeStamp, azumuth, elevation, range, radius);
-		Perception testCaseWithType = new CameraPerception(perceptionName, type, timeStamp, azumuth, elevation, range, radius);
+		Perception testCase = new CameraPerception(perceptionName, 1, timeStamp, azumuth, elevation, range, radius);
+		Perception testCaseWithType = new CameraPerception(perceptionName, type, 1, timeStamp, azumuth, elevation, range, radius);
 		Perception testCaseLost = testCase.clone();
 		testCaseLost.perceptionLost();
 		
@@ -75,9 +75,9 @@ class CameraPerceptionTests {
 		assertTrue(testCase.getDifference(testCaseLost) == 1);
 		assertFalse(testCase.isSimilar(null));
 		assertTrue(testCase.getDifference(null) == 1);
-		Perception similarTestCase = new CameraPerception(perceptionName, timeStamp, azumuth + 0.001, elevation, range, radius);
+		Perception similarTestCase = new CameraPerception(perceptionName, 1, timeStamp, azumuth + 0.001, elevation, range, radius);
 		assertTrue(similarTestCase.isSimilar(testCase));
-		Perception differentTestCase = new CameraPerception(perceptionName, timeStamp, azumuth + 10000, elevation, range, radius);
+		Perception differentTestCase = new CameraPerception(perceptionName, 1, timeStamp, azumuth + 10000, elevation, range, radius);
 		assertFalse(differentTestCase.isSimilar(testCase));
 		
 		Perception veryDifferent = new TimePerception(timeStamp);
