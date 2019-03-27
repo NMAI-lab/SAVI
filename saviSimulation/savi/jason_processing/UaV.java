@@ -37,4 +37,8 @@ public class UaV extends UxV {
 		// Initializes Behaviuor
 		this.uxvBehavior = new UaVBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod, sensorsErrorProb, sensorsErrorStdDev);
 	}
+		
+	public void drawPerceptionArea() {
+		simulator.arc(position.x, position.y, this.perceptionDistance*2, this.perceptionDistance*2, (float)0.0, (float)(2*Math.PI));
+	}
 }

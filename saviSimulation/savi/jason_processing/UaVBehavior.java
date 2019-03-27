@@ -11,7 +11,6 @@ import savi.StateSynchronization.*;
 
 
 public class UaVBehavior extends UxVBehavior {
-	private static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
 	private static final double VERTICAL_SPEED = 0.1; // 0.1 something (whatever real-life distance this corresponds to)
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
@@ -34,44 +33,6 @@ public class UaVBehavior extends UxVBehavior {
 	}
 	
 	/**
-	 * update
-	 * process actions from the queue, update the UAS state variable and set the new perceptions
-	 */
-	@Override
-	public void update(UxV uav, double simTime, int perceptionDistance, List<WorldObject> objects){
-		//Process actions to update speedVal & compassAngle
-		processAgentActions();
-		
-		//Update simTime
-		double timeElapsed =  simTime - this.time; //elapsed time since last update 
-		this.time = simTime;
-		
-		//Calculate new x,y position
-		double cosv = Math.cos(this.compasAngle);
-		double sinv = Math.sin(this.compasAngle);
-		PVector newpos = new PVector((float)(cosv*this.speedVal*timeElapsed), (float)(sinv*this.speedVal*timeElapsed), 0);
-		//Calculate new altitude
-		newpos.z+=verticalSpeedVal;
-		if(newpos.z<0) {
-			newpos.z=0;
-		}
-		
-		uav.setPosition(uav.getPosition().add(newpos));
-		
-		//Calculate visible items
-		this.visibleItems = new ArrayList<CameraPerception>();
-		
-		//Calculate objects detected with camera	
-		for (CameraPerception c: objectDetection(uav.position, objects, perceptionDistance)) {
-			visibleItems.add(c);
-		}	
-			
-		//Update percepts	
-		updatePercepts(uav.position);
-		//this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
-	}
-
-	/**
 	 * Process the action in the queue to update the speedVal and compassAngle
 	 */
 	protected void processAgentActions(){
@@ -86,17 +47,32 @@ public class UaVBehavior extends UxVBehavior {
 				this.compasAngle += Math.PI/16.0;
 				//Normalize compass angle between 0 and 2 Pi
 				if(compasAngle>2*Math.PI) compasAngle-=2*Math.PI;
-			else if (action.equals( "thrust(on)")) 
+			else if (action.equals("thrust(on)"))
 				this.speedVal = SPEED;
 			else if (action.equals("thrust(off)")) 
 				this.speedVal = 0;
-			else if (action.equals( "thrust(up)")) 
+			else if (action.equals("thrust(up)")) 
 				this.verticalSpeedVal = VERTICAL_SPEED;
 			else if (action.equals("thrust(down)")) 
 				this.verticalSpeedVal = -VERTICAL_SPEED;
 			else if (action.equals("hover")) 
-				this.verticalSpeedVal = 0;	
+				this.verticalSpeedVal = 0;
 				
 		}					
-	}	
+	}
+
+	
+	protected PVector calculateMovementVector (double timeElapsed) {
+		double cosv = Math.cos(this.compasAngle);
+		double sinv = Math.sin(this.compasAngle);
+		PVector movementVector = new PVector((float)(cosv*this.speedVal*timeElapsed), (float)(sinv*this.speedVal*timeElapsed), (float)0.0);
+		movementVector.z+=verticalSpeedVal*timeElapsed;
+		return movementVector;
+	}
+	
+	
+	protected boolean isObjectDetected (double azimuth, double elevation, double dist, double perceptionDistance) {
+		return ((elevation > Math.PI/2. || elevation < Math.PI)&&(dist <perceptionDistance));	
+	}
+	
 }

@@ -11,7 +11,6 @@ import savi.StateSynchronization.*;
 
 
 public class UgVBehavior extends UxVBehavior {
-	private static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
 
 	//-----------------------------------------
 	// DATA (or state variables)
@@ -39,41 +38,6 @@ public class UgVBehavior extends UxVBehavior {
 		super(id, type, initialPosition,reasoningCyclePeriod, sensorsErrorProb, sensorsErrorStdDev);
 	}
 
-	/**
-	 * update
-	 * process actions from the queue, update the UAS state variable and set the new perceptions
-	 */
-	@Override
-	public void update(UxV ugv, double simTime, int perceptionDistance, List<WorldObject> objects){
-
-		//Process actions to update speedVal & compassAngle
-		processAgentActions();
-		
-		//Update simTime
-		double timeElapsed =  simTime - this.time; //elapsed time since last update 
-		this.time = simTime;
-		
-		//Calculate new position
-		double cosv = Math.cos(this.compasAngle);
-		double sinv = Math.sin(this.compasAngle);
-
-		PVector newpos = new PVector((float)(cosv*this.speedVal*timeElapsed), (float)(sinv*this.speedVal*timeElapsed), 0);
-		ugv.setPosition(ugv.getPosition().add(newpos));
-		//Calculate visible items
-		this.visibleItems = new ArrayList<CameraPerception>();
-		
-		
-		//Calculate objects detected with camera	
-		for (CameraPerception c: objectDetection(ugv.position, objects, perceptionDistance)) {
-			visibleItems.add(c);
-		}	
-
-		//Update percepts	
-		updatePercepts(ugv.position);
-		//this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
-	}
-	
-	
 	protected void processAgentActions(){
 		List<String> toexec = agentState.getAllActions();   
 		for (String action : toexec) {
@@ -90,8 +54,21 @@ public class UgVBehavior extends UxVBehavior {
 				this.speedVal = SPEED;
 			else if (action.equals("thrust(off)")) 
 				this.speedVal = 0;  
-		}					
-	}	
+		}
+	}
+	
+	protected PVector calculateMovementVector (double timeElapsed) {
+		double cosv = Math.cos(this.compasAngle);
+		double sinv = Math.sin(this.compasAngle);
+		PVector movementVector = new PVector((float)(cosv*this.speedVal*timeElapsed), (float)(sinv*this.speedVal*timeElapsed), (float)0.0);
+		movementVector.z=0;
+		return movementVector;
+	}
+
+	
+	protected boolean isObjectDetected (double azimuth, double elevation, double dist, double perceptionDistance) {
+		return ((azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.)&&(dist <perceptionDistance));	
+	}
 	
 	
 }
