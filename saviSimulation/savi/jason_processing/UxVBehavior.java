@@ -84,6 +84,11 @@ public abstract class UxVBehavior extends AgentModel {
 		movementVector = calculateMovementVector(timeElapsed);		
 		uxv.setPosition(uxv.getPosition().add(movementVector));
 		
+		//If the movement led to z<0 the position in z should be 0
+		if(uxv.getPosition().z<0) {
+			uxv.setPosition(new PVector(uxv.getPosition().x,uxv.getPosition().y,0));
+		}
+		
 		//Calculate visible items
 		this.visibleItems = new ArrayList<CameraPerception>();
 		
@@ -218,11 +223,7 @@ public abstract class UxVBehavior extends AgentModel {
 	
 	// takes probability parameter between 0 and 1 
 	protected boolean isSensorFailing (double probability) {
-		if(rand.nextDouble()<probability) {
-			return true;
-		}else {
-			return false;
-		}
+		return (rand.nextDouble()<probability);
 	}
 
 	

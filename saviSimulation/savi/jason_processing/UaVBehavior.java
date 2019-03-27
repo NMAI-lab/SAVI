@@ -66,20 +66,13 @@ public class UaVBehavior extends UxVBehavior {
 		double cosv = Math.cos(this.compasAngle);
 		double sinv = Math.sin(this.compasAngle);
 		PVector movementVector = new PVector((float)(cosv*this.speedVal*timeElapsed), (float)(sinv*this.speedVal*timeElapsed), (float)0.0);
-		movementVector.z+=verticalSpeedVal;
-		if(movementVector.z<0) {
-			movementVector.z=0;
-		}
+		movementVector.z+=verticalSpeedVal*timeElapsed;
 		return movementVector;
 	}
 	
 	
 	protected boolean isObjectDetected (double azimuth, double elevation, double dist, double perceptionDistance) {
-		if ((elevation > Math.PI/2. || elevation < Math.PI)&&(dist <perceptionDistance)) {
-			return true;
-		}else {
-			return false;
-		}	
+		return ((elevation > Math.PI/2. || elevation < Math.PI)&&(dist <perceptionDistance));	
 	}
 	
 }

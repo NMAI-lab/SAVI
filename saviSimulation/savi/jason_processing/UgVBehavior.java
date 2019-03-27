@@ -67,11 +67,7 @@ public class UgVBehavior extends UxVBehavior {
 
 	
 	protected boolean isObjectDetected (double azimuth, double elevation, double dist, double perceptionDistance) {
-		if ((azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.)&&(dist <perceptionDistance)) {
-			return true;
-		}else {
-			return false;
-		}	
+		return ((azimuth < Math.PI/2. || azimuth > 3* Math.PI/2.)&&(dist <perceptionDistance));	
 	}
 	
 	
