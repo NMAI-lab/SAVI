@@ -53,7 +53,7 @@ public class PerceptionSnapshotUnitTest {
 		// Make some Perceptions for testing with
 		double timeStamp = 1.0;
 		String perceptionName = new String("threat");
-		double azumuth = 2.0;
+		double azimuth = 2.0;
 		double elevation = 3.0;
 		double range = 4.0;
 		double moreRecentTimeStep = 2.0;
@@ -61,9 +61,9 @@ public class PerceptionSnapshotUnitTest {
 		double radius=0.0;
 		
 		Perception testPerception1 = new TimePerception(timeStamp);
-		Perception testPerception2 = new CameraPerception(perceptionName, 1, moreRecentTimeStep, azumuth, elevation, range, radius);
-		Perception similarPerception = new CameraPerception(perceptionName, 1, timeStamp, azumuth + 0.001, elevation, range, radius);
-		Perception differentPerception = new CameraPerception(perceptionName, 1, timeStamp, azumuth + 10000, elevation, range, radius);
+		Perception testPerception2 = new CameraPerception(perceptionName, 1, moreRecentTimeStep, azimuth, elevation, range, radius);
+		Perception similarPerception = new CameraPerception(perceptionName, 1, timeStamp, azimuth + 0.001, elevation, range, radius);
+		Perception differentPerception = new CameraPerception(perceptionName, 1, timeStamp, azimuth + 10000, elevation, range, radius);
 		Perception samePerception = testPerception2.clone();
 		
 		// addPerceptions to the snapshot
