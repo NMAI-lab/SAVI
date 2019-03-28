@@ -186,30 +186,13 @@ public class SAVIWorld_model extends PApplet {
 		Map<String, AgentModel> agentList = new HashMap<String, AgentModel>();
 		//====================================================
 
-		
-		for (int i = 0; i < NUMBER_TREES; i++) { // Put trees
-			// _PIXELS is the maximum and the 1 is our minimum.
-			if (RANDOM_SEED != -1) {
-				rand = new Random(2 * RANDOM_SEED + i);
-			}
-			objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, TREE_SIZE/2),
-					TREE_SIZE, "tree", this, treeImage));
-		}
-			// _PIXELS is the maximum and the 1 is our minimum.
-		for (int i = 0; i < NUMBER_HOUSES; i++) { // Put houses
-			if (RANDOM_SEED != -1) {
-				rand = new Random(3 * RANDOM_SEED + i);
-			}
-			objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, HOUSE_SIZE/2),
-					HOUSE_SIZE, "house", this, houseImage));
+		if (RANDOM_SEED != -1) {
+			rand = new Random(RANDOM_SEED);
 		}
 		
 		for(int i = 0; i < NUMBER_UAV; i++)  { //Put UaV
 			//_PIXELS is the maximum and the 1 is our minimum
 			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
-			if(RANDOM_SEED != -1) {
-				rand = new Random(RANDOM_SEED+i);
-			}	
 				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE,"demo", 
 						this, uavImage, REASONING_CYCLE_PERIOD, "drone", UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
 				wifiParticipants.add(uav.getAntennaRef());
@@ -220,9 +203,6 @@ public class SAVIWorld_model extends PApplet {
 			// The way the for loop is set up is to make sure all the UxVs have different ids
 			//_PIXELS is the maximum and the 1 is our minimum
 			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
-			if(RANDOM_SEED != -1) {
-				rand = new Random(RANDOM_SEED+i);
-			}	
 				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE,"demo",
 						this, ugvImage, REASONING_CYCLE_PERIOD, "robot3", UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
 				wifiParticipants.add(ugv.getAntennaRef());
@@ -232,9 +212,6 @@ public class SAVIWorld_model extends PApplet {
 	
 		for (int i = 0; i < NUMBER_THREATS; i++) { // Put threats
 			// _PIXELS is the maximum and the 1 is our minimum.
-			if (RANDOM_SEED != -1) {
-				rand = new Random(4 * RANDOM_SEED + i);
-			}
 			objects.add(new Threat(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, THREAT_SIZE/2), RANDOM_SEED, MAX_SPEED,
 					THREAT_SIZE, "threat", this, threatImage));
 		}
