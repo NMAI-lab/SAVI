@@ -183,11 +183,15 @@ public abstract class UxVBehavior extends AgentModel {
 
 		//if position sensor is failing will return an error
 		PVector myposWithError = getPositionWithError(mypos,sensorsErrorProb);
+		double compassAngleWithError = this.compasAngle;
+
+		if(isSensorFailing(sensorsErrorProb))
+			compassAngleWithError = calculateFailureValue(compasAngle, sensorsErrorStdDev);
 		
 		P.addPerception(new PositionPerception(this.time, (double)myposWithError.x, (double)myposWithError.y, (double)myposWithError.z));
 
 		//Add velocity
-		P.addPerception(new VelocityPerception(this.time, this.compasAngle, 0, this.speedVal));
+		P.addPerception(new VelocityPerception(this.time, compassAngleWithError, 0, this.speedVal));
 
 		//Add time
 		P.addPerception(new TimePerception(this.time));
