@@ -180,14 +180,18 @@ public abstract class UxVBehavior extends AgentModel {
 	 */
 	protected void updatePercepts(PVector mypos) {
 		PerceptionSnapshot P = new PerceptionSnapshot();
-		PVector myposWithError = new PVector();
-		
+
 		//if position sensor is failing will return an error
-		myposWithError = getPositionWithError(mypos,sensorsErrorProb);
+		PVector myposWithError = getPositionWithError(mypos,sensorsErrorProb);
+		double compassAngleWithError = this.compasAngle;
+
+		if(isSensorFailing(sensorsErrorProb))
+			compassAngleWithError = calculateFailureValue(compasAngle, sensorsErrorStdDev);
 		
 		P.addPerception(new PositionPerception(this.time, (double)myposWithError.x, (double)myposWithError.y, (double)myposWithError.z));
+
 		//Add velocity
-		P.addPerception(new VelocityPerception(this.time, Math.atan(myposWithError.x/myposWithError.y), 0, this.speedVal));			
+		P.addPerception(new VelocityPerception(this.time, compassAngleWithError, 0, this.speedVal));
 
 		//Add time
 		P.addPerception(new TimePerception(this.time));
@@ -210,8 +214,8 @@ public abstract class UxVBehavior extends AgentModel {
 	 * Makes with a random probability, a random error on the UxV position perceived
 	 */
 	protected PVector getPositionWithError(PVector position, double sensorErrorProb) {
-		PVector positionWithError = new PVector();
-		if(isSensorFailing(sensorsErrorProb)) {
+		PVector positionWithError = position.copy();
+		if(isSensorFailing(sensorErrorProb)) {
 			positionWithError.x = (float)calculateFailureValue((double)position.x, this.sensorsErrorStdDev);
 			positionWithError.y = (float)calculateFailureValue((double)position.y, this.sensorsErrorStdDev);
 			positionWithError.z = (float)calculateFailureValue((double)position.z, this.sensorsErrorStdDev);
