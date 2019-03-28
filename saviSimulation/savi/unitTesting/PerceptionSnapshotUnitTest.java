@@ -122,7 +122,7 @@ public class PerceptionSnapshotUnitTest {
 	@Test
 	void test() {
 		
-		//System.out.println(new String());
+		System.out.println(new String());
 		
 		// Test the case where there is an empty PerceptionSnapshot involved.
 		this.emptyTest();

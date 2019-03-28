@@ -31,7 +31,7 @@ public abstract class AgentModel {
 	
 	protected void pauseAgent() {
 		if (theAgentThread != null) {
-			//System.out.println("Agent "+ID+" paused-----");
+			System.out.println("Agent "+ID+" paused-----");
 			theAgentThread.suspend();
 		
 		}
@@ -42,7 +42,7 @@ public abstract class AgentModel {
 			
 			
 		}
-		//System.out.println("Agent "+ID+" UNpaused ----");
+		System.out.println("Agent "+ID+" UNpaused ----");
 	}
 	
 	

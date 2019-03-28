@@ -82,7 +82,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	}
 	
 	public void run(){
-		//System.out.println("I'm a Jason Agent and I'm starting");
+		System.out.println("I'm a Jason Agent and I'm starting");
 		
 		try {
 			running= true;
@@ -192,7 +192,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		
 		// Log the action
 		getTS().getLogger().info("Agent " + getAgName() + " is doing: " + actionTerm);
-		//System.out.println("MYAgent " + getAgName() + " is doing: " + actionTerm);
+		System.out.println("MYAgent " + getAgName() + " is doing: " + actionTerm);
 		
 		// Define the action string
 		String actionString = "";
@@ -240,7 +240,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	
 	// a very simple implementation of sleep
 	public void sleep() {
-		//System.out.println("Snoozing");
+		System.out.println("Snoozing");
 		try {
 			Thread.sleep(100);					// TODO: Need to revisit this
 		} catch (InterruptedException e) {}

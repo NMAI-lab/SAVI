@@ -38,7 +38,7 @@ public class UaVBehavior extends UxVBehavior {
 	protected void processAgentActions(){
 		List<String> toexec = agentState.getAllActions();   
 		for (String action : toexec) {
-			//System.out.println("[ process actions]UAS id="+this.ID+" doing:"+ action);
+			System.out.println("[ process actions]UAS id="+this.ID+" doing:"+ action);
 			if (action.equals("turn(left)")) //TODO: make these MOD 2 pi ? 
 				this.compasAngle -= Math.PI/16.0;
 				//Normalize compass angle between 0 and 2 Pi

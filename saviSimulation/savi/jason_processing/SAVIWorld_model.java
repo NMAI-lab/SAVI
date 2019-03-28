@@ -94,14 +94,14 @@ public class SAVIWorld_model extends PApplet {
 		try {
 			String filePath = new File("").getAbsolutePath();
 			filePath = filePath + "/config.cfg";
-			//System.out.println(filePath);
+			System.out.println(filePath);
 			File inFile = new File(filePath);
 			in = new FileInputStream(inFile);
 			modelProps.load(in);
 		} catch (FileNotFoundException e) {
-			//System.out.println("File not found");
+			System.out.println("File not found");
 		} catch (Exception e) {
-			//System.out.println("Exception occurred");
+			System.out.println("Exception occurred");
 		}
 		NUMBER_TREES = Integer.parseInt(modelProps.getProperty("NUMBER_TREES"));
 		NUMBER_HOUSES = Integer.parseInt(modelProps.getProperty("NUMBER_HOUSES"));
@@ -370,14 +370,14 @@ public void createUGV(Map<String, AgentModel> agentList, int x, int y) {
 	public void pauseSimulation() {
 		if (!simPaused) { // the sim is NOT paused and we want to pause it
 
-			//System.out.println("pausing simulation!-------===================================================");
+			System.out.println("pausing simulation!-------===================================================");
 			for (WorldObject wo : objects) { // unpause all agents
 				if (wo instanceof UxV) {
 					//((UxV) wo).getBehavior().pauseAgent();
 				}
 			}
 		} else { // the sim was paused, unpause it
-			//System.out.println("resuming simulation!-------");
+			System.out.println("resuming simulation!-------");
 			for (WorldObject wo : objects) { // pause all agents
 				if (wo instanceof UxV) {
 					((UxV) wo).getBehavior().unPauseAgent();
