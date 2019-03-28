@@ -157,7 +157,8 @@ public class SAVIWorld_model extends PApplet {
 		//====================================================
 
 
-		createUGV(agentList, 300, 300);
+//		createUGV(agentList, 300, 300);
+		createUAV(agentList, 500, 500);
 		createTree(250, 300);
 		createTree(300, 250);
 		createTree(250, 250);
@@ -261,6 +262,14 @@ public void createUGV(Map<String, AgentModel> agentList, int x, int y) {
 	objects.add(ugv);
 	agentList.put(((UxV)ugv).getBehavior().getID(), ((UxV)ugv).getBehavior());//Create UgV agent
 }
+
+	public void createUAV(Map<String, AgentModel> agentList, int x, int y) {
+		UaV uav= new UaV(ugv_id++, new PVector(x, y, UAV_SIZE/2), UAV_SIZE,"uav",
+				this, uavImage, REASONING_CYCLE_PERIOD, "robot", UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
+		wifiParticipants.add(uav.getAntennaRef());
+		objects.add(uav);
+		agentList.put(((UxV)uav).getBehavior().getID(), ((UxV)uav).getBehavior());//Create UgV agent
+	}
 
 	public void createTree(int x, int y) {
 		objects.add(new WorldObject(tree_id++, new PVector(x, y, TREE_SIZE/2),
