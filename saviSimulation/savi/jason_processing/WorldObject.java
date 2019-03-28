@@ -38,7 +38,7 @@ public class WorldObject{
 			simulator.stroke(0);
 
 			simulator.shapeMode(PConstants.CENTER);
-			simulator.shape(this.image, this.position.x, this.position.y,pixels,pixels);
+			//simulator.shape(this.image, this.position.x, this.position.y,pixels,pixels);
 			//show height lower and upper
 			simulator.text(Double.toString(position.z+(this.pixels/2))+"\n"+Double.toString(position.z-(this.pixels/2)), position.x, position.y);
 		}
