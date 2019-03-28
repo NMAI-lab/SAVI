@@ -180,12 +180,12 @@ public abstract class UxVBehavior extends AgentModel {
 	 */
 	protected void updatePercepts(PVector mypos) {
 		PerceptionSnapshot P = new PerceptionSnapshot();
-		PVector myposWithError = new PVector();
-		
+
 		//if position sensor is failing will return an error
-		myposWithError = getPositionWithError(mypos,sensorsErrorProb);
+		PVector myposWithError = getPositionWithError(mypos,sensorsErrorProb);
 		
 		P.addPerception(new PositionPerception(this.time, (double)myposWithError.x, (double)myposWithError.y, (double)myposWithError.z));
+
 		//Add velocity
 		P.addPerception(new VelocityPerception(this.time, this.compasAngle, 0, this.speedVal));
 
@@ -211,7 +211,7 @@ public abstract class UxVBehavior extends AgentModel {
 	 */
 	protected PVector getPositionWithError(PVector position, double sensorErrorProb) {
 		PVector positionWithError = position.copy();
-		if(isSensorFailing(sensorsErrorProb)) {
+		if(isSensorFailing(sensorErrorProb)) {
 			positionWithError.x = (float)calculateFailureValue((double)position.x, this.sensorsErrorStdDev);
 			positionWithError.y = (float)calculateFailureValue((double)position.y, this.sensorsErrorStdDev);
 			positionWithError.z = (float)calculateFailureValue((double)position.z, this.sensorsErrorStdDev);
