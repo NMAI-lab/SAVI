@@ -60,11 +60,17 @@ targetFar :-
 	(RANGE > CLOSE).
 	
 // Initial goals
-!findTarget.		// Find a target
-//!observeTarget.	// Keep a target visible (recursive seeTarget)
+//!findTarget.		// Find a target
 //!faceTarget.		// Turn to face a target head on
 //!watchTarget.		// Face a target and keep facing it recursively
-//!followTarget.		// Follow a target
+!followDestTarget.		// Follow a target
+//+destination(250, 250, 250).
+
+
++!followDestTarget
+    : true
+    <- +destination(500,500,0);
+        !followTarget.
 
 /* Plans to achieve goals */
 
@@ -77,23 +83,6 @@ targetFar :-
 +!findTarget
 	:	noTarget & targetLastLeft
 	<-	turn(left).
-
-// See a target. Broadcast it.
-+!findTarget
-	:	target(threat,TYPE,AZ,EL,RANGE) & 
-		position(X_REF,Y_REF,Z_REF,_) &
-		velocity(BEARING,_,_,_)
-	<-	.broadcast(tell,threatSeen(3,4));
-		.print("Agent saying something").
-	//savi.UxVInternalActions.GetAbsolutePosition(X_TARGET,Y_TARGET,Z_TARGET,X_REF,Y_REF,Z_REF,BEARING,AZ,EL,RANGE);
-		//.broadcast(tell,threatSeen(X_TARGET,Y_TARGET,Z_TARGET)).
-		
-
-// Default plan for observing target - force recursion.
-+!observeTarget
-	: 	true
-	<- 	!findTarget;
-		!observeTarget.
 		
 // Plan for facing the target if none is seen
 +!faceTarget
@@ -135,10 +124,51 @@ targetFar :-
 // Follow a target that is close (stop moving, don't want to pass it)
 // OR Can't see a target, stop find one.
 +!followTarget
-	:	noTarget | targetClose
+	:	targetClose | (noTarget & not destination(_,_,_))
 	<-	!stopMoving;
 		!faceTarget;
 		!followTarget.
+
++!followTarget
+    :   noTarget &
+        destination(X_DEST, Y_DEST, Z_DEST)
+        <-  .print("No targets found. Using destination.");
+            -relativeDestination(_,_,_);
+            !goToDest;
+            !followTarget.
+
++!goToDest
+    :   destination(X_DEST, Y_DEST, Z_DEST) &
+        not relativeDestination(_,_,_) &
+        position(X_REF,Y_REF,Z_REF,_) &
+        velocity(BEARING,_,_,_)
+    <-  .print("Determining Relative Destination");
+        // Only navigate X, Y position for now, Z=0
+        savi.UxVInternalActions.GetRelativePosition(X_DEST,Y_DEST,0,X_REF,Y_REF,0,BEARING,AZ,EL,RANGE);
+        +relativeDestination(AZ, EL, RANGE);
+        !goToDest.
+
++!goToDest
+    : destRight
+    <- .print("Destination is Right!");
+        turn(right).
+
++!goToDest
+    : destLeft
+    <- .print("Destination is Left!");
+        turn(left).
+
++!goToDest
+    :   destAhead(R)
+        & R > 30.0
+    <-  .print("RANGE: ", R);
+        thrust(on).
+
++!goToDest
+    : destAhead(R)
+      & R < 30.0
+    <-  thrust(off);
+        -destination(_,_,_).
 
 // Start moving if not moving
 +!move
@@ -154,3 +184,31 @@ targetFar :-
 	<-	thrust(off).
 +!stopMoving.
 		
+/** Dest **/
+destLeft :-
+	(relativeDestination(AZ,EL,RANGE) &
+	turnAngle(ANGLE) &
+	pi(PI) &
+	((PI < AZ) &
+	(AZ < ((2 * PI) - ANGLE)))).
+
+destRight :-
+	(relativeDestination(AZ,EL,RANGE) &
+	turnAngle(ANGLE) &
+    	pi(PI) &
+    	(ANGLE < AZ) &
+    	(AZ <= PI)).
+
+destAhead(R) :-
+    (not destLeft & not destRight & relativeDestination(AZ, EL, R)).
+
++!patrol
+    :   destination(X_DEST, Y_DEST, Z_DEST) &
+        position(X_REF,Y_REF,Z_REF,_) &
+        velocity(BEARING,_,_,_)
+    <-  savi.UxVInternalActions.GetRelativePosition(X_DEST,Y_DEST,0,X_REF,Y_REF,0,BEARING,AZ,EL,RANGE);
+        .print("Destination Exists: ", AZ, " ", EL, " ", RANGE);
+        -relativeDestination(_,_,_);
+        +relativeDestination(AZ, EL, RANGE);
+        !turnToDest.
+
