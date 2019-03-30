@@ -220,7 +220,7 @@ noDestination :-
         proximityThreshold(T) &
         RANGE < (T + RADIUS)
     <- .print("Avoiding tree");
-       .drop_all_plans;
+       .drop_all_intentions;
        !stopMoving;
        turn(right);
        !clearAllThreatNotifications; // We need to keep these clear since we've dropped all other intentions. Surely there is a better way to handle this?
