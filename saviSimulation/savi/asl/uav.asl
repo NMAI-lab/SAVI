@@ -48,11 +48,17 @@ destAhead(R) :-
 
 +!broadcastVisibleThreats.
 
+// Hard coded random generator between 100 and 800 (X value of destination)
+nextRand(X) :-
+    .random(R) & X = (R*700)+100.
+
+
 +!patrol
-    :   not destination(_, _, _)
-    <-  .print("No Dest");
-        +destination(205, 222, 3);
+    :   not destination(_, _, _) &
+        nextRand(X)
+    <-  +destination(X, 222, 3);
         !patrol.
+
 
 +!patrol
     :   destination(X_DEST, Y_DEST, Z_DEST) &
@@ -60,34 +66,33 @@ destAhead(R) :-
         velocity(BEARING,_,_,_)
     <-  !broadcastVisibleThreats;
         savi.UxVInternalActions.GetRelativePosition(X_DEST,Y_DEST,0,X_REF,Y_REF,0,BEARING,AZ,EL,RANGE);
-        .print("Destination Exists: ", AZ, " ", EL, " ", RANGE);
         -relativeDestination(_,_,_);
         +relativeDestination(AZ, EL, RANGE);
         !turnToDest.
 
 +!turnToDest
     : destRight
-    <- .print("Right!");
-        turn(right);
+    <-  turn(right);
         !patrol.
 
 +!turnToDest
     : destLeft
-    <- .print("Left!");
-        turn(left);
+    <-  turn(left);
         !patrol.
 
 +!turnToDest
-    : destAhead(R)
-    & R > 30.0
-    <- .print("RANGE: ", R);
-        thrust(on);
+    :   destAhead(R) &
+        proximityThreshold(T) &
+        R > T
+    <-  thrust(on);
         !patrol.
 
 +!turnToDest
     : true
-    <- thrust(off);
-       !patrol.
+    <-  thrust(off);
+        -destination(_,_,_);
+        .wait(500);
+        !patrol.
 
 
 // Start moving if not moving
