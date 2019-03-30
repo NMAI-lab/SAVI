@@ -58,19 +58,61 @@ targetFar :-
 	target(_,_,_,_,RANGE,_) &
 	proximityThreshold(CLOSE) &
 	(RANGE > CLOSE).
+
+// Get the most up-to-date notification of enemies
+destination(AZ,EL,RANGE,TIME) :-
+  position(X_REF,Y_REF,Z_REF,_) &
+  velocity(BEARING,_,_,_) &
+  ((notifyThreat(X_DEST, Y_DEST, Z_DEST, _,TIME,_)) &
+  not (notifyThreat(_,_,_,_,NEWER,_) & (TIME < NEWER))) &
+  savi.UxVInternalActions.GetRelativePosition(X_DEST,Y_DEST,0,X_REF,Y_REF,0,BEARING,AZ,EL,RANGE).
+
+noDestination :-
+    not(destination(_,_,_,_)).
 	
-// Initial goals
+/** ============= **/
+/** Initial Goals **/
+/** ============= **/
+
 //!findTarget.		// Find a target
 //!faceTarget.		// Turn to face a target head on
 //!watchTarget.		// Face a target and keep facing it recursively
-!followDestTarget.		// Follow a target
-//+destination(250, 250, 250).
+!followTarget.		// Follow a target
 
 
-+!followDestTarget
-    : true
-    <- +destination(500,500,0);
-        !followTarget.
+
+/** =================================================== **/
+/** Removing old notifyThreat beliefs from other agents **/
+/** =================================================== **/
+
++!clearAllThreatNotifications
+    :   notifyThreat(_,_,_,_,_,_)[source(S)]
+    <- -notifyThreat(_,_,_,_,_,_)[source(S)];
+        !clearAllThreatNotifications.
++!clearAllThreatNotifications.
+
++!clearOldThreatNotifications
+    :   destination(_,_,_,TIME) &
+        notifyThreat(_,_,_,_,OLD,_)[source(S)] &
+        OLD < TIME
+    <- -notifyThreat(_,_,_,_,OLD,_)[source(S)];
+        !clearOldThreatNotifications.
++!clearOldThreatNotifications .
+
+/** ======================================================== **/
+/** ======================================================== **/
+
+
+
+// Broadcast the absolute positions of any visible threats
++!broadcastVisibleThreats
+    :   threat(AZ,EL,RANGE,RADIUS,TIME,TYPE) &
+        position(X_REF, Y_REF, Z_REF, _) &
+        velocity(BEARING, _,_,_)
+    <-  savi.UxVInternalActions.GetAbsolutePosition(X_TARGET,Y_TARGET,Z_TARGET,X_REF,Y_REF,Z_REF,BEARING,AZ,EL,RANGE);
+       	.broadcast(tell, notifyThreat(X_TARGET,Y_TARGET,Z_TARGET,RADIUS,TIME,TYPE)).
+
++!broadcastVisibleThreats.
 
 /* Plans to achieve goals */
 
@@ -106,69 +148,60 @@ targetFar :-
 // Face a target, goal achieved
 +!faceTarget
 	:	targetAhead.
-
-// watchTarget - recursive faceTarget
-+!watchTarget
-	:	true
-	<-	!faceTarget;
-		!watchTarget;
-		.print("tell,turning(left)").
 		
 // Follow a target that is ahead but not close
 +!followTarget
 	:	targetFar
-	<-	!move;
+	<-	!clearAllThreatNotifications; // Clear all threat notifications since we are chasing a visible target
+	    !broadcastVisibleThreats;
+	    !move;
 		!faceTarget;
 		!followTarget.
 		
 // Follow a target that is close (stop moving, don't want to pass it)
 // OR Can't see a target, stop find one.
 +!followTarget
-	:	targetClose | (noTarget & not destination(_,_,_))
-	<-	!stopMoving;
+	:	targetClose | (noTarget & noDestination)
+	<-	!clearAllThreatNotifications; // Clear all threat notifications since we are chasing a visible target
+	    !broadcastVisibleThreats;
+	    !stopMoving;
 		!faceTarget;
 		!followTarget.
 
 +!followTarget
     :   noTarget &
-        destination(X_DEST, Y_DEST, Z_DEST)
-        <-  .print("No targets found. Using destination.");
-            -relativeDestination(_,_,_);
-            !goToDest;
-            !followTarget.
+        destination(AZ,EL,RANGE,TIME)
+    <-  !clearOldThreatNotifications; // Clear old threat notifications, since they are no longer necessary
+        !goToDest(AZ,EL,RANGE); // Go to the current destination (AKA threats from other agents)
+        !followTarget.
 
-+!goToDest
-    :   destination(X_DEST, Y_DEST, Z_DEST) &
-        not relativeDestination(_,_,_) &
-        position(X_REF,Y_REF,Z_REF,_) &
-        velocity(BEARING,_,_,_)
-    <-  .print("Determining Relative Destination");
-        // Only navigate X, Y position for now, Z=0
-        savi.UxVInternalActions.GetRelativePosition(X_DEST,Y_DEST,0,X_REF,Y_REF,0,BEARING,AZ,EL,RANGE);
-        +relativeDestination(AZ, EL, RANGE);
-        !goToDest.
 
-+!goToDest
-    : destRight
-    <- .print("Destination is Right!");
-        turn(right).
 
-+!goToDest
-    : destLeft
+
+/** =========================================== **/
+/** Sub-goals for navigating to the destination **/
+/** =========================================== **/
+
++!goToDest(AZ,EL,RANGE)
+    : destRight(AZ,EL,RANGE)
+    <- turn(right).
+
++!goToDest(AZ,EL,RANGE)
+    : destLeft(AZ,EL,RANGE)
     <- .print("Destination is Left!");
         turn(left).
 
-+!goToDest
-    :   destAhead(R)
-        & R > 30.0
-    <-  .print("RANGE: ", R);
-        thrust(on).
++!goToDest(AZ,EL,RANGE)
+    :   destAhead(AZ,EL,RANGE)
+        & RANGE > 30.0
+    <-  !move.
 
-+!goToDest
-    : destAhead(R)
-      & R < 30.0
-    <-  thrust(off);
-        -destination(_,_,_).
++!goToDest(AZ,EL,RANGE)
+    : destAhead(AZ,EL,RANGE)
+      & RANGE < 30.0
+    <-  !stopMoving;
+        // Clear threats if we reach the destination
+        !clearAllThreatNotifications.
 
 // Start moving if not moving
 +!move
@@ -185,30 +218,17 @@ targetFar :-
 +!stopMoving.
 		
 /** Dest **/
-destLeft :-
-	(relativeDestination(AZ,EL,RANGE) &
+destLeft(AZ,EL,RANGE) :-
 	turnAngle(ANGLE) &
 	pi(PI) &
 	((PI < AZ) &
-	(AZ < ((2 * PI) - ANGLE)))).
+	(AZ < ((2 * PI) - ANGLE))).
 
-destRight :-
-	(relativeDestination(AZ,EL,RANGE) &
+destRight(AZ,EL,RANGE) :-
 	turnAngle(ANGLE) &
     	pi(PI) &
     	(ANGLE < AZ) &
-    	(AZ <= PI)).
+    	(AZ <= PI).
 
-destAhead(R) :-
-    (not destLeft & not destRight & relativeDestination(AZ, EL, R)).
-
-+!patrol
-    :   destination(X_DEST, Y_DEST, Z_DEST) &
-        position(X_REF,Y_REF,Z_REF,_) &
-        velocity(BEARING,_,_,_)
-    <-  savi.UxVInternalActions.GetRelativePosition(X_DEST,Y_DEST,0,X_REF,Y_REF,0,BEARING,AZ,EL,RANGE);
-        .print("Destination Exists: ", AZ, " ", EL, " ", RANGE);
-        -relativeDestination(_,_,_);
-        +relativeDestination(AZ, EL, RANGE);
-        !turnToDest.
-
+destAhead(AZ,EL,RANGE) :-
+    (not destLeft(AZ,EL,RANGE) & not destRight(AZ,EL,RANGE)).

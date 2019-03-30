@@ -162,7 +162,7 @@ public class SAVIWorld_model extends PApplet {
 			if(RANDOM_SEED != -1) {
 				rand = new Random(RANDOM_SEED+i);
 			}	
-				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE,"demo", 
+				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE,"uav",
 						this, uavImage, REASONING_CYCLE_PERIOD, "drone", UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
 				wifiParticipants.add(uav.getAntennaRef());
 				objects.add(uav);
