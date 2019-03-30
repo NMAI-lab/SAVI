@@ -132,6 +132,7 @@ public class SyncAgentState {
 	public synchronized Queue<String> getMsgIn() {
 		Queue<String> myCopy = new LinkedList<String>();
 		myCopy.addAll(msgIn);
+		msgIn.clear();
 		return myCopy;
 	}
 
