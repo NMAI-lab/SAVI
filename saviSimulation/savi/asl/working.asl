@@ -59,7 +59,11 @@ targetFar :-
 	proximityThreshold(CLOSE) &
 	(RANGE > CLOSE).
 
-// Get the most up-to-date notification of enemies
+/** ================= **/
+/** Destination Rules **/
+/** ================= **/
+
+// Gets the most recent notification and determines the relative position (only X,Y coordinates for UGV)
 destination(AZ,EL,RANGE,TIME) :-
     position(X_REF,Y_REF,Z_REF,_) &
     velocity(BEARING,_,_,_) &
@@ -67,10 +71,27 @@ destination(AZ,EL,RANGE,TIME) :-
     not (notifyThreat(_,_,_,_,NEWER,_) & (TIME < NEWER))) &
     savi.UxVInternalActions.GetRelativePosition(X_DEST,Y_DEST,0,X_REF,Y_REF,0,BEARING,AZ,EL,RANGE).
 
+
+// For all available (recent) destinations, we want to choose the closest one
 closestDestination(AZ, EL, RANGE, TIME) :-
     destination(AZ,EL,RANGE,TIME) &
     not (destination(_,_,CLOSER,_) &
     	(CLOSER < RANGE)).
+
+destLeft(AZ,EL,RANGE) :-
+	turnAngle(ANGLE) &
+	pi(PI) &
+	((PI < AZ) &
+	(AZ < ((2 * PI) - ANGLE))).
+
+destRight(AZ,EL,RANGE) :-
+	turnAngle(ANGLE) &
+    	pi(PI) &
+    	(ANGLE < AZ) &
+    	(AZ <= PI).
+
+destAhead(AZ,EL,RANGE) :-
+    (not destLeft(AZ,EL,RANGE) & not destRight(AZ,EL,RANGE)).
 
 noDestination :-
     not(destination(_,_,_,_)).
@@ -90,12 +111,14 @@ noDestination :-
 /** Removing old notifyThreat beliefs from other agents **/
 /** =================================================== **/
 
+// Clears all notifyThreat messages (useful if we are following a visible target)
 +!clearAllThreatNotifications
     :   notifyThreat(_,_,_,_,_,_)[source(S)]
     <- -notifyThreat(_,_,_,_,_,_)[source(S)];
         !clearAllThreatNotifications.
 +!clearAllThreatNotifications.
 
+// Clears all old notifyThreat messages (ensures our belief base is up-to-date)
 +!clearOldThreatNotifications
     :   destination(_,_,_,TIME) &
         notifyThreat(_,_,_,_,OLD,_)[source(S)] &
@@ -107,8 +130,6 @@ noDestination :-
 /** ======================================================== **/
 /** ======================================================== **/
 
-
-
 // Broadcast the absolute positions of any visible threats
 +!broadcastVisibleThreats
     :   threat(AZ,EL,RANGE,RADIUS,TIME,TYPE) &
@@ -119,7 +140,10 @@ noDestination :-
 
 +!broadcastVisibleThreats.
 
-/* Plans to achieve goals */
+
+/** ========== **/
+/** Main Plans **/
+/** ========== **/
 
 // Plan for trying to find a target
 +!findTarget
@@ -154,7 +178,7 @@ noDestination :-
 +!faceTarget
 	:	targetAhead.
 		
-// Follow a target that is ahead but not close
+// Follow a target that is ahead but not close (ignoring any threat notifications)
 +!followTarget
 	:	targetFar
 	<-	!clearAllThreatNotifications; // Clear all threat notifications since we are chasing a visible target
@@ -165,7 +189,7 @@ noDestination :-
 		!followTarget.
 		
 // Follow a target that is close (stop moving, don't want to pass it)
-// OR Can't see a target, stop find one.
+// OR Can't see a target, stop find one. (ignoring any threat notifications since we have a target)
 +!followTarget
 	:	targetClose | (noTarget & noDestination)
 	<-	!clearAllThreatNotifications; // Clear all threat notifications since we are chasing a visible target
@@ -175,52 +199,61 @@ noDestination :-
 		!faceTarget;
 		!followTarget.
 
+// We can't see any targets so find the closest destination (using global threat notifications from other sources)
 +!followTarget
     :   noTarget &
         closestDestination(AZ,EL,RANGE,TIME)
     <-  !clearOldThreatNotifications; // Clear old threat notifications, since they are no longer necessary
         !avoidObstacle;
-        !goToDest(AZ,EL,RANGE); // Go to the current destination (AKA threats from other agents)
+        !goToDestination(AZ,EL,RANGE); // Go to the current destination (AKA threats from other agents)
         !followTarget.
 
-/** ================================ **/
-/** Sub-goals for obstacle avoidance **/
-/** ================================ **/
+/** ====================================== **/
+/** Sub-goals/plans for obstacle avoidance **/
+/** ====================================== **/
 
+// Drop all intentions and turn if we see a tree
+// Ensure that our belief base doesn't get littered with notifyThreat while we do this by clearing notifications.
+// Recursively avoid obstacle until we can't see anymore trees
 +!avoidObstacle
     :   tree(AZ,EL,RANGE,RADIUS,TIME,TYPE) &
         proximityThreshold(T) &
         RANGE < (T + RADIUS)
     <- .print("Avoiding tree");
-       .drop_all_intentions;
+       .drop_all_plans;
        !stopMoving;
        turn(right);
        !clearAllThreatNotifications; // We need to keep these clear since we've dropped all other intentions. Surely there is a better way to handle this?
        !avoidObstacle.
 
-+!avoidObstacle : true .
++!avoidObstacle.
 
 
 /** =========================================== **/
 /** Sub-goals for navigating to the destination **/
 /** =========================================== **/
 
-+!goToDest(AZ,EL,RANGE)
+// Turn right if destination is on the right
++!goToDestination(AZ,EL,RANGE)
     : destRight(AZ,EL,RANGE)
     <- turn(right).
 
-+!goToDest(AZ,EL,RANGE)
+// Turn left if destination is on the left
++!goToDestination(AZ,EL,RANGE)
     : destLeft(AZ,EL,RANGE)
     <- .print("Destination is Left!");
         turn(left).
 
-+!goToDest(AZ,EL,RANGE)
+// Move if destination is ahead of us
++!goToDestination(AZ,EL,RANGE)
     :   destAhead(AZ,EL,RANGE) &
         proximityThreshold(T) &
         R > T
     <-  !move.
 
-+!goToDest(AZ,EL,RANGE)
+// Stop moving if we have reached the destination
+// Clear all current threat notifications and wait for new data (or search for threats)
++!goToDestination(AZ,EL,RANGE)
     : destAhead(AZ,EL,RANGE) &
         proximityThreshold(T) &
         R < T
@@ -241,19 +274,3 @@ noDestination :-
 		SPEED \== 0.0
 	<-	thrust(off).
 +!stopMoving.
-		
-/** Dest **/
-destLeft(AZ,EL,RANGE) :-
-	turnAngle(ANGLE) &
-	pi(PI) &
-	((PI < AZ) &
-	(AZ < ((2 * PI) - ANGLE))).
-
-destRight(AZ,EL,RANGE) :-
-	turnAngle(ANGLE) &
-    	pi(PI) &
-    	(ANGLE < AZ) &
-    	(AZ <= PI).
-
-destAhead(AZ,EL,RANGE) :-
-    (not destLeft(AZ,EL,RANGE) & not destRight(AZ,EL,RANGE)).

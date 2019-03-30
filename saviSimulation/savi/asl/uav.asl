@@ -7,6 +7,7 @@
 // Set initial beliefs and test goals
 pi(3.14159265359).			// Set the constant for PI
 proximityThreshold(30.0).	// When the agent is closer than this threashold, no need to get closer
+mapSize(900, 700).
 
 /* Rules */
 // Define the turn angle
@@ -31,7 +32,6 @@ destAhead(R) :-
     (not destLeft & not destRight & relativeDestination(AZ, EL, R)).
 
 // Initial goals
-// TODO: Patrol general area vs just going to one destination
 !patrol.    // Patrol the map
 
 // Remove any beliefs broadcast by other agents so they don't litter the belief base!
@@ -39,27 +39,28 @@ destAhead(R) :-
     : true
     <- -notifyThreat(_,_,_,_,_,_)[source(_)].
 
+// Broadcasts any visible threats
 +!broadcastVisibleThreats
     :   threat(AZ,EL,RANGE,RADIUS,TIME,TYPE) &
         position(X_REF, Y_REF, Z_REF, _) &
         velocity(BEARING, _,_,_)
     <-  savi.UxVInternalActions.GetAbsolutePosition(X_TARGET,Y_TARGET,Z_TARGET,X_REF,Y_REF,Z_REF,BEARING,AZ,EL,RANGE);
        	.broadcast(tell, notifyThreat(X_TARGET,Y_TARGET,Z_TARGET,RADIUS,TIME,TYPE)).
-
 +!broadcastVisibleThreats.
 
-// Hard coded random generator between 100 and 800 (X value of destination)
-nextRand(X) :-
-    .random(R) & X = (R*700)+100.
+// Randomly generate next coordinate
+nextDest(X, Y) :-
+    mapSize(MX, MY) & .random(RX) & .random(RY) & X = (RX*MX) & Y = (RY*MY).
 
 
+// Generate a random destination if one does not exist.
 +!patrol
     :   not destination(_, _, _) &
-        nextRand(X)
-    <-  +destination(X, 222, 3);
+        nextDest(X, Y)
+    <-  +destination(X, Y, 0);
         !patrol.
 
-
+// If a destination exists, we want to generate a relative destination so that we know how to go to the destination
 +!patrol
     :   destination(X_DEST, Y_DEST, Z_DEST) &
         position(X_REF,Y_REF,Z_REF,_) &
@@ -68,31 +69,33 @@ nextRand(X) :-
         savi.UxVInternalActions.GetRelativePosition(X_DEST,Y_DEST,0,X_REF,Y_REF,0,BEARING,AZ,EL,RANGE);
         -relativeDestination(_,_,_);
         +relativeDestination(AZ, EL, RANGE);
-        !turnToDest.
+        !goToDestination;
+        !patrol.
 
-+!turnToDest
+// Turns right if the destination is to our right
++!goToDestination
     : destRight
-    <-  turn(right);
-        !patrol.
+    <-  turn(right).
 
-+!turnToDest
+
+// Turns left if destination is to our left
++!goToDestination
     : destLeft
-    <-  turn(left);
-        !patrol.
+    <-  turn(left).
 
-+!turnToDest
+// Move if the destination is ahead of us (and far)
++!goToDestination
     :   destAhead(R) &
         proximityThreshold(T) &
         R > T
-    <-  thrust(on);
-        !patrol.
+    <-  !move.
 
-+!turnToDest
+// Stop moving if we arrive at the destination
++!goToDestination
     : true
-    <-  thrust(off);
+    <-  !stopMoving;
         -destination(_,_,_);
-        .wait(500);
-        !patrol.
+        .wait(500).
 
 
 // Start moving if not moving
