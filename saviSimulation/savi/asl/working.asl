@@ -154,6 +154,7 @@ noDestination :-
 	:	targetFar
 	<-	!clearAllThreatNotifications; // Clear all threat notifications since we are chasing a visible target
 	    !broadcastVisibleThreats;
+	    !avoidObstacle;
 	    !move;
 		!faceTarget;
 		!followTarget.
@@ -164,6 +165,7 @@ noDestination :-
 	:	targetClose | (noTarget & noDestination)
 	<-	!clearAllThreatNotifications; // Clear all threat notifications since we are chasing a visible target
 	    !broadcastVisibleThreats;
+	    !avoidObstacle;
 	    !stopMoving;
 		!faceTarget;
 		!followTarget.
@@ -172,10 +174,26 @@ noDestination :-
     :   noTarget &
         destination(AZ,EL,RANGE,TIME)
     <-  !clearOldThreatNotifications; // Clear old threat notifications, since they are no longer necessary
+        !avoidObstacle;
         !goToDest(AZ,EL,RANGE); // Go to the current destination (AKA threats from other agents)
         !followTarget.
 
+/** ================================ **/
+/** Sub-goals for obstacle avoidance **/
+/** ================================ **/
 
++!avoidObstacle
+    :   tree(AZ,EL,RANGE,RADIUS,TIME,TYPE) &
+        proximityThreshold(T) &
+        RANGE < (T + RADIUS)
+    <- .print("Avoiding tree");
+       .drop_all_intentions;
+       !stopMoving;
+       turn(right);
+       !clearAllThreatNotifications; // We need to keep these clear since we've dropped all other intentions. Surely there is a better way to handle this?
+       !avoidObstacle.
+
++!avoidObstacle : true .
 
 
 /** =========================================== **/
@@ -192,13 +210,15 @@ noDestination :-
         turn(left).
 
 +!goToDest(AZ,EL,RANGE)
-    :   destAhead(AZ,EL,RANGE)
-        & RANGE > 30.0
+    :   destAhead(AZ,EL,RANGE) &
+        proximityThreshold(T) &
+        R > T
     <-  !move.
 
 +!goToDest(AZ,EL,RANGE)
-    : destAhead(AZ,EL,RANGE)
-      & RANGE < 30.0
+    : destAhead(AZ,EL,RANGE) &
+        proximityThreshold(T) &
+        R < T
     <-  !stopMoving;
         // Clear threats if we reach the destination
         !clearAllThreatNotifications.
