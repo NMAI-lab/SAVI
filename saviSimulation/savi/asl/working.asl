@@ -61,11 +61,16 @@ targetFar :-
 
 // Get the most up-to-date notification of enemies
 destination(AZ,EL,RANGE,TIME) :-
-  position(X_REF,Y_REF,Z_REF,_) &
-  velocity(BEARING,_,_,_) &
-  ((notifyThreat(X_DEST, Y_DEST, Z_DEST, _,TIME,_)) &
-  not (notifyThreat(_,_,_,_,NEWER,_) & (TIME < NEWER))) &
-  savi.UxVInternalActions.GetRelativePosition(X_DEST,Y_DEST,0,X_REF,Y_REF,0,BEARING,AZ,EL,RANGE).
+    position(X_REF,Y_REF,Z_REF,_) &
+    velocity(BEARING,_,_,_) &
+    ((notifyThreat(X_DEST, Y_DEST, Z_DEST, _,TIME,_)) &
+    not (notifyThreat(_,_,_,_,NEWER,_) & (TIME < NEWER))) &
+    savi.UxVInternalActions.GetRelativePosition(X_DEST,Y_DEST,0,X_REF,Y_REF,0,BEARING,AZ,EL,RANGE).
+
+closestDestination(AZ, EL, RANGE, TIME) :-
+    destination(AZ,EL,RANGE,TIME) &
+    not (destination(_,_,CLOSER,_) &
+    	(CLOSER < RANGE)).
 
 noDestination :-
     not(destination(_,_,_,_)).
@@ -172,7 +177,7 @@ noDestination :-
 
 +!followTarget
     :   noTarget &
-        destination(AZ,EL,RANGE,TIME)
+        closestDestination(AZ,EL,RANGE,TIME)
     <-  !clearOldThreatNotifications; // Clear old threat notifications, since they are no longer necessary
         !avoidObstacle;
         !goToDest(AZ,EL,RANGE); // Go to the current destination (AKA threats from other agents)
