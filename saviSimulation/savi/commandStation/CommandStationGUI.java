@@ -17,8 +17,6 @@ public class CommandStationGUI implements ActionListener{
 	
 	private static int MAXLINES = 100;
 	
-	
-	
 	private JFrame frame;
 	private JTextField commands;
 	private JTextArea fromWifi;
@@ -76,6 +74,7 @@ public class CommandStationGUI implements ActionListener{
     		long mid= System.currentTimeMillis()%20000; //this is a really crude message id!
     		String message = "<"+mid+","+this.id+",tell,BROADCAST,"+commands.getText()+">";
     		
+    		// send the message to the simulator
             connector.messageOut(message); 
   
             // set the text of field to blank 
@@ -85,7 +84,10 @@ public class CommandStationGUI implements ActionListener{
     } 
 
 	
-
+    /**
+     * Method to receive messages from the simulator
+     * @param msg an incoming message.
+     */
 	public void receiveMessage(String msg) {
 		
 	fromWifi.append(msg+"\n");
