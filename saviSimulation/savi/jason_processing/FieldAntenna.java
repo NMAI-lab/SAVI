@@ -1,35 +1,23 @@
 package savi.jason_processing;
 
-import java.awt.*;
-import java.awt.event.*;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.text.BadLocationException;
-
 import processing.core.PShape;
 import processing.core.PVector;
+import savi.commandStation.CommandStationConnector;
+import savi.commandStation.CommandStationGUI;
 
-public class FieldAntenna extends WorldObject implements Communicator, ActionListener{
+public class FieldAntenna extends WorldObject implements Communicator, CommandStationConnector{
 	
 	
 
 	WifiAntenna antenna;
 	
 	private List<String> outbox = new LinkedList<String>();
-	private static int MAXLINES = 100;
 	
-	//TODO: add list of messages here, then implement message delivery
-	private JFrame frame;
-	private JTextField commands;
-	private JTextArea fromWifi;
+	private CommandStationGUI commandStationGUI;
+	
 	
 	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, PShape image, double wifiProbFailure) {
 		
@@ -37,7 +25,7 @@ public class FieldAntenna extends WorldObject implements Communicator, ActionLis
 		this.position = position;
 		antenna = new WifiAntenna(id, this, wifiProbFailure);
 		
-		createAndShowGUI();
+		commandStationGUI = new CommandStationGUI(this, String.valueOf(this.ID)); 
 		
 
 	}
@@ -47,58 +35,7 @@ public class FieldAntenna extends WorldObject implements Communicator, ActionLis
 		antenna.update(wifiParticipants);
 		
 	}
-	private void createAndShowGUI() {
-        //Create and set up the window.
-        frame = new JFrame("ConsoleDemo");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
- 
-        
-        // create a label to display text 
-        fromWifi = new JTextArea(10, 40);
-        JScrollPane scrollPane = new JScrollPane(fromWifi); 
-        fromWifi.setEditable(false);
-  
-        // create a new button 
-        JButton button = new JButton("submit"); 
-        button.setSize(50, 20);
-   
-        // addActionListener to button 
-        button.addActionListener(this); 
-  
-        // create a object of JTextField with 16 columns 
-        commands = new JTextField(40);
-  
-        
-        // add buttons and textfield to panel 
-        frame.getContentPane().add(commands, BorderLayout.NORTH);
-        frame.getContentPane().add(scrollPane, BorderLayout.SOUTH); 
-        frame.getContentPane().add(button, BorderLayout.CENTER); 
-  
-      
-   
-      //Display the window.
-        frame.pack();
-        frame.setVisible(true);
-        
-    } 
-  
-    // if the button is pressed 
-    public synchronized void actionPerformed(ActionEvent e) 
-    { 
-       
-            // set the text of the label to the text of the field
-    		long mid= System.currentTimeMillis()%20000; //this is a really crude message id!
-    		String message = "<"+mid+","+this.ID+",tell,BROADCAST,"+commands.getText()+">";
-    		
-            outbox.add(message); 
-  
-            // set the text of field to blank 
-            commands.setText("  "); 
-            
-        
-    } 
-
-	
+		
 
 	@Override
 	public PVector getPosition() {
@@ -108,23 +45,7 @@ public class FieldAntenna extends WorldObject implements Communicator, ActionLis
 	
 	@Override
 	public void receiveMessage(String msg) {
-		
-	fromWifi.append(msg+"\n");
-	fromWifi.setCaretPosition(fromWifi.getDocument().getLength());
-	
-	if (fromWifi.getLineCount()>MAXLINES) {
-		
-		try {
-			int endLine1 = fromWifi.getLineEndOffset(1);
-			fromWifi.replaceRange("", 0, endLine1);
-		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-		
-		
+		commandStationGUI.receiveMessage(msg);
 	}
 
 	@Override
@@ -141,6 +62,13 @@ public class FieldAntenna extends WorldObject implements Communicator, ActionLis
 	@Override
 	public WifiAntenna getAntennaRef() {	
 		return antenna;
+	}
+
+	
+	@Override
+	public synchronized void messageOut(String msg) {
+		outbox.add(msg);
+		
 	}
 
 }
