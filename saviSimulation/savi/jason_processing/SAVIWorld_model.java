@@ -10,6 +10,8 @@ import savi.StateSynchronization.*;
 import java.util.*;
 import java.util.logging.Logger;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
@@ -156,23 +158,20 @@ public class SAVIWorld_model extends PApplet {
 			String filePath = new File("").getAbsolutePath();
 			filePath = filePath + "/objects.cfg";
 			System.out.println(filePath);
-			File inFile = new File(filePath);
-			in = new FileInputStream(inFile);
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			String strLine;
-			//Read File Line By Line
-			while ((strLine = br.readLine()) != null)   {
-			  // Print the content on the console
-			  System.out.println (strLine);
-			  String s[] = strLine.split(",");
-			  int out[] = new int[s.length];
+			/// read file as stream:
+			Files.lines(Paths.get(filePath)).forEach(strLine -> {
+				// do this for each line in file:
+				Arrays.stream(strLine.split(",")).mapToInt(Integer::parseInt).toArray();
+				  int out[] = Arrays.stream(strLine.split(","))
+						  			.mapToInt(Integer::parseInt)
+						  			.toArray();
 
-			  for(int i = 0 ; i < s.length ; i++) 
-			       out[i] = Integer.parseInt(s[i]);
-			  
-			  objects.add(new WorldObject(1, new PVector(out[0], out[1], out[2]/2),
-					  out[2], "tree", this, treeImage));
-			}
+				  			  
+				  objects.add(new WorldObject(1, new PVector(out[0], out[1], out[2]/2),
+						  out[2], "tree", this, treeImage));
+			});
+			
+			
 			
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found");
