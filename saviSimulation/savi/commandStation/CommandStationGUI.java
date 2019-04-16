@@ -72,7 +72,7 @@ public class CommandStationGUI implements ActionListener{
        
             // set the text of the label to the text of the field
     		long mid= System.currentTimeMillis()%20000; //this is a really crude message id!
-    		String message = "<"+mid+","+this.id+",tell,BROADCAST,"+commands.getText()+">";
+    		String message = "<"+mid+","+this.id+",unachieve,BROADCAST,"+commands.getText()+">";
     		
     		// send the message to the simulator
             connector.messageOut(message); 
