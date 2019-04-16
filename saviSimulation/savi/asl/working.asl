@@ -60,11 +60,11 @@ targetFar :-
 	(RANGE > CLOSE).
 	
 // Initial goals
-//!findTarget.		// Find a target
+!findTarget.		// Find a target
 //!observeTarget.	// Keep a target visible (recursive seeTarget)
 //!faceTarget.		// Turn to face a target head on
 //!watchTarget.		// Face a target and keep facing it recursively
-!followTarget.		// Follow a target
+//!followTarget.		// Follow a target
 
 /* Plans to achieve goals */
 
