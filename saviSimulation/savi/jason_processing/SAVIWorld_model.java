@@ -10,6 +10,8 @@ import savi.StateSynchronization.*;
 import java.util.*;
 import java.util.logging.Logger;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
@@ -41,8 +43,8 @@ public class SAVIWorld_model extends PApplet {
 	private double WIFI_PERCEPTION_DISTANCE;
 	private double WIFI_ERROR_PROB;
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
-	public final int X_PIXELS = 874;
-	public final int Y_PIXELS = 699;
+	public final int X_PIXELS = 1570;
+	public final int Y_PIXELS = 944;
 	//int Z_PIXELS = 500;
 
 	// TimeStamp file names
@@ -149,59 +151,66 @@ public class SAVIWorld_model extends PApplet {
 		uavImage = loadShape("SimImages/airplane.svg");
 		antennaImage = loadShape("SimImages/antenna.svg");
 
-		backGround = loadImage("SimImages/OttawaAirport_874_699.PNG");
+		backGround = loadImage("SimImages/Major'sHillPark3D.jpg");
+		
+		//Load objects on scenario from objects file
+		try {
+			String filePath = new File("").getAbsolutePath();
+			filePath = filePath + "/objects.cfg";
+			System.out.println(filePath);
+			/// read file as stream:
+			Files.lines(Paths.get(filePath)).forEach(strLine -> {
+				// do this for each line in file:
+				Arrays.stream(strLine.split(",")).mapToInt(Integer::parseInt).toArray();
+				  int out[] = Arrays.stream(strLine.split(","))
+						  			.mapToInt(Integer::parseInt)
+						  			.toArray();
+
+				  			  
+				  objects.add(new WorldObject(1, new PVector(out[0], out[1], out[2]/2),
+						  out[2], "tree", this, treeImage));
+			});
+			
+			
+			
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found");
+		} catch (Exception e) {
+			System.out.println("Exception occurred");
+		}
+		
 		
 		Random rand = new Random();
 		// ======= Jason BDI agents ================
 		Map<String, AgentModel> agentList = new HashMap<String, AgentModel>();
 		//====================================================
-				
+
+		if (RANDOM_SEED != -1) {
+			rand = new Random(RANDOM_SEED);
+		}
+		
 		for(int i = 0; i < NUMBER_UAV; i++)  { //Put UaV
 			//_PIXELS is the maximum and the 1 is our minimum
 			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
-			if(RANDOM_SEED != -1) {
-				rand = new Random(RANDOM_SEED+i);
-			}	
-				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE,"uav",
+				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE,"uav", 
 						this, uavImage, REASONING_CYCLE_PERIOD, "drone", UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
 				wifiParticipants.add(uav.getAntennaRef());
 				objects.add(uav);
 				agentList.put(((UxV)uav).getBehavior().getID(), ((UxV)uav).getBehavior());//Create UaV agent
 			}
-		for(int i = NUMBER_UAV; i < NUMBER_UAV+NUMBER_UGV; i++)  { //Put UgV 
+			for(int i = NUMBER_UAV; i < NUMBER_UAV+NUMBER_UGV; i++)  { //Put UgV 
 			// The way the for loop is set up is to make sure all the UxVs have different ids
 			//_PIXELS is the maximum and the 1 is our minimum
 			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
-			if(RANDOM_SEED != -1) {
-				rand = new Random(RANDOM_SEED+i);
-			}	
 				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE,"ugv",
-						this, ugvImage, REASONING_CYCLE_PERIOD, "robot", UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
+						this, ugvImage, REASONING_CYCLE_PERIOD, "robot3", UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
 				wifiParticipants.add(ugv.getAntennaRef());
 				objects.add(ugv);
 				agentList.put(((UxV)ugv).getBehavior().getID(), ((UxV)ugv).getBehavior());//Create UgV agent
 		}
-		for (int i = 0; i < NUMBER_TREES; i++) { // Put trees
-			// _PIXELS is the maximum and the 1 is our minimum.
-			if (RANDOM_SEED != -1) {
-				rand = new Random(2 * RANDOM_SEED + i);
-			}
-			objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, TREE_SIZE/2),
-					TREE_SIZE, "tree", this, treeImage));
-		}
-			// _PIXELS is the maximum and the 1 is our minimum.
-		for (int i = 0; i < NUMBER_HOUSES; i++) { // Put houses
-			if (RANDOM_SEED != -1) {
-				rand = new Random(3 * RANDOM_SEED + i);
-			}
-			objects.add(new WorldObject(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, HOUSE_SIZE/2),
-					HOUSE_SIZE, "house", this, houseImage));
-		}
+	
 		for (int i = 0; i < NUMBER_THREATS; i++) { // Put threats
 			// _PIXELS is the maximum and the 1 is our minimum.
-			if (RANDOM_SEED != -1) {
-				rand = new Random(4 * RANDOM_SEED + i);
-			}
 			objects.add(new Threat(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, THREAT_SIZE/2), RANDOM_SEED, MAX_SPEED,
 					THREAT_SIZE, "threat", this, threatImage));
 		}
@@ -239,7 +248,14 @@ public class SAVIWorld_model extends PApplet {
 			e.printStackTrace();
 		}
 
-}		
+}
+	
+	private boolean isSpaceOccupied(WorldObject obj, List<WorldObject> objects) {
+		return true;
+	}
+	
+	
+	
 	/************* Main draw() ***********************/
 // Main state update and visualization function
 // called by Processing in an infinite loop
