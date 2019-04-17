@@ -222,6 +222,7 @@ public class SAVIWorld_model extends PApplet {
 		
 		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, antennaImage, WIFI_ERROR_PROB);
 		objects.add(consoleProxy);
+		System.out.println("console proxy coordinates:"+consoleProxy.position.x+" / "+consoleProxy.position.y);
 		wifiParticipants.add(consoleProxy.getAntennaRef());
 
 		// smoother rendering (optional)

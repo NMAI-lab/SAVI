@@ -41,6 +41,11 @@ public class FieldAntenna extends WorldObject implements Communicator, CommandSt
 	public PVector getPosition() {
 		return position;
 	}
+	
+	@Override
+	public void draw(PVector position) {
+		simulator.shape(this.image, this.position.x, this.position.y,pixels,pixels);
+	}
 
 	
 	@Override
