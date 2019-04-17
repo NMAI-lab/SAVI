@@ -100,10 +100,10 @@ noDestination :-
 /** Initial Goals **/
 /** ============= **/
 
-//!findTarget.		// Find a target
+!findTarget.		// Find a target
 //!faceTarget.		// Turn to face a target head on
 //!watchTarget.		// Face a target and keep facing it recursively
-!followTarget.		// Follow a target
+//!followTarget.		// Follow a target
 
 
 
