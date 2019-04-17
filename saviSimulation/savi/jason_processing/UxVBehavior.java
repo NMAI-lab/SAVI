@@ -48,7 +48,7 @@ public abstract class UxVBehavior extends AgentModel {
 		this.ID = id;
 		this.type = type;
 		this.initialPosition = initialPosition;
-		this.speedVal = 0;	
+		this.speedVal = 0;
 		this.time = 0;
 		this.compasAngle = 0;
 		//this.agentState = new SyncAgentState();

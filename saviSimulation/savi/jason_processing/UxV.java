@@ -69,14 +69,14 @@ public abstract class UxV extends WorldObject implements Communicator {
 		image=simulator.loadShape("SimImages/"+imageName+".svg");
 		
 		// translate to center image on uasposition.x, uasposition.y
-		//	simulator.shapeMode(PConstants.CENTER); didn't work
+//			simulator.shapeMode(PConstants.CENTER);// didn't work
 		image.translate(-image.width/2,-image.height/2);		
 		
 		// to adjust compassAngle to the image
 		image.rotate((float) ((float)this.getBehavior().getCompassAngle()+Math.PI/2));
 
 		//draw image
-		simulator.shape(image, position.x, position.y, pixels, pixels);
+		simulator.shape(image, position.x+pixels/2, position.y+pixels/2, pixels, pixels);
 		//show height lower and upper
 		simulator.text(Double.toString(position.z+(this.pixels/2))+"\n"+Double.toString(position.z-(this.pixels/2)), position.x, position.y);
 		simulator.noFill();
