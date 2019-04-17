@@ -277,6 +277,8 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		Circumstance circ = getTS().getC();
 		Queue<String> messages = new LinkedList<String>();
 		messages = this.agentState.getMsgIn();
+		if (messages.isEmpty())
+			return;
 		for(String messageString:messages) {
 			try {
 				 Message currentMessage = Message.parseMsg(messageString);
