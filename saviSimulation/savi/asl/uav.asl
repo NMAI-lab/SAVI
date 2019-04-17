@@ -30,7 +30,24 @@ destRight :-
 
 destAhead(R) :-
     (not destLeft & not destRight & relativeDestination(AZ, EL, R)).
+	
+// Destination is close
+destinationClose :-
+	relativeDestination(_,_,RANGE) &
+	proximityThreshold(CLOSE) &
+	(RANGE < CLOSE).
 
+// Destination is far
+targetFar :-
+	relativeDestination(_,_,RANGE) &
+	proximityThreshold(CLOSE) &
+	(RANGE > CLOSE).
+		
+withinThreashold(A,B) :-
+	DISTANCE = A - B &
+	absolute(DISTANCE) < absolute(T)
+	proximityThreshold(T)
+		
 // Initial goals
 !patrol.    // Patrol the map
 
