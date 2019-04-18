@@ -8,6 +8,7 @@
 pi(3.14159265359).			// Set the constant for PI
 proximityThreshold(30.0).	// When the agent is closer than this threashold, no need to get closer
 mapSize(900, 700).
+cruisingAltitude(500).		// Set desired cruising altitude for the UAV
 
 /* Rules */
 // Define the turn angle
@@ -34,23 +35,17 @@ destAhead(R) :-
 // Destination is close
 destinationClose :-
 	relativeDestination(_,_,RANGE) &
-	proximityThreshold(CLOSE) &
-	(RANGE < CLOSE).
+	proximityThreshold(T) &
+	(RANGE < T).
 
 // Destination is far
-targetFar :-
+destinationFar :-
 	relativeDestination(_,_,RANGE) &
-	proximityThreshold(CLOSE) &
-	(RANGE > CLOSE).
-		
-withinThreashold(A,B) :-
-	DISTANCE = A - B &
-	absolute(DISTANCE) < absolute(T)
-	proximityThreshold(T)
+	proximityThreshold(T) &
+	(RANGE > T).
 		
 // Initial goals
 !patrol.    // Patrol the map
-
 
 // Deal with telemetry request/
 +!sendTelemetry
@@ -110,17 +105,15 @@ nextDest(X, Y) :-
 
 // Move if the destination is ahead of us (and far)
 +!goToDestination
-    :   destAhead(R) &
-        proximityThreshold(T) &
-        R > T
+    :   destinationFar
     <-  !move.
 
 // Stop moving if we arrive at the destination
 +!goToDestination
-    : true
+    : destinationClose
     <-  !stopMoving;
-        -destination(_,_,_);
-        .wait(500).
+        -destination(_,_,_).
+        //.wait(500).
 
 
 // Start moving if not moving
@@ -136,3 +129,8 @@ nextDest(X, Y) :-
 		SPEED \== 0.0
 	<-	thrust(off).
 +!stopMoving.
+
+
+// Get to the right altitude
+//+!adjustAltitude
+//	:	position(_,_,Z)
