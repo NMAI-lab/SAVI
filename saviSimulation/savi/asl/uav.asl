@@ -51,6 +51,14 @@ withinThreashold(A,B) :-
 // Initial goals
 !patrol.    // Patrol the map
 
+
+// Deal with telemetry request/
++!sendTelemetry
+	:	position(X,Y,Z,TP) & velocity(BEARING,PITCH,SPEED,TV)
+	<-	.broadcast(tell, notifyPosition(X,Y,Z,TP));
+		.broadcast(tell, notifyVelocity(BEARING,PITCH,SPEED,TV)).
++!sendTelemetry.
+
 // Remove any beliefs broadcast by other agents so they don't litter the belief base!
 +notifyThreat(_,_,_,_,_,_)[source(_)]
     : true
