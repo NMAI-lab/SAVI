@@ -105,7 +105,14 @@ noDestination :-
 //!watchTarget.		// Face a target and keep facing it recursively
 !followTarget.		// Follow a target
 
-
+/** =================================================== **/
+/** Deal with telemetry request							**/
+/** =================================================== **/
++!sendTelemetry
+	:	position(X,Y,Z,TP) & velocity(BEARING,PITCH,SPEED,TV)
+	<-	.broadcast(tell, notifyPosition(X,Y,Z,TP));
+		.broadcast(tell, notifyVelocity(BEARING,PITCH,SPEED,TV)).
++!sendTelemetry.
 
 /** =================================================== **/
 /** Removing old notifyThreat beliefs from other agents **/
@@ -219,7 +226,7 @@ noDestination :-
     :   tree(AZ,EL,RANGE,RADIUS,TIME,TYPE) &
         proximityThreshold(T) &
         RANGE < (T + RADIUS)
-    <- .print("Avoiding tree");
+    <- //.print("Avoiding tree");
        .drop_all_intentions;
        !stopMoving;
        turn(right);
@@ -241,7 +248,7 @@ noDestination :-
 // Turn left if destination is on the left
 +!goToDestination(AZ,EL,RANGE)
     : destLeft(AZ,EL,RANGE)
-    <- .print("Destination is Left!");
+    <- //.print("Destination is Left!");
         turn(left).
 
 // Move if destination is ahead of us
