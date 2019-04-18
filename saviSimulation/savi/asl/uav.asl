@@ -43,6 +43,24 @@ destinationFar :-
 	relativeDestination(_,_,RANGE) &
 	proximityThreshold(T) &
 	(RANGE > T).
+	
+// Altitude is too low
+altitudeTooLow :-
+	position(_,_,Z) & 
+	cruisingAltitude(A) &
+	proximityThreshold(T) &
+	(Z + T) < A.
+	
+// Altitude is too high
+altitudeTooHigh :-
+	position(_,_,Z) & 
+	cruisingAltitude(A) &
+	proximityThreshold(T) &
+	Z < (A + T).
+
+// Altitude is within margin
+altitudeCorrect :-
+	not (altitudeTooLow | altitudeTooHigh).
 		
 // Initial goals
 !patrol.    // Patrol the map
@@ -118,8 +136,14 @@ nextDest(X, Y) :-
 
 // Start moving if not moving
 +!move
+	:	not altitudeCorrect
+	<-	!adjustAltitude;
+		!move.
+
++!move
 	: 	velocity(_,_,SPEED,_) &
-		SPEED == 0.0
+		SPEED == 0.0 &
+		altitudeCorrect
 	<-	thrust(on).
 +!move.
 
@@ -132,5 +156,16 @@ nextDest(X, Y) :-
 
 
 // Get to the right altitude
-//+!adjustAltitude
-//	:	position(_,_,Z)
++!adjustAltitude
+	:	altitudeTooLow
+	<-	thrust(up)
+		!adjustAltitude.
+		
++!adjustAltitude
+	:	altitudeTooHigh
+	<-	thrust(down)
+		!adjustAltitude.
+		
++!adjustAltitude
+	:	altitudeCorrect
+	<-	hover.
