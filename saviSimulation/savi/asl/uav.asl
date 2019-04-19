@@ -65,7 +65,7 @@ altitudeCorrect :-
 		
 // Initial goals
 //!sendTelemetry.
-!patrol.    // Patrol the map
+//!patrol.    // Patrol the map
 
 // Deal with telemetry request/
 +!sendTelemetry
