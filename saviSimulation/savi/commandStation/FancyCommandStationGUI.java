@@ -19,19 +19,22 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.BadLocationException;
 
 public class FancyCommandStationGUI implements ActionListener {
+	
+	private CommandStationCore commandStation;
 
 	private static int MAXLINES = 100;
 
 	private JFrame frame;
-	private JTextField commands;
+	//private JTextField commands;
 	private JTextArea fromWifi;
 
-	private CommandStationConnector connector; // connection to the rest of the simulation
-	private String id; // identifier to use in messages
+	//private CommandStationConnector connector; // connection to the rest of the simulation
+	//private String id; // identifier to use in messages
 
-	public FancyCommandStationGUI(CommandStationConnector connector, String ID) {
-		this.id = ID;
-		this.connector = connector;
+	public FancyCommandStationGUI(CommandStationCore commandStation) {
+		//this.id = ID;
+		//this.connector = connector;
+		this.commandStation = commandStation;
 		createAndShowGUI();
 	}
 
@@ -86,8 +89,8 @@ public class FancyCommandStationGUI implements ActionListener {
 	// if the button is pressed
 	public void actionPerformed(ActionEvent e) {
 
-		long mid = System.currentTimeMillis() % 20000; // this is a really crude message id!
-		String message;
+		//long mid = System.currentTimeMillis() % 20000; // this is a really crude message id!
+		//String message;
 
 		// Deal with the type of button that was pressed
 		//if (e.getActionCommand().equals("achieve")) {
@@ -96,22 +99,28 @@ public class FancyCommandStationGUI implements ActionListener {
 		//	message = "<" + mid + "," + this.id + ",achieve,BROADCAST," + commands.getText() + ">";
 		//} else 
 		if (e.getActionCommand().equals("Request single telemetry")) {
-			message = "<" + mid + "," + this.id + ",achieve,BROADCAST,sendTelemetry>";
+			this.commandStation.sendMessage("BROADCAST", "achieve", "sendTelemetry");
+			//message = "<" + mid + "," + this.id + ",achieve,BROADCAST,sendTelemetry>";
 			
 			// send the message to the simulator
-			connector.messageOut(message);
+			//connector.messageOut(message);
 			
 		} else if (e.getActionCommand().equals("Patrol")) {
-			message = "<" + mid + "," + this.id + ",achieve,BROADCAST,patrol>";
+			this.commandStation.sendMessage("BROADCAST", "achieve", "patrol");
+			//message = "<" + mid + "," + this.id + ",achieve,BROADCAST,patrol>";
 			
 			// send the message to the simulator
-			connector.messageOut(message);
+			//connector.messageOut(message);
 			
 		} else if (e.getActionCommand().equals("Follow Target")) {
-			message = "<" + mid + "," + this.id + ",achieve,BROADCAST,followTarget>";
+			this.commandStation.sendMessage("BROADCAST", "achieve", "followTarget");
+			//message = "<" + mid + "," + this.id + ",achieve,BROADCAST,followTarget>";
 			
 			// send the message to the simulator
-			connector.messageOut(message);
+			//connector.messageOut(message);
+		} else if (e.getActionCommand().equals("Set telemetry frequency")) {
+			// Set the telemetry period (make it 1 second for now)
+			this.commandStation.setTelemetryPeriod(1000);
 		}
 
 		
@@ -190,7 +199,7 @@ public class FancyCommandStationGUI implements ActionListener {
 	}
 
 	private void getMissionPanel(Container panel) {
-		panel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+		panel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 
 		// Set up the border
 		TitledBorder title = new TitledBorder("Load Mission");

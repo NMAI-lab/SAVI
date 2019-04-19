@@ -2,17 +2,20 @@ package savi.commandStation;
 
 public class TelemetryFetcher extends Thread {
 
-	private long telemetryPeriod;		// Period for how often to check the telemetry in ms (anything less than minTelemetryPeriod means never)
-	private static long minTelemetryPeriod = 10;
-	private long lastTelemetryRequest;	// The last time telemetry was requested
+	private long telemetryPeriod;				// Period for how often to check the telemetry in ms (anything less than minTelemetryPeriod means never)
+	private static long minTelemetryPeriod = 100;
+	private long lastTelemetryRequest;			// The last time telemetry was requested
+	private CommandStationCore commandStation;	// Linkage to the command station
 	
-	public TelemetryFetcher() {
-		this(0);
+	public TelemetryFetcher(CommandStationCore commandStation) {
+		this(0, commandStation);
 	}
 	
-	public TelemetryFetcher(long period) {
+	public TelemetryFetcher(long period, CommandStationCore commandStation) {
 		this.setTelemetryPeriod(period);
 		this.lastTelemetryRequest = 0;
+		this.commandStation = commandStation;
+		//this.run();
 	}
 	
 	synchronized public void setTelemetryPeriod(long period) {
@@ -45,6 +48,13 @@ public class TelemetryFetcher extends Thread {
 				if (currentTime > (this.getLastTelemetryTime() + this.getTelemetryPeriod())) {
 					
 					// Ping  telemetry
+					commandStation.sendMessage("BROADCAST", "achieve", "sendTelemetry");
+					try {
+						Thread.sleep(this.telemetryPeriod);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}
