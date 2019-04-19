@@ -84,7 +84,7 @@ public abstract class UxV extends WorldObject implements Communicator {
 		//draw perception area
 		drawPerceptionArea();
 
-		//draw circle on objects percepted
+		//draw circle on objects perceived
 		for(CameraPerception cpi : this.getBehavior().getVisibleItems()){
 			double angle = (this.getBehavior().getCompassAngle()+cpi.getParameters().get(0));// % 2* Math.PI;
 			double cosv = Math.cos(angle);
