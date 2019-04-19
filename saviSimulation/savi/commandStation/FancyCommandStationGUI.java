@@ -52,7 +52,7 @@ public class FancyCommandStationGUI implements ActionListener {
 		patrolButton.setSize(50, 20);
 
 		// create the patrol button
-		JButton sendTelemetryButton = new JButton("sendTelemetry");
+		JButton sendTelemetryButton = new JButton("getTelemetry");
 		sendTelemetryButton.setSize(50, 20);
 
 		// addActionListener to buttons
