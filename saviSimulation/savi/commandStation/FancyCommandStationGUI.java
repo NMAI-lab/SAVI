@@ -44,8 +44,8 @@ public class FancyCommandStationGUI implements ActionListener {
 		followTargetButton.setSize(50, 20);
 
 		// create the achieve button
-		JButton button = new JButton("achieve");
-		button.setSize(50, 20);
+		//JButton button = new JButton("achieve");
+		//button.setSize(50, 20);
 
 		// create the patrol button
 		JButton patrolButton = new JButton("patrol");
@@ -56,7 +56,7 @@ public class FancyCommandStationGUI implements ActionListener {
 		sendTelemetryButton.setSize(50, 20);
 
 		// addActionListener to buttons
-		button.addActionListener(this);
+		//button.addActionListener(this);
 		followTargetButton.addActionListener(this);
 		patrolButton.addActionListener(this);
 		sendTelemetryButton.addActionListener(this);
@@ -67,10 +67,10 @@ public class FancyCommandStationGUI implements ActionListener {
 		// add buttons and textfield to panel
 		frame.getContentPane().add(commands, BorderLayout.NORTH);
 		frame.getContentPane().add(scrollPane, BorderLayout.SOUTH);
-		frame.getContentPane().add(button, BorderLayout.CENTER);
+		//frame.getContentPane().add(button, BorderLayout.CENTER);
 		frame.getContentPane().add(followTargetButton, BorderLayout.WEST);
 		frame.getContentPane().add(patrolButton, BorderLayout.EAST);
-		frame.getContentPane().add(sendTelemetryButton, BorderLayout.SOUTH);
+		frame.getContentPane().add(sendTelemetryButton, BorderLayout.CENTER);
 
 		// Display the window.
 		frame.pack();
