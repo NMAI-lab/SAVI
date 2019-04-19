@@ -100,6 +100,7 @@ noDestination :-
 /** Initial Goals **/
 /** ============= **/
 
+//!sendTelemetry.
 //!findTarget.		// Find a target
 //!faceTarget.		// Turn to face a target head on
 //!watchTarget.		// Face a target and keep facing it recursively
@@ -281,3 +282,6 @@ noDestination :-
 		SPEED \== 0.0
 	<-	thrust(off).
 +!stopMoving.
+
+// Address possibility of being asked to patrol (no plans)
++!patrol.

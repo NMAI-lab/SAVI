@@ -46,14 +46,14 @@ destinationFar :-
 	
 // Altitude is too low
 altitudeTooLow :-
-	position(_,_,Z) & 
+	position(_,_,Z,_) & 
 	cruisingAltitude(A) &
 	proximityThreshold(T) &
 	(Z + T) < A.
 	
 // Altitude is too high
 altitudeTooHigh :-
-	position(_,_,Z) & 
+	position(_,_,Z,_) & 
 	cruisingAltitude(A) &
 	proximityThreshold(T) &
 	Z < (A + T).
@@ -63,6 +63,7 @@ altitudeCorrect :-
 	not (altitudeTooLow | altitudeTooHigh).
 		
 // Initial goals
+//!sendTelemetry.
 !patrol.    // Patrol the map
 
 // Deal with telemetry request/
@@ -136,7 +137,7 @@ nextDest(X, Y) :-
 
 // Start moving if not moving
 +!move
-	:	not altitudeCorrect
+	:	altitudeTooLow | altitudeTooHigh
 	<-	!adjustAltitude;
 		!move.
 
@@ -158,14 +159,17 @@ nextDest(X, Y) :-
 // Get to the right altitude
 +!adjustAltitude
 	:	altitudeTooLow
-	<-	thrust(up)
+	<-	thrust(up);
 		!adjustAltitude.
 		
 +!adjustAltitude
 	:	altitudeTooHigh
-	<-	thrust(down)
+	<-	thrust(down);
 		!adjustAltitude.
 		
 +!adjustAltitude
 	:	altitudeCorrect
 	<-	hover.
+	
+// Address possibility of being asked to followTarget (no plans)
++!followTarget.
