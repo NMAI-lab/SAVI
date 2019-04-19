@@ -2,7 +2,8 @@ package savi.commandStation;
 
 public class TelemetryFetcher extends Thread {
 
-	private long telemetryPeriod;		// Period for how often to check the telemetry in ms (0 for never)
+	private long telemetryPeriod;		// Period for how often to check the telemetry in ms (anything less than minTelemetryPeriod means never)
+	private static long minTelemetryPeriod = 10;
 	private long lastTelemetryRequest;	// The last time telemetry was requested
 	
 	public TelemetryFetcher() {
@@ -15,7 +16,7 @@ public class TelemetryFetcher extends Thread {
 	}
 	
 	synchronized public void setTelemetryPeriod(long period) {
-		if (period < 0) {
+		if (period < this.minTelemetryPeriod) {
 			this.telemetryPeriod = 0;
 		} else {
 			this.telemetryPeriod = period;
