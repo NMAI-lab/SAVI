@@ -1,7 +1,6 @@
 package savi.commandStation;
 
 import java.awt.*;
-import java.awt.event.*;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -14,7 +13,7 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.BadLocationException;
 
-public class FancyCommandStationGUI implements ActionListener {
+public class FancyCommandStationGUI extends JFrame {
 	
 	private CommandStationCore commandStation;
 
@@ -30,25 +29,6 @@ public class FancyCommandStationGUI implements ActionListener {
 	}
 
 	
-	// if the button is pressed
-	public void actionPerformed(ActionEvent e) {
-
-		if (e.getActionCommand().equals("Request single telemetry")) {
-			this.commandStation.sendMessage("BROADCAST", "achieve", "sendTelemetry");
-			
-		} else if (e.getActionCommand().equals("Patrol")) {
-			this.commandStation.sendMessage("BROADCAST", "achieve", "patrol");
-			
-		} else if (e.getActionCommand().equals("Follow Target")) {
-			this.commandStation.sendMessage("BROADCAST", "achieve", "followTarget");
-		} else if (e.getActionCommand().equals("Set telemetry frequency")) {
-			// Set the telemetry period
-			this.setTelemetryPeriod();
-		}
-	}
-	
-
-
 	/**
 	 * Method to receive messages from the simulator
 	 * 
@@ -67,9 +47,7 @@ public class FancyCommandStationGUI implements ActionListener {
 			} catch (BadLocationException e) {
 				e.printStackTrace();
 			}
-
 		}
-
 	}
 	
 	
@@ -127,7 +105,6 @@ public class FancyCommandStationGUI implements ActionListener {
 	}
 	
 	private void getTelemetryPanel(Container panel) {
-		//panel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
 		// Set up the border
 		TitledBorder title = new TitledBorder("Telemetry Settings");
@@ -135,15 +112,14 @@ public class FancyCommandStationGUI implements ActionListener {
 
 		// Set the layout
 		panel.setLayout(new GridLayout(2,2));
-		//GridBagConstraints c = new GridBagConstraints();
 
 		JLabel label = new JLabel("Telemetry period in ms (0 for no telemetry ping):");
 	    panel.add(label); 
 		
 		JButton button;
-		button = new JButton("Set telemetry frequency");
+		button = new JButton("Set telemetry period");
 		panel.add(button);
-		button.addActionListener(this);
+		button.addActionListener(e -> {this.setTelemetryPeriod();});
 
 		// Make the text field for the period
 		period = new JTextField(); 
@@ -152,7 +128,7 @@ public class FancyCommandStationGUI implements ActionListener {
 		
 		button = new JButton("Request single telemetry");
 		panel.add(button);
-		button.addActionListener(this);
+		button.addActionListener(e -> {this.commandStation.sendMessage("BROADCAST", "achieve", "sendTelemetry");});
 	}
 
 	private void getMissionPanel(Container panel) {
@@ -168,11 +144,11 @@ public class FancyCommandStationGUI implements ActionListener {
 
 		button = new JButton("Patrol");
 		panel.add(button);
-		button.addActionListener(this);
+		button.addActionListener(e -> {this.commandStation.sendMessage("BROADCAST", "achieve", "patrol");});
 
 		button = new JButton("Follow Target");
 		panel.add(button);
-		button.addActionListener(this);
+		button.addActionListener(e -> {this.commandStation.sendMessage("BROADCAST", "achieve", "followTarget");});
 	}
 	
 	private void buildMessageWindow(Container panel) {
