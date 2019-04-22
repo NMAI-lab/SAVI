@@ -7,11 +7,15 @@ public class CommandStationCore {
 	
 	private TelemetryFetcher telemetryFetcher;	// class in a separate thread that generates messages for fetching telemetry
 	private FancyCommandStationGUI gui;
+	private TelemetryTracker telemetryTracker;	// Keeps track of the telemetry and organizes it
 
 	public CommandStationCore(CommandStationConnector connector, String ID) {
 		// Set message ID and connecter parameters
 		this.id = ID;
 		this.connector = connector;
+		
+		// Setup the telemetry tracker
+		this.telemetryTracker = new TelemetryTracker();
 		
 		// Build the GUI (remove the parameters)
 		gui = new FancyCommandStationGUI(this);
@@ -47,6 +51,7 @@ public class CommandStationCore {
 		
 		// Deal with receiving the message. Send to the GUI raw for now
 		gui.receiveMessage(msg);
+		telemetryTracker.update(msg);
 	}
 }
 
