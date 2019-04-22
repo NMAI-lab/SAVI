@@ -1,14 +1,27 @@
 package savi.commandStation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class TelemetryTracker {
+	
+//	private Map agentTelemetry;
 
 	public TelemetryTracker() {
-		// TODO Auto-generated constructor stub
+	//	this.agentTelemetry = new HashMap<String, AgentTelemetryData>();
 	}
 
 	public void update(String messageString) {
 		TelemetryItem item = TelemetryItem.getTelemetryItem(messageString);
+		
+		
+		
+		//this.agentTelemetry.put();
+		
+		
 
+		/*
 		//try {
 		//	Message jasonMessage = Message.parseMsg(messageString);
 		//	String receiver = jasonMessage.getReceiver();
@@ -43,7 +56,7 @@ public class TelemetryTracker {
 		}
 		
 		System.out.println("-------");
-			
+			*/
 	}
 
 }
