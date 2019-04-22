@@ -49,7 +49,16 @@ public class TelemetryItem {
 		this.vehicleType = new String("Not Set");
 		for (Term currentTerm : termList) {
 			if (currentTerm.isNumeric()) {
-				this.parameters.add(Double.parseDouble(currentTerm.toString()));
+				// Deal with special case for negative numbers (number is in brackets for some reason)
+				if (currentTerm.toString().contains("-")) {
+					String negativeString = currentTerm.toString();
+					this.parameters.add(Double.parseDouble(negativeString.substring(1, negativeString.length()-1)));
+					//this.parameters.add(Double.parseDouble(currentTerm.toString()));
+				// Positive numbers are not in brackets
+				} else {
+					this.parameters.add(Double.parseDouble(currentTerm.toString()));
+				}
+			// Deal with the only parameter that isn't a number
 			} else {
 				this.vehicleType = new String(currentTerm.toString());
 			}
