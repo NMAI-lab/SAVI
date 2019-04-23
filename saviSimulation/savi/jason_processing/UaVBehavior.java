@@ -36,12 +36,7 @@ public class UaVBehavior extends UxVBehavior {
 	 * Process the action in the queue to update the speedVal and compassAngle
 	 */
 	protected void processAgentActions(){
-		//List<String> toexec = agentState.getAllActions();
-		
-		//added for testing
-		List<String> toexec = new ArrayList<String>();
-		toexec.add("thrust(up)");
-		
+		List<String> toexec = agentState.getAllActions();
 		for (String action : toexec) {
 			System.out.println("[ process actions]UAS id="+this.ID+" doing:"+ action);
 			if (action.equals("turn(left)")) //TODO: make these MOD 2 pi ? 
