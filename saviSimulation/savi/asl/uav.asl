@@ -9,6 +9,7 @@ pi(3.14159265359).			// Set the constant for PI
 proximityThreshold(30.0).	// When the agent is closer than this threashold, no need to get closer
 mapSize(900, 700).
 cruisingAltitude(500).		// Set desired cruising altitude for the UAV
+altitudeThreshold(100).		// Set desired cruising altitude for the UAV
 
 /* Rules */
 // Define the turn angle
@@ -48,15 +49,15 @@ destinationFar :-
 altitudeTooLow :-
 	position(_,_,Z,_) & 
 	cruisingAltitude(A) &
-	proximityThreshold(T) &
-	(Z + T) < A.
+	altitudeThreshold(T) &
+	(Z < (A - T)).
 	
 // Altitude is too high
 altitudeTooHigh :-
 	position(_,_,Z,_) & 
 	cruisingAltitude(A) &
-	proximityThreshold(T) &
-	Z < (A + T).
+	altitudeThreshold(T) &
+	(Z > (A + T)).
 
 // Altitude is within margin
 altitudeCorrect :-

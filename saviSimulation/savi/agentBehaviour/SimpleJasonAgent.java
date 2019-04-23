@@ -202,6 +202,10 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		Term right = Literal.parseLiteral("turn(right)");
 		Term go = Literal.parseLiteral("thrust(on)");
 		Term stop = Literal.parseLiteral("thrust(off)");
+		Term up = Literal.parseLiteral("thrust(up)");
+		Term down = Literal.parseLiteral("thrust(down)");
+		Term hover = Literal.parseLiteral("hover");
+		
         
 		// Check what action is being performed, update actionString accordingly.
 		if (actionTerm.equals(left)) {
@@ -213,6 +217,12 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 			actionString = "thrust(on)";
 		else if (actionTerm.equals(stop))
 			actionString = "thrust(off)";
+		else if (actionTerm.equals(up))
+			actionString = "thrust(up)";
+		else if (actionTerm.equals(down))
+			actionString = "thrust(down)";
+		else if (actionTerm.equals(hover))
+			actionString = "hover";
 		
 		// Add the action to agentState
 		agentState.addAction(actionString);
