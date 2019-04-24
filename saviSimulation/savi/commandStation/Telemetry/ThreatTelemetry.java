@@ -1,4 +1,4 @@
-package savi.commandStation;
+package savi.commandStation.Telemetry;
 
 public class ThreatTelemetry extends TelemetryItem {
 

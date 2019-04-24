@@ -1,4 +1,4 @@
-package savi.commandStation;
+package savi.commandStation.Telemetry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,6 @@ public class TelemetryItem {
 				if (currentTerm.toString().contains("-")) {
 					String negativeString = currentTerm.toString();
 					this.parameters.add(Double.parseDouble(negativeString.substring(1, negativeString.length()-1)));
-					//this.parameters.add(Double.parseDouble(currentTerm.toString()));
 				// Positive numbers are not in brackets
 				} else {
 					this.parameters.add(Double.parseDouble(currentTerm.toString()));
@@ -112,4 +111,25 @@ public class TelemetryItem {
 			return new String(this.vehicleType);
 		}
 	}
+	
+	public String toString() {
+		String msg = "Generic telemetry from " + this.getSender() + " to " + this.getReceiver() + " containing " ;
+		
+		// Append the parameters
+		if (this.getParameters() == null) {
+			msg = msg + "no doubles";
+		} else {
+			msg = msg + this.getParameters().toString();
+		}
+		
+		// Append the type
+		if (this.getVehicleType() == null) {
+			msg = msg + " and no no vehicle type";
+		} else {
+			msg = msg + " vehicle type " + this.getVehicleType();
+		}
+		
+		return msg;
+	}
+	
 }

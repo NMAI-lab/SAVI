@@ -1,4 +1,4 @@
-package savi.commandStation;
+package savi.commandStation.Telemetry;
 
 public class PositionTelemetry extends TelemetryItem {
 
