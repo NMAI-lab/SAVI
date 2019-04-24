@@ -49,6 +49,8 @@ public class CommandStationCore {
 	 */
 	public void receiveMessage(String msg) {
 		
+		// *** SEND OVER SOCKET HERE *** //
+		
 		// Deal with receiving the message. Send to the GUI raw for now
 		gui.receiveMessage(msg);
 		telemetryTracker.update(msg);
