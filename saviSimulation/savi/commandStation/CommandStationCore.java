@@ -77,10 +77,26 @@ public class CommandStationCore {
 		// *** SEND OVER SOCKET HERE *** //
 		
 		// Parse the message and get a telemetryItem
-		TelemetryItem item = TelemetryItem.getTelemetryItem(msg);
+		TelemetryItem item = TelemetryItem.generateTelemetryItem(msg);
+		
+		// Parse the message
+		String parsedMessage;
+		if (item instanceof ThreatTelemetry) {
+			ThreatTelemetry threatItem = (ThreatTelemetry)item;
+			parsedMessage = threatItem.toString();
+		} else if (item instanceof PositionTelemetry) {
+			PositionTelemetry positionItem = (PositionTelemetry)item;
+			parsedMessage = positionItem.toString();
+		} else if (item instanceof VelocityTelemetry) {
+			VelocityTelemetry velocityItem = (VelocityTelemetry)item;
+			parsedMessage = velocityItem.toString();
+		} else {
+			parsedMessage = item.toString();
+			//parsedMessage = "";
+		}
 		
 		// Send to the GUI
-		gui.receiveMessage(msg, item.toString());
+		gui.receiveMessage(msg, parsedMessage);
 	}
 }
 

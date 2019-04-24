@@ -16,7 +16,13 @@ public class TelemetryItem {
 	private List<Double> parameters;
 	private String vehicleType;
 
-	public static TelemetryItem getTelemetryItem(String message) {
+	
+	/**
+	 * Static generator method - use this instead of the constructor
+	 * @param message
+	 * @return
+	 */
+	public static TelemetryItem generateTelemetryItem(String message) {
 		TelemetryItem tempItem = new TelemetryItem(message);
 		if (ThreatTelemetry.isType(tempItem)) {
 			return new ThreatTelemetry(message);
@@ -29,6 +35,10 @@ public class TelemetryItem {
 		}
 	}
 
+	/**
+	 * Default constructor - protected, generator method should be used.
+	 * @param message
+	 */
 	protected TelemetryItem(String message) {
 		try {
 			// Interpret the message as a jason message
@@ -63,55 +73,10 @@ public class TelemetryItem {
 			}
 		}
 	}
-
-	public Message getMessage() {
-		if (this.jasonMessage == null) {
-			return null;
-		} else {
-			return jasonMessage.clone();
-		}
-	}
-
-	public String getReceiver() {
-		if (this.receiver == null) {
-			return null;
-		} else {
-			return new String(this.receiver);
-		}
-	}
-
-	public String getSender() {
-		if (this.sender == null) {
-			return null;
-		} else {
-			return new String(this.sender);
-		}
-	}
-
-	public String getType() {
-		if (this.type == null) {
-			return null;
-		} else {
-			return new String(this.type);
-		}
-	}
-
-	public List<Double> getParameters() {
-		if (this.parameters == null) {
-			return null;
-		} else {
-			return new ArrayList<Double>(this.parameters);
-		}
-	}
-
-	public String getVehicleType() {
-		if (this.vehicleType == null) {
-			return null;
-		} else {
-			return new String(this.vehicleType);
-		}
-	}
 	
+	/**
+	 * Return human readable version
+	 */
 	public String toString() {
 		String msg = "Generic telemetry from " + this.getSender() + " to " + this.getReceiver() + " containing " ;
 		
@@ -131,5 +96,77 @@ public class TelemetryItem {
 		
 		return msg;
 	}
+
 	
+	/**
+	 * Getter
+	 * @return
+	 */
+	public Message getMessage() {
+		if (this.jasonMessage == null) {
+			return null;
+		} else {
+			return jasonMessage.clone();
+		}
+	}
+
+	/**
+	 * Getter
+	 * @return
+	 */
+	public String getReceiver() {
+		if (this.receiver == null) {
+			return null;
+		} else {
+			return new String(this.receiver);
+		}
+	}
+
+	/**
+	 * Getter
+	 * @return
+	 */
+	public String getSender() {
+		if (this.sender == null) {
+			return null;
+		} else {
+			return new String(this.sender);
+		}
+	}
+
+	/**
+	 * Getter
+	 * @return
+	 */
+	public String getType() {
+		if (this.type == null) {
+			return null;
+		} else {
+			return new String(this.type);
+		}
+	}
+
+	/**
+	 * Getter
+	 * @return
+	 */
+	public List<Double> getParameters() {
+		if (this.parameters == null) {
+			return null;
+		} else {
+			return new ArrayList<Double>(this.parameters);
+		}
+	}
+
+	/**
+	 * Getter
+	 * @return
+	 */
+	public String getVehicleType() {
+		if (this.vehicleType == null) {
+			return null;
+		} else {
+			return new String(this.vehicleType);
+		}
+	}
 }
