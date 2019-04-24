@@ -119,7 +119,7 @@ public class FancyCommandStationGUI extends JFrame {
 		JButton button;
 		button = new JButton("Set telemetry period");
 		panel.add(button);
-		button.addActionListener(e -> {this.setTelemetryPeriod();});
+		button.addActionListener(e -> {this.setTelemetryPeriod();});		// Set the period for telemetry to be sent
 
 		// Make the text field for the period
 		period = new JTextField(); 
@@ -128,9 +128,16 @@ public class FancyCommandStationGUI extends JFrame {
 		
 		button = new JButton("Request single telemetry");
 		panel.add(button);
+		
+		// Request a single telemetry message be sent from all agents
 		button.addActionListener(e -> {this.commandStation.sendMessage("BROADCAST", "achieve", "sendTelemetry");});
 	}
 
+	
+	/**
+	 * Build the mission loading panel
+	 * @param panel
+	 */
 	private void getMissionPanel(Container panel) {
 
 		// Set up the border
@@ -144,10 +151,14 @@ public class FancyCommandStationGUI extends JFrame {
 
 		button = new JButton("Patrol");
 		panel.add(button);
+		
+		// Request a patrol from agents (UAVs can do this)
 		button.addActionListener(e -> {this.commandStation.sendMessage("BROADCAST", "achieve", "patrol");});
 
 		button = new JButton("Follow Target");
 		panel.add(button);
+		
+		// Request a patrol from agents (UGVs can do this)
 		button.addActionListener(e -> {this.commandStation.sendMessage("BROADCAST", "achieve", "followTarget");});
 	}
 	
