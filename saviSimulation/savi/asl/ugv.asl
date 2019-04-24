@@ -111,8 +111,8 @@ noDestination :-
 /** =================================================== **/
 +!sendTelemetry
 	:	position(X,Y,Z,TP) & velocity(BEARING,PITCH,SPEED,TV)
-	<-	.broadcast(tell, notifyPosition(X,Y,Z,TP));
-		.broadcast(tell, notifyVelocity(BEARING,PITCH,SPEED,TV)).
+	<-	.broadcast(tell, notifyPosition(X,Y,Z,TP,ugv));
+		.broadcast(tell, notifyVelocity(BEARING,PITCH,SPEED,TV,ugv)).
 +!sendTelemetry.
 
 /** =================================================== **/

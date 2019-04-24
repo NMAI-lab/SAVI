@@ -20,8 +20,6 @@ public class TelemetryTracker {
 		//this.agentTelemetry.put();
 		
 		
-
-		/*
 		//try {
 		//	Message jasonMessage = Message.parseMsg(messageString);
 		//	String receiver = jasonMessage.getReceiver();
@@ -53,10 +51,13 @@ public class TelemetryTracker {
 			ThreatTelemetry threatItem = (ThreatTelemetry)item;
 			System.out.println("Threat X: " + threatItem.getX());
 			//System.out.println("-------");
+		} else if (item instanceof PositionTelemetry) {
+			PositionTelemetry positionItem = (PositionTelemetry)item;
+			System.out.println("I am a: " + positionItem.getVehicleType());
 		}
 		
 		System.out.println("-------");
-			*/
+
 	}
 
 }
