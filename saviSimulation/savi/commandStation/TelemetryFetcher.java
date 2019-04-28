@@ -4,7 +4,6 @@ public class TelemetryFetcher extends Thread {
 
 	private long telemetryPeriod;				// Period for how often to check the telemetry in ms (anything less than minTelemetryPeriod means never)
 	private static long minTelemetryPeriod = 1000;
-	private long lastTelemetryRequest;			// The last time telemetry was requested
 	private CommandStationCore commandStation;	// Linkage to the command station
 	
 	public TelemetryFetcher(CommandStationCore commandStation) {
@@ -12,7 +11,6 @@ public class TelemetryFetcher extends Thread {
 	}
 	
 	public TelemetryFetcher(long period, CommandStationCore commandStation) {
-		this.lastTelemetryRequest = 0;
 		this.commandStation = commandStation;
 		this.setTelemetryPeriod(period);	// Set the period and start the thread if needed
 	}
@@ -24,10 +22,6 @@ public class TelemetryFetcher extends Thread {
 			this.telemetryPeriod = period;
 			this.start();
 		}
-	}
-	
-	synchronized private long getLastTelemetryTime() {
-		return this.lastTelemetryRequest;
 	}
 	
 	synchronized private long getTelemetryPeriod() {
