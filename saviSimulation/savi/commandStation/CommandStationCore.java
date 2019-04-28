@@ -37,7 +37,7 @@ public class CommandStationCore {
 	/**
 	 * Send the message to the agents
 	 * 
-	 * @param destination - ID of the agent or BROADCAST for all agnets
+	 * @param destination - ID of the agent or BROADCAST for all agents
 	 * @param messageType - message type, "achieve", "tell", or any other JASON supported message types
 	 * @param parameter - The message in AgentSpeak
 	 */
