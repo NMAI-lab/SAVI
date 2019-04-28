@@ -31,7 +31,7 @@ public class CommandStationGUI extends JFrame {
 
 	
 	/**
-	 * Method to receive messages from the simulator
+	 * Method for displaying messages received by the CommandStationCore
 	 * 
 	 * @param 	rawMessage 		An incoming message, raw format
 	 * @param	parsedMessage	Parsed version of the message
@@ -66,7 +66,7 @@ public class CommandStationGUI extends JFrame {
 			}
 		}
 	}
-	
+
 	
 	/**
 	 * Get the telemetry period from the text box and send it to the command station
