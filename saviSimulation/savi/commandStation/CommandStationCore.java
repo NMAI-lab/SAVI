@@ -49,6 +49,8 @@ public class CommandStationCore {
 		// Build the message
 		String message = "<" + mid + "," + this.id + "," + messageType + "," + destination + "," + parameter + ">";
 		
+		// *** SEND OVER SOCKET HERE *** //
+		
 		// Send the message
 		this.sendMessagePassthrough(message);
 	}
