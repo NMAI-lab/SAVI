@@ -12,21 +12,25 @@ import javax.swing.JTextField;
 import javax.swing.text.BadLocationException;
 
 
-public class CommandStationGUI implements ActionListener{
+public class CommandStationGUI implements ActionListener, MessageHandler{
 	
 	
+	public static final int simPort = 9090;
+	public static final int commandStationPort = 9091;
+
 	private static int MAXLINES = 100;
 	
 	private JFrame frame;
 	private JTextField commands;
 	private JTextArea fromWifi;
 	
-	private CommandStationConnector connector; // connection to the rest of the simulation
+	private SocketConnector connector; // connection to the rest of the simulation
 	private String id; // identifier to use in messages
 	
-	public CommandStationGUI(CommandStationConnector connector, String ID) {
+	public CommandStationGUI(String ID) {
 		this.id = ID;
-		this.connector = connector;
+		this.connector = new SocketConnector(this, commandStationPort, simPort);
+		connector.listenForMessages(); // start the "server" on the socket
 		createAndShowGUI();
 	}
 	
@@ -88,23 +92,25 @@ public class CommandStationGUI implements ActionListener{
      * Method to receive messages from the simulator
      * @param msg an incoming message.
      */
-	public void receiveMessage(String msg) {
-		
-	fromWifi.append(msg+"\n");
-	fromWifi.setCaretPosition(fromWifi.getDocument().getLength());
-	
-	if (fromWifi.getLineCount()>MAXLINES) {
-		
-		try {
-			int endLine1 = fromWifi.getLineEndOffset(1);
-			fromWifi.replaceRange("", 0, endLine1);
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-		}
-		
-	}
-		
-		
-	}
+    @Override
+    public void messageIn(String msg) {
+
+    	fromWifi.append(msg+"\n");
+    	fromWifi.setCaretPosition(fromWifi.getDocument().getLength());
+
+    	if (fromWifi.getLineCount()>MAXLINES) {
+
+    		try {
+    			int endLine1 = fromWifi.getLineEndOffset(1);
+    			fromWifi.replaceRange("", 0, endLine1);
+    		} catch (BadLocationException e) {
+    			e.printStackTrace();
+    		}
+    	}
+    }
+    
+    public static void main(String[] args) {
+    	new CommandStationGUI("5");
+    }
 
 }
