@@ -104,15 +104,15 @@ noDestination :-
 //!findTarget.		// Find a target
 //!faceTarget.		// Turn to face a target head on
 //!watchTarget.		// Face a target and keep facing it recursively
-!followTarget.		// Follow a target
+//!followTarget.		// Follow a target
 
 /** =================================================== **/
 /** Deal with telemetry request							**/
 /** =================================================== **/
 +!sendTelemetry
 	:	position(X,Y,Z,TP) & velocity(BEARING,PITCH,SPEED,TV)
-	<-	.broadcast(tell, notifyPosition(X,Y,Z,TP));
-		.broadcast(tell, notifyVelocity(BEARING,PITCH,SPEED,TV)).
+	<-	.broadcast(tell, notifyPosition(X,Y,Z,TP,ugv));
+		.broadcast(tell, notifyVelocity(BEARING,PITCH,SPEED,TV,ugv)).
 +!sendTelemetry.
 
 /** =================================================== **/

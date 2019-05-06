@@ -5,8 +5,7 @@ import java.util.List;
 
 import processing.core.PShape;
 import processing.core.PVector;
-import savi.commandStation.CommandStationConnector;
-import savi.commandStation.CommandStationGUI;
+import savi.commandStation.*;
 
 public class FieldAntenna extends WorldObject implements Communicator, CommandStationConnector{
 	
@@ -16,7 +15,9 @@ public class FieldAntenna extends WorldObject implements Communicator, CommandSt
 	
 	private List<String> outbox = new LinkedList<String>();
 	
-	private CommandStationGUI commandStationGUI;
+	//private CommandStationGUI commandStation;
+	//private FancyCommandStation commandStationGUI;
+	private CommandStationCore commandStation;
 	
 	
 	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, PShape image, double wifiProbFailure) {
@@ -25,9 +26,10 @@ public class FieldAntenna extends WorldObject implements Communicator, CommandSt
 		this.position = position;
 		antenna = new WifiAntenna(id, this, wifiProbFailure);
 		
-		commandStationGUI = new CommandStationGUI(this, String.valueOf(this.ID)); 
+		//commandStation = new CommandStationGUI(this, String.valueOf(this.ID)); 
+		//commandStation = new FancyCommandStationGUI(this, String.valueOf(this.ID));
+		commandStation = new CommandStationCore(this, String.valueOf(this.ID));
 		
-
 	}
 	
 	@Override
@@ -50,7 +52,7 @@ public class FieldAntenna extends WorldObject implements Communicator, CommandSt
 	
 	@Override
 	public void receiveMessage(String msg) {
-		commandStationGUI.receiveMessage(msg);
+		commandStation.receiveMessage(msg);
 	}
 
 	@Override
