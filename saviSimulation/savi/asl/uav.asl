@@ -8,6 +8,8 @@
 pi(3.14159265359).			// Set the constant for PI
 proximityThreshold(30.0).	// When the agent is closer than this threashold, no need to get closer
 mapSize(900, 700).
+cruisingAltitude(500).		// Set desired cruising altitude for the UAV
+altitudeThreshold(100).		// Set desired cruising altitude for the UAV
 
 /* Rules */
 // Define the turn angle
@@ -30,9 +32,47 @@ destRight :-
 
 destAhead(R) :-
     (not destLeft & not destRight & relativeDestination(AZ, EL, R)).
+	
+// Destination is close
+destinationClose :-
+	relativeDestination(_,_,RANGE) &
+	proximityThreshold(T) &
+	(RANGE < T).
 
+// Destination is far
+destinationFar :-
+	relativeDestination(_,_,RANGE) &
+	proximityThreshold(T) &
+	(RANGE > T).
+	
+// Altitude is too low
+altitudeTooLow :-
+	position(_,_,Z,_) & 
+	cruisingAltitude(A) &
+	altitudeThreshold(T) &
+	(Z < (A - T)).
+	
+// Altitude is too high
+altitudeTooHigh :-
+	position(_,_,Z,_) & 
+	cruisingAltitude(A) &
+	altitudeThreshold(T) &
+	(Z > (A + T)).
+
+// Altitude is within margin
+altitudeCorrect :-
+	not (altitudeTooLow | altitudeTooHigh).
+		
 // Initial goals
+//!sendTelemetry.
 !patrol.    // Patrol the map
+
+// Deal with telemetry request/
++!sendTelemetry
+	:	position(X,Y,Z,TP) & velocity(BEARING,PITCH,SPEED,TV)
+	<-	.broadcast(tell, notifyPosition(X,Y,Z,TP));
+		.broadcast(tell, notifyVelocity(BEARING,PITCH,SPEED,TV)).
++!sendTelemetry.
 
 // Remove any beliefs broadcast by other agents so they don't litter the belief base!
 +notifyThreat(_,_,_,_,_,_)[source(_)]
@@ -85,23 +125,26 @@ nextDest(X, Y) :-
 
 // Move if the destination is ahead of us (and far)
 +!goToDestination
-    :   destAhead(R) &
-        proximityThreshold(T) &
-        R > T
+    :   destinationFar
     <-  !move.
 
 // Stop moving if we arrive at the destination
 +!goToDestination
-    : true
+    : destinationClose
     <-  !stopMoving;
-        -destination(_,_,_);
-        .wait(500).
+        -destination(_,_,_).
 
 
 // Start moving if not moving
 +!move
+	:	altitudeTooLow | altitudeTooHigh
+	<-	!adjustAltitude;
+		!move.
+
++!move
 	: 	velocity(_,_,SPEED,_) &
-		SPEED == 0.0
+		SPEED == 0.0 &
+		altitudeCorrect
 	<-	thrust(on).
 +!move.
 
@@ -111,3 +154,22 @@ nextDest(X, Y) :-
 		SPEED \== 0.0
 	<-	thrust(off).
 +!stopMoving.
+
+
+// Get to the right altitude
++!adjustAltitude
+	:	altitudeTooLow
+	<-	thrust(up);
+		!adjustAltitude.
+		
++!adjustAltitude
+	:	altitudeTooHigh
+	<-	thrust(down);
+		!adjustAltitude.
+		
++!adjustAltitude
+	:	altitudeCorrect
+	<-	hover.
+	
+// Address possibility of being asked to followTarget (no plans)
++!followTarget.

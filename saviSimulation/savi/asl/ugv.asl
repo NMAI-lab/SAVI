@@ -100,12 +100,20 @@ noDestination :-
 /** Initial Goals **/
 /** ============= **/
 
+//!sendTelemetry.
 //!findTarget.		// Find a target
 //!faceTarget.		// Turn to face a target head on
 //!watchTarget.		// Face a target and keep facing it recursively
 !followTarget.		// Follow a target
 
-
+/** =================================================== **/
+/** Deal with telemetry request							**/
+/** =================================================== **/
++!sendTelemetry
+	:	position(X,Y,Z,TP) & velocity(BEARING,PITCH,SPEED,TV)
+	<-	.broadcast(tell, notifyPosition(X,Y,Z,TP));
+		.broadcast(tell, notifyVelocity(BEARING,PITCH,SPEED,TV)).
++!sendTelemetry.
 
 /** =================================================== **/
 /** Removing old notifyThreat beliefs from other agents **/
@@ -219,8 +227,7 @@ noDestination :-
     :   tree(AZ,EL,RANGE,RADIUS,TIME,TYPE) &
         proximityThreshold(T) &
         RANGE < (T + RADIUS)
-    <- .print("Avoiding tree");
-       .drop_all_intentions;
+    <- .drop_all_intentions;
        !stopMoving;
        turn(right);
        !clearAllThreatNotifications; // We need to keep these clear since we've dropped all other intentions. Surely there is a better way to handle this?
@@ -241,8 +248,7 @@ noDestination :-
 // Turn left if destination is on the left
 +!goToDestination(AZ,EL,RANGE)
     : destLeft(AZ,EL,RANGE)
-    <- .print("Destination is Left!");
-        turn(left).
+    <- turn(left).
 
 // Move if destination is ahead of us
 +!goToDestination(AZ,EL,RANGE)
@@ -274,3 +280,6 @@ noDestination :-
 		SPEED \== 0.0
 	<-	thrust(off).
 +!stopMoving.
+
+// Address possibility of being asked to patrol (no plans)
++!patrol.
