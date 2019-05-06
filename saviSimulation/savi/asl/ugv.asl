@@ -227,8 +227,7 @@ noDestination :-
     :   tree(AZ,EL,RANGE,RADIUS,TIME,TYPE) &
         proximityThreshold(T) &
         RANGE < (T + RADIUS)
-    <- //.print("Avoiding tree");
-       .drop_all_intentions;
+    <- .drop_all_intentions;
        !stopMoving;
        turn(right);
        !clearAllThreatNotifications; // We need to keep these clear since we've dropped all other intentions. Surely there is a better way to handle this?
@@ -249,8 +248,7 @@ noDestination :-
 // Turn left if destination is on the left
 +!goToDestination(AZ,EL,RANGE)
     : destLeft(AZ,EL,RANGE)
-    <- //.print("Destination is Left!");
-        turn(left).
+    <- turn(left).
 
 // Move if destination is ahead of us
 +!goToDestination(AZ,EL,RANGE)

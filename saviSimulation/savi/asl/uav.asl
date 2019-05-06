@@ -133,7 +133,6 @@ nextDest(X, Y) :-
     : destinationClose
     <-  !stopMoving;
         -destination(_,_,_).
-        //.wait(500).
 
 
 // Start moving if not moving
