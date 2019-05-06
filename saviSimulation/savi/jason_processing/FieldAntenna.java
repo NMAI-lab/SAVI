@@ -15,9 +15,7 @@ public class FieldAntenna extends WorldObject implements Communicator, CommandSt
 	
 	private List<String> outbox = new LinkedList<String>();
 	
-	//private CommandStationGUI commandStation;
-	//private FancyCommandStation commandStationGUI;
-	private CommandStationCore commandStation;
+	private CommandStationSocketConnector toCommandStation;
 	
 	
 	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, PShape image, double wifiProbFailure) {
@@ -26,10 +24,8 @@ public class FieldAntenna extends WorldObject implements Communicator, CommandSt
 		this.position = position;
 		antenna = new WifiAntenna(id, this, wifiProbFailure);
 		
-		//commandStation = new CommandStationGUI(this, String.valueOf(this.ID)); 
-		//commandStation = new FancyCommandStationGUI(this, String.valueOf(this.ID));
-		commandStation = new CommandStationCore(this, String.valueOf(this.ID));
-		
+		toCommandStation = new CommandStationSocketConnector(this); 
+
 	}
 	
 	@Override
@@ -52,7 +48,7 @@ public class FieldAntenna extends WorldObject implements Communicator, CommandSt
 	
 	@Override
 	public void receiveMessage(String msg) {
-		commandStation.receiveMessage(msg);
+		toCommandStation.messageToCommandStation(msg);
 	}
 
 	@Override
