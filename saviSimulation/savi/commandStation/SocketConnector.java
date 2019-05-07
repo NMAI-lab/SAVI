@@ -69,11 +69,9 @@ public class SocketConnector {
 	                DatagramSocket socket = null;
 	                try {
 	                    socket = new DatagramSocket(myPort);
-	                    //socket.setBroadcast(true);;
 
 	                } catch (SocketException ex) {
 	                    ex.printStackTrace();
-	                    //parent.quit();
 	                }
 	                DatagramPacket packet = new DatagramPacket(new byte[1024], 1024);
 	                
@@ -87,7 +85,6 @@ public class SocketConnector {
 
 	                	} catch (IOException ex) {
 	                		ex.printStackTrace();
-	                		//parent.quit();
 	                	}
 
 	                }
