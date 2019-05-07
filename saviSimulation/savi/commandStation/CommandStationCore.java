@@ -95,11 +95,6 @@ public class CommandStationCore implements MessageHandler {
 	}
 	
 
-	
-	public static void main(String [] args) {
-		new CommandStationCore("5");
-	}
-
 	public static void main(String[] args) {
 		new CommandStationCore("commander");
 	}

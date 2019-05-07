@@ -1,15 +1,13 @@
 package savi.commandStation;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.Random;
 
 import savi.jason_processing.FieldAntenna;
 
+/**
+ * Wraps a connection to the command station using a SocketConnector.
+ * @author davoal01
+ *
+ */
 public class CommandStationSocketConnector implements MessageHandler {
 
 	public static final int SimPort = 9090;
@@ -25,6 +23,10 @@ public class CommandStationSocketConnector implements MessageHandler {
 		
 	}
 	
+	/**
+	 * pass-through messages from simulation to command station
+	 * @param msg
+	 */
 	public void messageToCommandStation(String msg) {
 		socketConnector.messageOut(msg);
 	}

@@ -7,14 +7,16 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+
+/** Miminal connector to hold a peer-to-peer socket connection
+ * Currently only works for a connection on the same machine.
+ */
 public class SocketConnector {
 	
 	private int myPort;
 	private int otherPort;
 	
 	private MessageHandler inboxHandler;
-	
-
 	
 	public SocketConnector(MessageHandler msgHandler, int myPort,
 			int otherPort) {
