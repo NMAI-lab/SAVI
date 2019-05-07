@@ -16,7 +16,7 @@ public class TelemetryFetcher extends Thread {
 	}
 	
 	synchronized public void setTelemetryPeriod(long period) {
-		if (period < this.minTelemetryPeriod) {
+		if (period < TelemetryFetcher.minTelemetryPeriod) {
 			this.telemetryPeriod = 0;
 		} else {
 			this.telemetryPeriod = period;
