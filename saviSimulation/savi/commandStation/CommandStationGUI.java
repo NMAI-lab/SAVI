@@ -13,7 +13,7 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.BadLocationException;
 
-public class CommandStationGUI extends JFrame {
+public class CommandStationGUI {
 	
 	private CommandStationCore commandStation;		// Core of the command station - where the logic is implemented
 
@@ -226,7 +226,7 @@ public class CommandStationGUI extends JFrame {
 		((JComponent) panel).setBorder(title);
 		
 		// create a label to display text
-		fromWifi = new JTextArea(20, 80);
+		fromWifi = new JTextArea(20, 60);
 		JScrollPane scrollPane = new JScrollPane(fromWifi);
 		fromWifi.setEditable(false);
 		panel.add(scrollPane);
@@ -244,7 +244,7 @@ public class CommandStationGUI extends JFrame {
 		((JComponent) panel).setBorder(title);
 		
 		// create a label to display text
-		parsedMessages = new JTextArea(60, 80);
+		parsedMessages = new JTextArea(40, 60);
 		JScrollPane scrollPane = new JScrollPane(parsedMessages);
 		parsedMessages.setEditable(false);
 		panel.add(scrollPane);

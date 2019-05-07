@@ -93,6 +93,12 @@ public class CommandStationCore implements MessageHandler {
 		// Send to the GUI
 		gui.receiveMessage(msg, parsedMessage);
 	}
+	
+
+	
+	public static void main(String [] args) {
+		new CommandStationCore("5");
+	}
 
 }
 
