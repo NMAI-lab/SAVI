@@ -94,5 +94,9 @@ public class CommandStationCore implements MessageHandler {
 		gui.receiveMessage(msg, parsedMessage);
 	}
 
+	public static void main(String[] args) {
+		new CommandStationCore("commander");
+	}
+	
 }
 
