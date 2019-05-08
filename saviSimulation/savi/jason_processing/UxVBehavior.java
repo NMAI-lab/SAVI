@@ -197,6 +197,8 @@ public abstract class UxVBehavior extends AgentModel {
 		if(isSensorFailing(sensorsErrorProb))
 			compassAngleWithError = calculateFailureValueUniform(compasAngle, sensorsErrorCompassAngle);
 		
+		compassAngleWithError=normalize02PI(compassAngleWithError);
+		
 		P.addPerception(new PositionPerception(this.time, (double)myposWithError.x, (double)myposWithError.y, (double)myposWithError.z));
 
 		//Add velocity
@@ -212,8 +214,8 @@ public abstract class UxVBehavior extends AgentModel {
 					elevation = calculateFailureValueUniform(cpi.getParameters().get(1), this.sensorsErrorElevation);
 					range = calculateFailureValueUniform(cpi.getParameters().get(2), this.sensorsErrorRange);
 					
-					azimuth=normalizeAzimuth(azimuth);
-					elevation=normalizeElevation(elevation);
+					azimuth=normalize02PI(azimuth);
+					elevation=normalize0PI(elevation);
 
 					cpi.getParameters().set(0, azimuth);
 					cpi.getParameters().set(1, elevation);
@@ -281,13 +283,13 @@ public abstract class UxVBehavior extends AgentModel {
 		return type;
 	}
 	
-	protected double normalizeAzimuth (double azimuth) {
+	protected double normalize02PI (double azimuth) {
 	    azimuth = (azimuth) % 2*Math.PI;
 	    if (azimuth < 0) azimuth += 2*Math.PI;
 	    return azimuth;
 	}
 	
-	protected double normalizeElevation (double elevation) {
+	protected double normalize0PI (double elevation) {
 	    elevation = (elevation) % Math.PI;
 	    if (elevation < 0) elevation += Math.PI;
 	    return elevation;
