@@ -39,7 +39,11 @@ public class SAVIWorld_model extends PApplet {
 	private int NUMBER_UAV;
 	private int NUMBER_UGV;
 	private double SENSORS_ERROR_PROB;
-	private double SENSORS_ERROR_STD_DEV;
+	private double SENSORS_ERROR_POSITION;
+	private double SENSORS_ERROR_COMPASS_ANGLE;
+	private double SENSORS_ERROR_AZIMUTH_DETECTED;
+	private double SENSORS_ERROR_ELEVATION_DETECTED;
+	private double SENSORS_ERROR_RANGE_DETECTED;
 	private double WIFI_PERCEPTION_DISTANCE;
 	private double WIFI_ERROR_PROB;
 	/********** CONSTANTS THAT CANNOT BE LOADED FROM THE CONF FILE **********/
@@ -125,7 +129,11 @@ public class SAVIWorld_model extends PApplet {
 		UGV_SIZE = Integer.parseInt(modelProps.getProperty("UGV_SIZE"));
 		UAV_SIZE = Integer.parseInt(modelProps.getProperty("UAV_SIZE"));
 		SENSORS_ERROR_PROB = (double) Double.parseDouble(modelProps.getProperty("SENSORS_ERROR_PROB"));
-		SENSORS_ERROR_STD_DEV = (double) Double.parseDouble(modelProps.getProperty("SENSORS_ERROR_STD_DEV"));
+		SENSORS_ERROR_POSITION = (double) Double.parseDouble(modelProps.getProperty("SENSORS_ERROR_POSITION"));
+		SENSORS_ERROR_COMPASS_ANGLE = (double) Double.parseDouble(modelProps.getProperty("SENSORS_ERROR_COMPASS_ANGLE"));
+		SENSORS_ERROR_AZIMUTH_DETECTED = (double) Double.parseDouble(modelProps.getProperty("SENSORS_ERROR_AZIMUTH_DETECTED"));
+		SENSORS_ERROR_ELEVATION_DETECTED = (double) Double.parseDouble(modelProps.getProperty("SENSORS_ERROR_ELEVATION_DETECTED"));
+		SENSORS_ERROR_RANGE_DETECTED = (double) Double.parseDouble(modelProps.getProperty("SENSORS_ERROR_RANGE_DETECTED"));
 		WIFI_ERROR_PROB = (double) Double.parseDouble(modelProps.getProperty("WIFI_ERROR_PROB"));
 		WIFI_PERCEPTION_DISTANCE = Double.parseDouble(modelProps.getProperty("WIFI_PERCEPTION_DISTANCE"));
 		// Initialization code goes here
@@ -193,7 +201,8 @@ public class SAVIWorld_model extends PApplet {
 			//_PIXELS is the maximum and the 1 is our minimum
 			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
 				UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE,"uav", 
-						this, uavImage, REASONING_CYCLE_PERIOD, "drone", UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
+						this, uavImage, REASONING_CYCLE_PERIOD, "drone", UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_POSITION, 
+						SENSORS_ERROR_COMPASS_ANGLE, SENSORS_ERROR_AZIMUTH_DETECTED, SENSORS_ERROR_ELEVATION_DETECTED, SENSORS_ERROR_RANGE_DETECTED, WIFI_ERROR_PROB);
 				wifiParticipants.add(uav.getAntennaRef());
 				objects.add(uav);
 				agentList.put(((UxV)uav).getBehavior().getID(), ((UxV)uav).getBehavior());//Create UaV agent
@@ -203,7 +212,8 @@ public class SAVIWorld_model extends PApplet {
 			//_PIXELS is the maximum and the 1 is our minimum
 			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
 				UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE,"ugv",
-						this, ugvImage, REASONING_CYCLE_PERIOD, "robot3", UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
+						this, ugvImage, REASONING_CYCLE_PERIOD, "robot3", UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_POSITION, 
+						SENSORS_ERROR_COMPASS_ANGLE, SENSORS_ERROR_AZIMUTH_DETECTED, SENSORS_ERROR_ELEVATION_DETECTED, SENSORS_ERROR_RANGE_DETECTED, WIFI_ERROR_PROB);
 				wifiParticipants.add(ugv.getAntennaRef());
 				objects.add(ugv);
 				agentList.put(((UxV)ugv).getBehavior().getID(), ((UxV)ugv).getBehavior());//Create UgV agent

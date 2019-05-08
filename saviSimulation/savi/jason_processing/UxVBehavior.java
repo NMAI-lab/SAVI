@@ -25,7 +25,11 @@ public abstract class UxVBehavior extends AgentModel {
 	protected ArrayList<CameraPerception> visibleItems;
 	protected double time;	
 	protected double sensorsErrorProb;
-	protected double sensorsErrorStdDev;
+	protected double sensorsErrorPosition;
+	protected double sensorsErrorCompassAngle;
+	protected double sensorsErrorAzimuth;
+	protected double sensorsErrorElevation;
+	protected double sensorsErrorRange;
 	protected static Random rand = new Random();
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
@@ -42,7 +46,7 @@ public abstract class UxVBehavior extends AgentModel {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UxVBehavior(String id, String type, PVector initialPosition, double reasoningCyclePeriod, double sensorsErrorProb, double sensorsErrorStdDev) {	
+	public UxVBehavior(String id, String type, PVector initialPosition, double reasoningCyclePeriod, double sensorsErrorProb, double sensorsErrorPosition, double sensorsErrorCompassAngle, double sensorsErrorAzimuth, double sensorsErrorElevation, double sensorsErrorRange) {	
 		// Initialize data values
 		super(reasoningCyclePeriod);
 		this.ID = id;
@@ -55,7 +59,11 @@ public abstract class UxVBehavior extends AgentModel {
 		this.visibleItems = new ArrayList<CameraPerception>();
 		updatePercepts(initialPosition);		
 		this.sensorsErrorProb = sensorsErrorProb;
-		this.sensorsErrorStdDev = sensorsErrorStdDev;
+		this.sensorsErrorPosition = sensorsErrorPosition;
+		this.sensorsErrorCompassAngle = sensorsErrorCompassAngle;
+		this.sensorsErrorAzimuth = sensorsErrorAzimuth;
+		this.sensorsErrorElevation = sensorsErrorElevation;
+		this.sensorsErrorRange = sensorsErrorRange;
 	}
 
 	public ArrayList<CameraPerception> getVisibleItems() {
@@ -180,13 +188,14 @@ public abstract class UxVBehavior extends AgentModel {
 	 */
 	protected void updatePercepts(PVector mypos) {
 		PerceptionSnapshot P = new PerceptionSnapshot();
-
+		CameraPerception cp;
+		double azimuth, elevation, range;
 		//if position sensor is failing will return an error
 		PVector myposWithError = getPositionWithError(mypos,sensorsErrorProb);
 		double compassAngleWithError = this.compasAngle;
 
 		if(isSensorFailing(sensorsErrorProb))
-			compassAngleWithError = calculateFailureValue(compasAngle, sensorsErrorStdDev);
+			compassAngleWithError = calculateFailureValueUniform(compasAngle, sensorsErrorCompassAngle);
 		
 		P.addPerception(new PositionPerception(this.time, (double)myposWithError.x, (double)myposWithError.y, (double)myposWithError.z));
 
@@ -198,11 +207,18 @@ public abstract class UxVBehavior extends AgentModel {
 		
 		//Add Visible items
 		for(CameraPerception cpi : this.visibleItems) {
-			for(int i=0; i<cpi.getParameters().size(); i++) {
 				if(isSensorFailing(sensorsErrorProb)) {
-					cpi.getParameters().set(i, calculateFailureValue(cpi.getParameters().get(i), this.sensorsErrorStdDev));
-				}
-			}	
+					azimuth = calculateFailureValueUniform(cpi.getParameters().get(0), this.sensorsErrorAzimuth);
+					elevation = calculateFailureValueUniform(cpi.getParameters().get(1), this.sensorsErrorElevation);
+					range = calculateFailureValueUniform(cpi.getParameters().get(2), this.sensorsErrorRange);
+					
+					azimuth=normalizeAzimuth(azimuth);
+					elevation=normalizeElevation(elevation);
+
+					cpi.getParameters().set(0, azimuth);
+					cpi.getParameters().set(1, elevation);
+					cpi.getParameters().set(2, range);
+				}	
 			P.addPerception(cpi);
 		}
 		
@@ -216,10 +232,10 @@ public abstract class UxVBehavior extends AgentModel {
 	protected PVector getPositionWithError(PVector position, double sensorErrorProb) {
 		PVector positionWithError = position.copy();
 		if(isSensorFailing(sensorErrorProb)) {
-			positionWithError.x = (float)calculateFailureValue((double)position.x, this.sensorsErrorStdDev);
-			positionWithError.y = (float)calculateFailureValue((double)position.y, this.sensorsErrorStdDev);
-			positionWithError.z = (float)calculateFailureValue((double)position.z, this.sensorsErrorStdDev);
-		}	
+			positionWithError.x = (float)calculateFailureValueUniform((double)position.x, this.sensorsErrorPosition);
+			positionWithError.y = (float)calculateFailureValueUniform((double)position.y, this.sensorsErrorPosition);
+			positionWithError.z = (float)calculateFailureValueUniform((double)position.z, this.sensorsErrorPosition);
+		}
 		return positionWithError;
 	}
 	
@@ -232,10 +248,17 @@ public abstract class UxVBehavior extends AgentModel {
 
 	
 	// generate random value for a normal distribution (mean, stdDev)
-	protected double calculateFailureValue (double mean, double stdDev) {
+	protected double calculateFailureValueNormal (double mean, double stdDev) {
 		return ((rand.nextGaussian()*stdDev)+mean);
 	}
 
+	
+	// generate random value for a uniform distribution (mean-range, mean+range)
+		protected double calculateFailureValueUniform (double mean, double range) {
+			double a=mean-range, b=mean+range;
+			return a+(b-a)*rand.nextGaussian();
+		}
+	
 	
 	public static void setSeed(int seed) {
 		if(seed != -1) {
@@ -257,4 +280,17 @@ public abstract class UxVBehavior extends AgentModel {
 	public String getType() {		
 		return type;
 	}
+	
+	protected double normalizeAzimuth (double azimuth) {
+	    azimuth = (azimuth) % 2*Math.PI;
+	    if (azimuth < 0) azimuth += 2*Math.PI;
+	    return azimuth;
+	}
+	
+	protected double normalizeElevation (double elevation) {
+	    elevation = (elevation) % Math.PI;
+	    if (elevation < 0) elevation += Math.PI;
+	    return elevation;
+	}
+	
 }

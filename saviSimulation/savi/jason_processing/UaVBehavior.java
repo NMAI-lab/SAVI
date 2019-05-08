@@ -27,9 +27,9 @@ public class UaVBehavior extends UxVBehavior {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UaVBehavior(String id, String type, PVector initialPosition, double reasoningCyclePeriod, double sensorsErrorProb, double sensorsErrorStdDev) {	
+	public UaVBehavior(String id, String type, PVector initialPosition, double reasoningCyclePeriod, double sensorsErrorProb, double sensorsErrorPosition, double sensorsErrorCompassAngle, double sensorsErrorAzimuth, double sensorsErrorElevation, double sensorsErrorRange) {	
 		// Initialize data values
-		super(id, type, initialPosition,reasoningCyclePeriod, sensorsErrorProb, sensorsErrorStdDev);
+		super(id, type, initialPosition,reasoningCyclePeriod, sensorsErrorProb, sensorsErrorPosition, sensorsErrorCompassAngle, sensorsErrorAzimuth, sensorsErrorElevation, sensorsErrorRange);
 	}
 	
 	/**
