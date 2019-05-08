@@ -2,9 +2,15 @@ package savi.commandStation;
 
 import savi.commandStation.Telemetry.*;
 
-public class CommandStationCore {
+public class CommandStationCore implements MessageHandler {
 	
-	private CommandStationConnector connector; 	// connection to the rest of the simulation
+	
+	public static final int simPort = 9090;
+	public static final int commandStationPort = 9091;
+	
+	
+	
+	private SocketConnector socketConnector; 	// connection to the rest of the simulation
 	private String id; 							// identifier to use in messages
 	
 	private TelemetryFetcher telemetryFetcher;	// class in a separate thread that generates messages for fetching telemetry
@@ -17,10 +23,12 @@ public class CommandStationCore {
 	 * @param connector 	The connector to the rest of the simulation
 	 * @param ID			The agent ID for the command station (address for messages)
 	 */
-	public CommandStationCore(CommandStationConnector connector, String ID) {
+	public CommandStationCore(String ID)  {
 		// Set message ID and connecter parameters
 		this.id = ID;
-		this.connector = connector;
+		this.socketConnector =  new SocketConnector(this, commandStationPort, simPort);
+		socketConnector.listenForMessages(); // start the "server" on the socket
+
 		
 		// Build the GUI (remove the parameters)
 		gui = new CommandStationGUI(this);
@@ -49,38 +57,23 @@ public class CommandStationCore {
 		// Build the message
 		String message = "<" + mid + "," + this.id + "," + messageType + "," + destination + "," + parameter + ">";
 		
-		// *** SEND OVER SOCKET HERE *** //
+		// Send the message
+		socketConnector.messageOut(message);
+	}
 		
-		// Send the message
-		this.sendMessagePassthrough(message);
-	}
-	
-	
-	/**
-	 * Sends the message to the agents
-	 * 
-	 * *** Assuming that the messages are valid, socket receiver should call this method ***
-	 * 
-	 * @param	The message to be sent - MUST BE A VALID MESSAGE, NO ERROR CHECKING IN THIS METHOD
-	 */
-	public synchronized void sendMessagePassthrough(String message) {
-		// Send the message
-		this.connector.messageOut(message);
-	}
-	
 	
 	/**
 	 * Method to receive messages from the simulator
 	 * 
 	 * @param msg an incoming message.
 	 */
-	public void receiveMessage(String msg) {
-		
-		// *** SEND OVER SOCKET HERE *** //
-		
+	@Override
+	public void messageIn(String msg) {
+
+
 		// Parse the message and get a telemetryItem
 		TelemetryItem item = TelemetryItem.generateTelemetryItem(msg);
-		
+
 		// Parse the message
 		String parsedMessage;
 		if (item instanceof ThreatTelemetry) {
@@ -96,9 +89,15 @@ public class CommandStationCore {
 			parsedMessage = item.toString();
 			//parsedMessage = "";
 		}
-		
+
 		// Send to the GUI
 		gui.receiveMessage(msg, parsedMessage);
 	}
+	
+
+	public static void main(String[] args) {
+		new CommandStationCore("commander");
+	}
+	
 }
 
