@@ -86,10 +86,7 @@ public abstract class UxV extends WorldObject implements Communicator {
 
 		//draw circle on objects perceived
 		for(CameraPerception cpi : this.getBehavior().getVisibleItems()){
-			double angle = (this.getBehavior().getCompassAngle()+cpi.getParameters().get(0));// % 2* Math.PI;
-			double cosv = Math.cos(angle);
-			double sinv = Math.sin(angle);
-			p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+this.position.x, Math.round(sinv*cpi.getParameters().get(2))+this.position.y);
+			p1 = Geometry.absolutePositionFromPolar(cpi.getParameters().get(0), cpi.getParameters().get(1), cpi.getParameters().get(2), this.position, this.getBehavior().getCompassAngle());
 			// draw circle over items visualized
 			simulator.ellipse(p1.x,p1.y, cpi.getParameters().get(3).floatValue()*2, cpi.getParameters().get(3).floatValue()*2);
 		}
