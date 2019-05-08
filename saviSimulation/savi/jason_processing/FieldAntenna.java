@@ -18,9 +18,9 @@ public class FieldAntenna extends WorldObject implements Communicator, CommandSt
 	private CommandStationSocketConnector toCommandStation;
 	
 	
-	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, PShape image, double wifiProbFailure) {
+	public FieldAntenna(int id, PVector position, SAVIWorld_model sim, int size, double wifiProbFailure) {
 		
-		super(id, position, size, "FieldAntenna", sim, image);
+		super(id, position, size, "FieldAntenna", sim);
 		this.position = position;
 		antenna = new WifiAntenna(id, this, wifiProbFailure);
 		
@@ -40,10 +40,6 @@ public class FieldAntenna extends WorldObject implements Communicator, CommandSt
 		return position;
 	}
 	
-	@Override
-	public void draw(PVector position) {
-		simulator.shape(this.image, this.position.x, this.position.y,pixels,pixels);
-	}
 
 	
 	@Override

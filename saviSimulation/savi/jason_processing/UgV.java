@@ -12,7 +12,8 @@ import savi.StateSynchronization.*;
 
 public class UgV extends UxV {
 	private static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
-
+	private static final double UGVperceptionAngle = Math.PI;
+	private static final String UGVType = "ugv";
 	//-----------------------------------------
 	// DATA (or state variables)
 	//-----------------------------------------  
@@ -31,15 +32,15 @@ public class UgV extends UxV {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UgV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName, int perceptionDistance, double sensorsErrorProb, double sensorsErrorStdDev, double probWifiFailing) {			
+	public UgV(int id, PVector pos, int pixels, SAVIWorld_model sim, double reasoningCyclePeriod, int perceptionDistance, double sensorsErrorProb, double sensorsErrorStdDev, double probWifiFailing) {			
 		// Initializes UAS as WorldObject
-		super(id, pos, pixels, Type, sim, image, reasoningCyclePeriod, imageName, perceptionDistance, sensorsErrorProb, sensorsErrorStdDev, probWifiFailing);
+		super(id, pos, pixels, UGVType, sim, reasoningCyclePeriod, perceptionDistance, UGVperceptionAngle, sensorsErrorProb, sensorsErrorStdDev, probWifiFailing);
 		// Initializes Behavior
 		this.uxvBehavior = new UgVBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod, sensorsErrorProb, sensorsErrorStdDev);
 	}
 	
-	public void drawPerceptionArea() {
-		simulator.arc(position.x, position.y, this.perceptionDistance*2, this.perceptionDistance*2, (float)this.getBehavior().getCompassAngle()-(float)Math.PI/2, (float)this.getBehavior().getCompassAngle()+(float)Math.PI/2);
-	}
+	
+	
+	
 	
 }
