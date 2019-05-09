@@ -23,9 +23,9 @@ public class Threat extends WorldObject{
 	//              that doesn't have a type (not even void).
 	
 
-	Threat(int id, PVector initialPosition, int seed, double MS, int pxSize, String type, SAVIWorld_model world, PShape img) {
+	Threat(int id, PVector initialPosition, int seed, double MS, int pxSize, String type, SAVIWorld_model world) {
 		// Initialize data values
-		super(id, initialPosition, pxSize, type, world, img);
+		super(id, initialPosition, pxSize, type, world);
 		rand = new Random();
 		if(seed != -1) {
 			rand = new Random(seed + this.ID);
@@ -94,15 +94,7 @@ public class Threat extends WorldObject{
 		System.out.println("Threat heading to position "+rx+" / "+ry );
 	}
 	
-	@Override
-	public void draw(PVector position) {
-		simulator.stroke(0);
-
-		simulator.shapeMode(PConstants.CENTER);
-		simulator.shape(this.image, this.position.x, this.position.y, this.pixels, this.pixels);
-		//show height lower and upper
-		simulator.text(Double.toString(position.z+(this.pixels/2))+"\n"+Double.toString(position.z-(this.pixels/2)), position.x, position.y);
-	}
+	
 
 
 }

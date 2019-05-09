@@ -70,7 +70,7 @@ public abstract class UxVBehavior extends AgentModel {
 	 * process actions from the queue, update the UAS state variable and set the new perceptions
 	 */
 
-	public void update(UxV uxv, double simTime, int perceptionDistance, List<WorldObject> objects){
+	public void update(UxV uxv, double simTime, float perceptionDistance, List<WorldObject> objects){
 		PVector movementVector = new PVector();
 		
 		//Process actions to update speedVal & compassAngle & verticalPosition(if applies)

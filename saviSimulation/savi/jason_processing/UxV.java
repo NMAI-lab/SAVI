@@ -19,7 +19,9 @@ public abstract class UxV extends WorldObject implements Communicator {
 	protected WifiAntenna wifiAntenna;
 	protected UxVBehavior uxvBehavior;
 	protected String imageName;
-	protected int perceptionDistance;
+	protected float perceptionDistance;
+
+	public float perceptionAngle;
 	private static Random rand = new Random();
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
@@ -36,12 +38,13 @@ public abstract class UxV extends WorldObject implements Communicator {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, PShape image, double reasoningCyclePeriod, String imageName, int perceptionDistance, double sensorsErrorProb, double sensorsErrorStdDev, double probWifiFailure) {			
+	public UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, double reasoningCyclePeriod, int perceptionDistance, double perceptionAngle, double sensorsErrorProb, double sensorsErrorStdDev, double probWifiFailure) {			
 		// Initializes UAS as WorldObject
-		super(id, pos, pixels, Type, sim, image);
-		this.imageName=imageName;
+		super(id, pos, pixels, Type, sim);
+		//this.imageName=imageName;
 		// Initializes Behaviuor
 		//this.uxvBehavior = new UxVBehavior(Integer.toString(id), type, pos, reasoningCyclePeriod);
+		this.perceptionAngle = (float) perceptionAngle;
 		this.wifiAntenna = new WifiAntenna (id, this, probWifiFailure);
 		this.perceptionDistance=perceptionDistance;
 	}
@@ -59,44 +62,6 @@ public abstract class UxV extends WorldObject implements Communicator {
 	public void setPosition(PVector pos) {		
 		this.position = pos;
 	}
-	
-	@Override
-	public void draw(PVector position) {
-		PVector p1;
-		simulator.stroke(0);
-
-		//it's easier to load the image every time to rotate it to the compassAngle
-		image=simulator.loadShape("SimImages/"+imageName+".svg");
-		
-		// translate to center image on uasposition.x, uasposition.y
-//			simulator.shapeMode(PConstants.CENTER);// didn't work
-		image.translate(-image.width/2,-image.height/2);		
-		
-		// to adjust compassAngle to the image
-		image.rotate((float) ((float)this.getBehavior().getCompassAngle()+Math.PI/2));
-
-		//draw image
-		simulator.shape(image, position.x+pixels/2, position.y+pixels/2, pixels, pixels);
-		//show height lower and upper
-		simulator.text(Double.toString(position.z+(this.pixels/2))+"\n"+Double.toString(position.z-(this.pixels/2)), position.x, position.y);
-		simulator.noFill();
-
-		//draw perception area
-		drawPerceptionArea();
-
-		//draw circle on objects perceived
-		for(CameraPerception cpi : this.getBehavior().getVisibleItems()){
-			double angle = (this.getBehavior().getCompassAngle()+cpi.getParameters().get(0));// % 2* Math.PI;
-			double cosv = Math.cos(angle);
-			double sinv = Math.sin(angle);
-			p1 = new PVector(Math.round(cosv*cpi.getParameters().get(2))+this.position.x, Math.round(sinv*cpi.getParameters().get(2))+this.position.y);
-			// draw circle over items visualized
-			simulator.ellipse(p1.x,p1.y, cpi.getParameters().get(3).floatValue()*2, cpi.getParameters().get(3).floatValue()*2);
-		}
-	}
-	
-	
-	public abstract void drawPerceptionArea();
 	
 	
 	@Override
