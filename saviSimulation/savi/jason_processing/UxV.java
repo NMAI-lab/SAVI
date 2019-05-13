@@ -63,6 +63,9 @@ public abstract class UxV extends WorldObject implements Communicator {
 		this.position = pos;
 	}
 	
+	public static void setSeed(Random ran) {
+		rand = ran;
+	}	
 	
 	@Override
 	public  List<String> getOutgoingMessages(){
