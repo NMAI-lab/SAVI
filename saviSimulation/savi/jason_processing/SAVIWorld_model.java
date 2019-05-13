@@ -146,15 +146,15 @@ public class SAVIWorld_model {
 
 		for (int i = 0; i < NUMBER_THREATS; i++) { // Put threats
 			// _PIXELS is the maximum and the 1 is our minimum.
-			objects.add(new Threat(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, THREAT_SIZE/2), RANDOM_SEED, MAX_SPEED,
+			objects.add(new Threat(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, THREAT_SIZE/2), rand, MAX_SPEED,
 					THREAT_SIZE, "threat", this));
 		}
 		
 		//set classes values
 		WifiAntenna.setPerceptionDistance(WIFI_PERCEPTION_DISTANCE);
-		WifiAntenna.setSeed(RANDOM_SEED);
-		UxVBehavior.setSeed(RANDOM_SEED);
-		
+		WifiAntenna.setSeed(rand);
+		UxVBehavior.setSeed(rand);
+		UxV.setSeed(rand);
 		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, WIFI_ERROR_PROB);
 		objects.add(consoleProxy);
 		System.out.println("console proxy coordinates:"+consoleProxy.position.x+" / "+consoleProxy.position.y);

@@ -237,10 +237,8 @@ public abstract class UxVBehavior extends AgentModel {
 	}
 
 	
-	public static void setSeed(int seed) {
-		if(seed != -1) {
-			rand = new Random(seed);
-		}
+	public static void setSeed(Random ran) {
+			rand = ran;		
 	}
 	
 	/**
