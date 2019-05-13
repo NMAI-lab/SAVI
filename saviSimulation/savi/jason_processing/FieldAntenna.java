@@ -24,7 +24,7 @@ public class FieldAntenna extends WorldObject implements Communicator, CommandSt
 		this.position = position;
 		antenna = new WifiAntenna(id, this, wifiProbFailure);
 		
-		toCommandStation = new CommandStationSocketConnector(this); 
+		toCommandStation = CommandStationSocketConnector.getCommandStationSocketConnector(this); 
 
 	}
 	

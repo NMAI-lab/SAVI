@@ -88,7 +88,8 @@ public class SAVI_Processing extends PApplet implements SimView {
 		
 	}
 	
-	public void drawOnce() {
+	public void drawOnce(boolean paused) {
+		
 		
 		background(backGround);
 		if (worldModel ==null) {
@@ -99,11 +100,18 @@ public class SAVI_Processing extends PApplet implements SimView {
 			drawWorldObject(wo);
 		}
 
-		playButton.label = "pause";
+		if(paused) {
 
-		playButton.drawButton();
-		stopButton.drawButton();
+			playButton.label = "play";
 
+			playButton.drawButton();
+			stopButton.drawButton();
+		}else {
+			playButton.label = "pause";
+
+			playButton.drawButton();
+			stopButton.drawButton();
+		}
 	}
 	
 	

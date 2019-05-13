@@ -192,7 +192,8 @@ public class SAVIWorld_model {
 	//************************************************/
 	public void update(double simTimeDelta) {
 		if (simPaused) {
-
+			for (SimView view: views)
+				view.drawOnce(true);
 			return; // don't change anything if sim is paused
 		}
 
@@ -224,7 +225,7 @@ public class SAVIWorld_model {
 		//		background(240); // white background
 
 		for (SimView view: views)
-			view.drawOnce();
+			view.drawOnce(false);
 	}
 
 
