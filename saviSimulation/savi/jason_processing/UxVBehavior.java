@@ -180,7 +180,7 @@ public abstract class UxVBehavior extends AgentModel {
 	 */
 	protected void updatePercepts(PVector mypos) {
 		PerceptionSnapshot P = new PerceptionSnapshot();
-
+		double azimuth, elevation, range;
 		//if position sensor is failing will return an error
 		PVector myposWithError = getPositionWithError(mypos,sensorsErrorProb);
 		double compassAngleWithError = this.compasAngle;
@@ -204,15 +204,22 @@ public abstract class UxVBehavior extends AgentModel {
 		P.addPerception(new TimePerception(this.time));
 		
 		//Add Visible items
-		for(CameraPerception cpi : this.visibleItems) {
-			for(int i=0; i<cpi.getParameters().size(); i++) {
-				if(isSensorFailing(sensorsErrorProb)) {
-					cpi.getParameters().set(i, calculateFailureValue(cpi.getParameters().get(i), this.sensorsErrorStdDev));
+				for(CameraPerception cpi : this.visibleItems) {
+						if(isSensorFailing(sensorsErrorProb)) {
+							azimuth = calculateFailureValue(cpi.getParameters().get(0), this.sensorsErrorStdDev);
+							elevation = calculateFailureValue(cpi.getParameters().get(1), this.sensorsErrorStdDev);
+							range = calculateFailureValue(cpi.getParameters().get(2), this.sensorsErrorStdDev);
+							
+							azimuth=Geometry.normalize02PI(azimuth);
+							elevation=Geometry.normalize0PI(elevation);
+
+							cpi.getParameters().set(0, azimuth);
+							cpi.getParameters().set(1, elevation);
+							cpi.getParameters().set(2, range);
+						}	
+					P.addPerception(cpi);
 				}
-			}	
-			P.addPerception(cpi);
-		}
-		
+				
 		agentState.setPerceptions(P);
 	}
 	
@@ -244,7 +251,8 @@ public abstract class UxVBehavior extends AgentModel {
 	protected double calculateFailureValue (double mean, double stdDev) {
 		return ((rand.nextGaussian()*stdDev)+mean);
 	}
-
+	
+	
 	
 	public static void setSeed(int seed) {
 		if(seed != -1) {
