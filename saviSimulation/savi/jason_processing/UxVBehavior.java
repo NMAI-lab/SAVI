@@ -188,6 +188,13 @@ public abstract class UxVBehavior extends AgentModel {
 		if(isSensorFailing(sensorsErrorProb))
 			compassAngleWithError = calculateFailureValue(compasAngle, sensorsErrorStdDev);
 		
+		// to normalize between 0 to 2 Pi                                                                
+			while (compassAngleWithError < 0)                                                                                    
+				compassAngleWithError += (2 * Math.PI);
+				
+			while (compassAngleWithError > (2 * Math.PI))
+				compassAngleWithError -= (2 * Math.PI);
+		
 		P.addPerception(new PositionPerception(this.time, (double)myposWithError.x, (double)myposWithError.y, (double)myposWithError.z));
 
 		//Add velocity
@@ -231,7 +238,9 @@ public abstract class UxVBehavior extends AgentModel {
 	}
 
 	
-	// generate random value for a normal distribution (mean, stdDev)
+	// Generate random value for a normal distribution (mean, stdDev)
+	// nextGaussian returns a value for the normal distribution (0,1)
+	// multiply for the stdDev to get error and this error value is added to the mean
 	protected double calculateFailureValue (double mean, double stdDev) {
 		return ((rand.nextGaussian()*stdDev)+mean);
 	}
