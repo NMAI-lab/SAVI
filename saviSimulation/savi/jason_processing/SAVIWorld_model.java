@@ -73,6 +73,7 @@ public class SAVIWorld_model {
 		views.add(v);
 	}
 	
+	public static Random rand = new Random();
 
 	/************* Main setup() ***********************/
 // Main system initialization function
@@ -114,20 +115,16 @@ public class SAVIWorld_model {
 			System.out.println("Exception occurred");
 		}
 		
-		
-		Random rand = new Random();
 		// ======= Jason BDI agents ================
 		Map<String, AgentModel> agentList = new HashMap<String, AgentModel>();
 		//====================================================
 
-		if (RANDOM_SEED != -1) {
-			rand = new Random(RANDOM_SEED);
-		}
+		setSeed(rand);
 		
 		for(int i = 0; i < NUMBER_UAV; i++)  { //Put UaV
 			//_PIXELS is the maximum and the 1 is our minimum
 			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
-			UaV uav = new UaV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE, 
+			UaV uav = new UaV(i, new PVector(SAVIWorld_model.rand.nextInt(X_PIXELS) + 1, SAVIWorld_model.rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE, 
 					this, REASONING_CYCLE_PERIOD, UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
 			wifiParticipants.add(uav.getAntennaRef());
 			objects.add(uav);
@@ -137,7 +134,7 @@ public class SAVIWorld_model {
 			// The way the for loop is set up is to make sure all the UxVs have different ids
 			//_PIXELS is the maximum and the 1 is our minimum
 			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
-			UgV ugv= new UgV(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE,
+			UgV ugv= new UgV(i, new PVector(SAVIWorld_model.rand.nextInt(X_PIXELS) + 1, SAVIWorld_model.rand.nextInt(Y_PIXELS) + 1, UGV_SIZE/2), UGV_SIZE,
 					this, REASONING_CYCLE_PERIOD, UGV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
 			wifiParticipants.add(ugv.getAntennaRef());
 			objects.add(ugv);
@@ -146,16 +143,13 @@ public class SAVIWorld_model {
 
 		for (int i = 0; i < NUMBER_THREATS; i++) { // Put threats
 			// _PIXELS is the maximum and the 1 is our minimum.
-			objects.add(new Threat(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, THREAT_SIZE/2), MAX_SPEED,
+			objects.add(new Threat(i, new PVector(SAVIWorld_model.rand.nextInt(X_PIXELS) + 1, SAVIWorld_model.rand.nextInt(Y_PIXELS) + 1, THREAT_SIZE/2), MAX_SPEED,
 					THREAT_SIZE, "threat", this));
 		}
 		
 		//set classes values
 		WifiAntenna.setPerceptionDistance(WIFI_PERCEPTION_DISTANCE);
-		WifiAntenna.setSeed(rand);
-		UxVBehavior.setSeed(rand);
-		WorldObject.setSeed(rand);
-		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, WIFI_ERROR_PROB);
+		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(SAVIWorld_model.rand.nextInt(X_PIXELS) + 1, SAVIWorld_model.rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, WIFI_ERROR_PROB);
 		objects.add(consoleProxy);
 		System.out.println("console proxy coordinates:"+consoleProxy.position.x+" / "+consoleProxy.position.y);
 		wifiParticipants.add(consoleProxy.getAntennaRef());
@@ -276,5 +270,14 @@ public class SAVIWorld_model {
 	}
 
 
-
+	private void setSeed(Random rand) {
+		if (RANDOM_SEED != -1) {
+			rand = new Random(RANDOM_SEED);
+		}else {
+			rand = new Random(System.currentTimeMillis());
+		}
+	}
+	
+	
+	
 }

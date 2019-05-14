@@ -26,7 +26,6 @@ public abstract class UxVBehavior extends AgentModel {
 	protected double time;	
 	protected double sensorsErrorProb;
 	protected double sensorsErrorStdDev;
-	protected static Random rand = new Random();
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
 	//IF WE WANT TO IMPLEMENTE MALFUNCTION OF SENSORS, THE INFO RECEIVED IN 
@@ -237,7 +236,7 @@ public abstract class UxVBehavior extends AgentModel {
 	
 	// takes probability parameter between 0 and 1 
 	protected boolean isSensorFailing (double probability) {
-		return (rand.nextDouble()<probability);
+		return (SAVIWorld_model.rand.nextDouble()<probability);
 	}
 
 	
@@ -245,18 +244,9 @@ public abstract class UxVBehavior extends AgentModel {
 	// nextGaussian returns a value for the normal distribution (0,1)
 	// multiply for the stdDev to get error and this error value is added to the mean
 	protected double calculateFailureValue (double mean, double stdDev) {
-		return ((rand.nextGaussian()*stdDev)+mean);
+		return ((SAVIWorld_model.rand.nextGaussian()*stdDev)+mean);
 	}
 	
-	public static void setSeed(Random ran) {
-		if (rand == null) {
-			rand = new Random();
-		}
-		else {
-			rand = ran;
-		}
-		
-	}
 	
 	/**
 	 * Get UAS id
