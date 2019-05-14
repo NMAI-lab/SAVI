@@ -154,7 +154,7 @@ public class SAVIWorld_model {
 		WifiAntenna.setPerceptionDistance(WIFI_PERCEPTION_DISTANCE);
 		WifiAntenna.setSeed(rand);
 		UxVBehavior.setSeed(rand);
-		UxV.setSeed(rand);
+		WorldObject.setSeed(rand);
 		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, WIFI_ERROR_PROB);
 		objects.add(consoleProxy);
 		System.out.println("console proxy coordinates:"+consoleProxy.position.x+" / "+consoleProxy.position.y);

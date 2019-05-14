@@ -15,6 +15,7 @@ public class WorldObject{
 		protected PVector position;
 		String type;
 		SAVIWorld_model simulator;
+		protected static Random rand = new Random();
 		
 		int pixels;
 			//-----------------------------------------
@@ -51,5 +52,13 @@ public class WorldObject{
 			return position;
 		}
 
-
+		public static void setSeed(Random ran) {
+			if (rand == null) {
+				rand = new Random();
+			}
+			else {
+				rand = ran;
+			}
+			
+		}
 }

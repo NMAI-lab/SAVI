@@ -12,7 +12,6 @@ public class Threat extends WorldObject{
 	// DATA (or state variables)
 	//-----------------------------------------
 	double maxSpeed;
-	Random rand;
 	double movingAngle = 0;
 	PVector nextRandomDestination;
 	//-----------------------------------------
@@ -26,7 +25,6 @@ public class Threat extends WorldObject{
 	Threat(int id, PVector initialPosition, Random ran, double MS, int pxSize, String type, SAVIWorld_model world) {
 		// Initialize data values
 		super(id, initialPosition, pxSize, type, world);
-		rand = ran;	
 		maxSpeed = MS;// the max speed 
 		this.movingAngle = (double) (rand.nextInt(10)*(Math.PI/4));
 		

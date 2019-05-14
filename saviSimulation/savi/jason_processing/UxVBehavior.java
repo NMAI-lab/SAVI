@@ -189,11 +189,7 @@ public abstract class UxVBehavior extends AgentModel {
 			compassAngleWithError = calculateFailureValue(compasAngle, sensorsErrorStdDev);
 		
 		// to normalize between 0 to 2 Pi                                                                
-			while (compassAngleWithError < 0)                                                                                    
-				compassAngleWithError += (2 * Math.PI);
-				
-			while (compassAngleWithError > (2 * Math.PI))
-				compassAngleWithError -= (2 * Math.PI);
+		Geometry.normalize02PI(compasAngle);
 		
 		P.addPerception(new PositionPerception(this.time, (double)myposWithError.x, (double)myposWithError.y, (double)myposWithError.z));
 
@@ -252,10 +248,14 @@ public abstract class UxVBehavior extends AgentModel {
 		return ((rand.nextGaussian()*stdDev)+mean);
 	}
 	
-	
-	
 	public static void setSeed(Random ran) {
-			rand = ran;		
+		if (rand == null) {
+			rand = new Random();
+		}
+		else {
+			rand = ran;
+		}
+		
 	}
 	
 	/**

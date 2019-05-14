@@ -33,7 +33,7 @@ public class Geometry {
 		double azimuth = theta1 - refAngle;
 
 		// to normalize between 0 to 2 Pi                                                                
-		azimuth = normalize02PI(azimuth);
+		azimuth = Geometry.normalize02PI(azimuth);
 		
 		// Calculate the elevation and deal with NaN case
 		PVector difference = targetPosition.copy().sub(refPosition);
@@ -91,10 +91,10 @@ public class Geometry {
 
 	public static double normalize0PI(double angle) {
 		while (angle < 0)                                                                                    
-			angle += (2 * Math.PI);
+			angle += (Math.PI);
 		
-		while (angle > (2 * Math.PI))
-			angle -= (2 * Math.PI);
+		while (angle > (Math.PI))
+			angle -= (Math.PI);
 	
 		return angle;
 	}
