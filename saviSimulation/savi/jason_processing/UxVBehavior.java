@@ -207,7 +207,7 @@ public abstract class UxVBehavior extends AgentModel {
 							range = calculateFailureValue(cpi.getParameters().get(2), this.sensorsErrorStdDev);
 							
 							azimuth=Geometry.normalize02PI(azimuth);
-							elevation=Geometry.normalize0PI(elevation);
+							elevation=Geometry.normalizeMinusPIPI(elevation);
 
 							cpi.getParameters().set(0, azimuth);
 							cpi.getParameters().set(1, elevation);

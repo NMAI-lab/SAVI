@@ -89,11 +89,11 @@ public class Geometry {
 		return angle;
 	}
 
-	public static double normalize0PI(double angle) {
-		while (angle < 0)                                                                                    
+	public static double normalizeMinusPIPI(double angle) {
+		while (angle < -Math.PI)                                                                                    
 			angle += (Math.PI);
 		
-		while (angle > (Math.PI))
+		while (angle > Math.PI)
 			angle -= (Math.PI);
 	
 		return angle;
