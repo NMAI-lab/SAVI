@@ -189,7 +189,7 @@ public abstract class UxVBehavior extends AgentModel {
 			compassAngleWithError = calculateFailureValue(compasAngle, sensorsErrorStdDev);
 		
 		// to normalize between 0 to 2 Pi                                                                
-		Geometry.normalize02PI(compasAngle);
+		compasAngle = Geometry.normalize02PI(compasAngle);
 		
 		P.addPerception(new PositionPerception(this.time, (double)myposWithError.x, (double)myposWithError.y, (double)myposWithError.z));
 
