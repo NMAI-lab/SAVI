@@ -22,7 +22,7 @@ public class Threat extends WorldObject{
 	//              that doesn't have a type (not even void).
 	
 
-	Threat(int id, PVector initialPosition, Random ran, double MS, int pxSize, String type, SAVIWorld_model world) {
+	Threat(int id, PVector initialPosition, double MS, int pxSize, String type, SAVIWorld_model world) {
 		// Initialize data values
 		super(id, initialPosition, pxSize, type, world);
 		maxSpeed = MS;// the max speed 

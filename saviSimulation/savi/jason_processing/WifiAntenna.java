@@ -86,7 +86,13 @@ public class WifiAntenna {
 	}
 	
 	public static void setSeed(Random ran) {
-		rand = ran;
+		if (rand == null) {
+			rand = new Random();
+		}
+		else {
+			rand = ran;
+		}
+		
 	}
 	
 }

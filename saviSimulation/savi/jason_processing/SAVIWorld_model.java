@@ -146,7 +146,7 @@ public class SAVIWorld_model {
 
 		for (int i = 0; i < NUMBER_THREATS; i++) { // Put threats
 			// _PIXELS is the maximum and the 1 is our minimum.
-			objects.add(new Threat(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, THREAT_SIZE/2), rand, MAX_SPEED,
+			objects.add(new Threat(i, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, THREAT_SIZE/2), MAX_SPEED,
 					THREAT_SIZE, "threat", this));
 		}
 		
