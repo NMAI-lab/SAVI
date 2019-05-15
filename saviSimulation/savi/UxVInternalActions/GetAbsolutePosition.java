@@ -33,7 +33,7 @@ public class GetAbsolutePosition extends DefaultInternalAction {
 
 		// execute the internal action
 
-		ts.getAg().getLogger().info("executing internal action 'UxVInternalActions.absolutePosition'");
+		ts.getAg().getLogger().fine("executing internal action 'UxVInternalActions.absolutePosition'");
 
 		try {
 			// Get the parameters
