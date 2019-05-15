@@ -13,10 +13,22 @@ public class CommandStationSocketConnector implements MessageHandler {
 	public static final int SimPort = 9090;
 	public static final int commandStationPort = 9091;
 	
+	//singleton
+	private static CommandStationSocketConnector singleton;
+	
 	private SocketConnector socketConnector;
 	private FieldAntenna fieldAntenna;
 	
-	public CommandStationSocketConnector(FieldAntenna fa) {		
+	public static CommandStationSocketConnector getCommandStationSocketConnector(FieldAntenna fa) {
+		if (singleton ==null)
+			singleton = new CommandStationSocketConnector(fa);
+		else
+			singleton.fieldAntenna = fa;
+		
+		return singleton;
+	}
+	
+	private CommandStationSocketConnector(FieldAntenna fa) {		
 		this.fieldAntenna = fa;
 		this.socketConnector = new SocketConnector(this, SimPort, commandStationPort);
 		this.socketConnector.listenForMessages();		
