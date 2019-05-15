@@ -215,7 +215,7 @@ public class SAVIWorld_model {
 			e.printStackTrace();
 		}
 
-		logger.info("== SAVIWorld_Model update() == at:" + simTime);
+		logger.fine("== SAVIWorld_Model update() == at:" + simTime);
 		// 2. STATE UPDATE (SIMULATION)
 		for (WorldObject wo : objects) { // Update all world objects
 			wo.update(simTime, simTimeDelta, objects, wifiParticipants);
