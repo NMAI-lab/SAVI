@@ -15,7 +15,7 @@ import savi.agentBehaviour.SimpleJasonAgent;
 public abstract class UxVBehavior extends AgentModel {
 	protected static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
 	
-	protected static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
+	protected static Logger logger = Logger.getLogger(UxVBehavior.class.getName());
 	
 	//-----------------------------------------
 	// DATA (or state variables)

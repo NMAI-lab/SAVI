@@ -18,7 +18,7 @@ public class WorldObject{
 		protected String type;
 		protected SAVIWorld_model simulator;
 		
-		protected static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
+		protected static Logger logger = Logger.getLogger(WorldObject.class.getName());
 		
 		int pixels;
 			//-----------------------------------------

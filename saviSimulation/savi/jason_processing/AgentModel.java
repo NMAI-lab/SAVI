@@ -14,7 +14,7 @@ public abstract class AgentModel {
 
 	protected SyncAgentState agentState; //visible to subclasses
 	
-	private static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
+	private static Logger logger = Logger.getLogger(AgentModel.class.getName());
 	
 	public AgentModel() {
 		this(0);

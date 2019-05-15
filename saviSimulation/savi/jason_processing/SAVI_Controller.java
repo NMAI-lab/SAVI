@@ -12,7 +12,7 @@ import savi.commandStation.CommandStationCore;
 
 public class SAVI_Controller {
 		
-	private static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
+	private static Logger logger = Logger.getLogger(SAVI_Controller.class.getName());
 	
 	public static void main(String [] args) {
 		
