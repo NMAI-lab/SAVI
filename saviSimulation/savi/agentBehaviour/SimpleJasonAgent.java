@@ -82,7 +82,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	}
 	
 	public void run(){
-		System.out.println("I'm a Jason Agent and I'm starting");
+		logger.log(Level.FINE, "I'm a Jason Agent and I'm starting");
 		
 		try {
 			running= true;
@@ -124,9 +124,9 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 			this.firstPerception = false;	// No longer the first perception
 			freshData = true;				// There is fresh data
 			this.lastPerceptionId = currentPerceptId;	// Update the perception ID
-			logger.info("Agent "+ getAgName() + " has fresh perception at "+ this.lastPerceptionId );
+			logger.fine("Agent "+ getAgName() + " has fresh perception at "+ this.lastPerceptionId );
 		} else
-			logger.info("Agent "+ getAgName() + " has STALE perception at "+ this.lastPerceptionId );
+			logger.fine("Agent "+ getAgName() + " has STALE perception at "+ this.lastPerceptionId );
 
 		// Return the result
 		return freshData;
@@ -146,8 +146,8 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		// Update the history, get the list of literals to send to the agent
 		List<Literal> perceptionLiterals = new ArrayList<Literal>(this.perceptHistory.updatePerceptions(currentPerceptions));
 		
-		System.out.println("Agent " + getAgName() + " Perceiving perception "+ this.lastPerceptionId);
-		System.out.println(perceptionLiterals.toString());
+		logger.log(Level.FINE, "Agent " + getAgName() + " Perceiving perception "+ this.lastPerceptionId);
+		logger.log(Level.FINE, perceptionLiterals.toString());
 		
 		// Write the perceptions to the perception logfile
 		try {
@@ -191,8 +191,8 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 		Structure actionTerm = action.getActionTerm();
 		
 		// Log the action
-		getTS().getLogger().info("Agent " + getAgName() + " is doing: " + actionTerm);
-		System.out.println("MYAgent " + getAgName() + " is doing: " + actionTerm);
+		//getTS().getLogger().info("Agent " + getAgName() + " is doing: " + actionTerm);
+		logger.log(Level.FINE, "MYAgent " + getAgName() + " is doing: " + actionTerm);
 		
 		// Define the action string
 		String actionString = "";
@@ -250,7 +250,7 @@ public class SimpleJasonAgent extends AgArch implements Runnable {
 	
 	// a very simple implementation of sleep
 	public void sleep() {
-		System.out.println("Snoozing");
+		logger.log(Level.FINE, "Snoozing");
 		try {
 			Thread.sleep(100);					// TODO: Need to revisit this
 		} catch (InterruptedException e) {}
