@@ -91,7 +91,7 @@ public class Threat extends WorldObject{
 		int rx = rand.nextInt(simulator.X_PIXELS);
 		int ry = rand.nextInt(simulator.Y_PIXELS);
 		nextRandomDestination = new PVector(rx,ry,pixels/2);
-		System.out.println("Threat heading to position "+rx+" / "+ry );
+		logger.fine("Threat heading to position "+rx+" / "+ry );
 	}
 	
 	

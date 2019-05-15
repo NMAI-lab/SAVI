@@ -1,6 +1,7 @@
 package savi.jason_processing;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 import processing.core.*;
 
@@ -8,10 +9,13 @@ import processing.data.*;
 import processing.event.*;
 import processing.opengl.*;
 import savi.StateSynchronization.*;
+import savi.agentBehaviour.SimpleJasonAgent;
 
 
 public abstract class UxVBehavior extends AgentModel {
 	protected static final double SPEED = 0.1; // 0.1 pixels (whatever real-life distance this corresponds to)
+	
+	protected static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
 	
 	//-----------------------------------------
 	// DATA (or state variables)

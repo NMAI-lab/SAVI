@@ -30,7 +30,7 @@ public class SocketConnector {
 
 
 	public void messageOut(String msg) {
-		System.out.println("Message OUT: "+msg);
+		//System.out.println("Message OUT: "+msg);
 		//get data for message
 		byte [] data = msg.getBytes();
          

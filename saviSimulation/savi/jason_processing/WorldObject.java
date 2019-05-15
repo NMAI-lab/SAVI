@@ -2,19 +2,23 @@ package savi.jason_processing;
 
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import processing.core.PConstants;
 import processing.core.PShape;
 import processing.core.PVector;
+import savi.agentBehaviour.SimpleJasonAgent;
 
 public class WorldObject{
 		//-----------------------------------------
 		// DATA (or state variables)
 		//-----------------------------------------
-		int ID;
+		protected int ID;
 		protected PVector position;
-		String type;
-		SAVIWorld_model simulator;
+		protected String type;
+		protected SAVIWorld_model simulator;
+		
+		protected static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
 		
 		int pixels;
 			//-----------------------------------------

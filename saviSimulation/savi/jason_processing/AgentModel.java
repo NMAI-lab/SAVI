@@ -1,9 +1,9 @@
 package savi.jason_processing;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
-import jason.architecture.AgArch;
 import savi.StateSynchronization.SyncAgentState;
+import savi.agentBehaviour.SimpleJasonAgent;
 
 //import jason.asSyntax.Structure;
 
@@ -13,6 +13,8 @@ public abstract class AgentModel {
 	protected String type;
 
 	protected SyncAgentState agentState; //visible to subclasses
+	
+	private static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
 	
 	public AgentModel() {
 		this(0);
@@ -31,7 +33,7 @@ public abstract class AgentModel {
 	
 	protected void pauseAgent() {
 		if (theAgentThread != null) {
-			System.out.println("Agent "+ID+" paused-----");
+			logger.fine("Agent "+ID+" paused-----");
 			theAgentThread.suspend();
 		
 		}
@@ -42,7 +44,7 @@ public abstract class AgentModel {
 			
 			
 		}
-		System.out.println("Agent "+ID+" UNpaused ----");
+		logger.fine("Agent "+ID+" UNpaused ----");
 	}
 	
 	

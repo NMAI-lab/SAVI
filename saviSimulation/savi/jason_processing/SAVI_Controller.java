@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import processing.core.PApplet;
+import savi.agentBehaviour.SimpleJasonAgent;
 import savi.commandStation.CommandStationCore;
 
 public class SAVI_Controller {
 		
+	private static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
 	
 	public static void main(String [] args) {
 		
@@ -21,14 +24,14 @@ public class SAVI_Controller {
 		try {
 			String filePath = new File("").getAbsolutePath();
 			filePath = filePath + "/config.cfg";
-			System.out.println(filePath);
+			logger.fine(filePath);
 			File inFile = new File(filePath);
 			in = new FileInputStream(inFile);
 			modelProps.load(in);
 		} catch (FileNotFoundException e) {
-			System.out.println("File not found");
+			logger.fine("File not found");
 		} catch (Exception e) {
-			System.out.println("Exception occurred");
+			logger.fine("Exception occurred");
 		}
 		
 		
