@@ -6,6 +6,7 @@ import processing.event.*;
 import processing.opengl.*;
 //import savi.jason_processing.SAVIWorld_model.Button;
 import savi.StateSynchronization.*;
+import savi.agentBehaviour.SimpleJasonAgent;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -92,7 +93,7 @@ public class SAVIWorld_model {
 		try {
 			String filePath = new File("").getAbsolutePath();
 			filePath = filePath + "/objects.cfg";
-			System.out.println(filePath);
+			logger.fine(filePath);
 			/// read file as stream:
 			Files.lines(Paths.get(filePath)).forEach(strLine -> {
 				// do this for each line in file:
@@ -109,9 +110,9 @@ public class SAVIWorld_model {
 			
 			
 		} catch (FileNotFoundException e) {
-			System.out.println("File not found");
+			logger.severe("File not found");
 		} catch (Exception e) {
-			System.out.println("Exception occurred");
+			logger.severe("Exception occurred");
 		}
 		
 		
@@ -157,7 +158,7 @@ public class SAVIWorld_model {
 		
 		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(rand.nextInt(X_PIXELS) + 1, rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, WIFI_ERROR_PROB);
 		objects.add(consoleProxy);
-		System.out.println("console proxy coordinates:"+consoleProxy.position.x+" / "+consoleProxy.position.y);
+		logger.fine("console proxy coordinates:"+consoleProxy.position.x+" / "+consoleProxy.position.y);
 		wifiParticipants.add(consoleProxy.getAntennaRef());
 
 		// smoother rendering (optional)
@@ -251,14 +252,14 @@ public class SAVIWorld_model {
 	public void pauseSimulation() {
 		if (!simPaused) { // the sim is NOT paused and we want to pause it
 
-			System.out.println("pausing simulation!-------===================================================");
+			logger.fine("pausing simulation!-------===================================================");
 			for (WorldObject wo : objects) { // unpause all agents
 				if (wo instanceof UxV) {
 					//((UxV) wo).getBehavior().pauseAgent();
 				}
 			}
 		} else { // the sim was paused, unpause it
-			System.out.println("resuming simulation!-------");
+			logger.fine("resuming simulation!-------");
 			for (WorldObject wo : objects) { // pause all agents
 				if (wo instanceof UxV) {
 					((UxV) wo).getBehavior().unPauseAgent();
