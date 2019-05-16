@@ -38,7 +38,7 @@ public class GetRelativePosition extends DefaultInternalAction {
 	public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
 
 		// execute the internal action
-		ts.getAg().getLogger().info("executing internal action 'UxVInternalActions.absolutePosition'");
+		ts.getAg().getLogger().fine("executing internal action 'UxVInternalActions.absolutePosition'");
 
 		try {
 			// Get the parameters
