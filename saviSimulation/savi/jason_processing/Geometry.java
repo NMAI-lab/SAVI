@@ -91,12 +91,27 @@ public class Geometry {
 
 	public static double normalizeMinusPIPI(double angle) {
 		while (angle < -Math.PI)                                                                                    
-			angle += (Math.PI);
+			angle += 2* (Math.PI);
 		
 		while (angle > Math.PI)
-			angle -= (Math.PI);
+			angle -= 2* (Math.PI);
 	
 		return angle;
+	}
+
+
+	//normalize polar angles elevation / azimuth to account for case where object is "behind" agent
+	public static double[] normalizePolar(double azimuth, double elevation) {
+		double azimuth2 = normalize02PI(azimuth);
+		double elevation2 = normalizeMinusPIPI(elevation);
+		if (elevation2 > 0.5 * Math.PI) {
+			elevation2 = Math.PI - elevation2;
+			azimuth2 = normalize02PI(azimuth2 +Math.PI);
+		} else if (elevation2 < -0.5 * Math.PI){
+			elevation2 = -Math.PI - elevation2;
+			azimuth2 = normalize02PI(azimuth2 +Math.PI);
+		}
+		return new double [] {azimuth2, elevation2};
 	}
 	
 }
