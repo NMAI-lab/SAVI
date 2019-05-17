@@ -1,4 +1,8 @@
 bin/
+output/
+build/
+.idea/
+.gradle/
 *.java~
 *.class
 *.asl~
