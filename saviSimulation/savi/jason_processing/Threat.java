@@ -12,7 +12,6 @@ public class Threat extends WorldObject{
 	// DATA (or state variables)
 	//-----------------------------------------
 	double maxSpeed;
-	Random rand;
 	double movingAngle = 0;
 	PVector nextRandomDestination;
 	//-----------------------------------------
@@ -23,15 +22,11 @@ public class Threat extends WorldObject{
 	//              that doesn't have a type (not even void).
 	
 
-	Threat(int id, PVector initialPosition, int seed, double MS, int pxSize, String type, SAVIWorld_model world) {
+	Threat(int id, PVector initialPosition, double MS, int pxSize, String type, SAVIWorld_model world) {
 		// Initialize data values
 		super(id, initialPosition, pxSize, type, world);
-		rand = new Random();
-		if(seed != -1) {
-			rand = new Random(seed + this.ID);
-		}		
 		maxSpeed = MS;// the max speed 
-		this.movingAngle = (double) (rand.nextInt(10)*(Math.PI/4));
+		this.movingAngle = (double) (SAVIWorld_model.rand.nextInt(10)*(Math.PI/4));
 		
 		setRandomDestination();
 		
@@ -40,12 +35,12 @@ public class Threat extends WorldObject{
 	// State Update: Randomly move up, down, left, right, or stay in one place
 	@Override
 	public void update(double simTime, double timestep, List<WorldObject> objects, List<WifiAntenna> wifiParticipants){
-		double speedValue = this.maxSpeed *(1 - 0.6*rand.nextDouble()); // speed between 0.4 * maxSpeed and MaxSpeed
+		double speedValue = this.maxSpeed *(1 - 0.6 * SAVIWorld_model.rand.nextDouble()); // speed between 0.4 * maxSpeed and MaxSpeed
 		
 		PVector temp = nextRandomDestination.copy().sub(position).setMag((float) (speedValue * timestep));// new PVector(Math.round(cosv*speedValue * timestep ), Math.round(sinv*speedValue * timestep));
 		// add a bit of noise to the movement
-		float noisex = (float) (speedValue * timestep *0.4*(rand.nextFloat()-1));
-		float noisey = (float) (speedValue * timestep *0.4*(rand.nextFloat()-1));
+		float noisex = (float) (speedValue * timestep *0.4*(SAVIWorld_model.rand.nextFloat()-1));
+		float noisey = (float) (speedValue * timestep *0.4*(SAVIWorld_model.rand.nextFloat()-1));
 		temp.add(noisex, noisey, 0);// adding 0 in z coordinate as it does not change the altitude
 
 		//if there is no collision with an object update position
@@ -88,8 +83,8 @@ public class Threat extends WorldObject{
 
 	
 	private void setRandomDestination() {
-		int rx = rand.nextInt(simulator.X_PIXELS);
-		int ry = rand.nextInt(simulator.Y_PIXELS);
+		int rx = SAVIWorld_model.rand.nextInt(simulator.X_PIXELS);
+		int ry = SAVIWorld_model.rand.nextInt(simulator.Y_PIXELS);
 		nextRandomDestination = new PVector(rx,ry,pixels/2);
 		logger.fine("Threat heading to position "+rx+" / "+ry );
 	}

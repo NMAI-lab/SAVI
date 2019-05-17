@@ -22,7 +22,6 @@ public abstract class UxV extends WorldObject implements Communicator {
 	protected float perceptionDistance;
 
 	public float perceptionAngle;
-	private static Random rand = new Random();
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
 	//IF WE WANT TO IMPLEMENTE MALFUNCTION OF SENSORS, THE INFO RECEIVED IN 
@@ -61,8 +60,7 @@ public abstract class UxV extends WorldObject implements Communicator {
 	
 	public void setPosition(PVector pos) {		
 		this.position = pos;
-	}
-	
+	}	
 	
 	@Override
 	public  List<String> getOutgoingMessages(){

@@ -33,11 +33,7 @@ public class Geometry {
 		double azimuth = theta1 - refAngle;
 
 		// to normalize between 0 to 2 Pi                                                                
-		while (azimuth < 0)                                                                                    
-			azimuth += (2 * Math.PI);
-		
-		while (azimuth > (2 * Math.PI))
-			azimuth -= (2 * Math.PI);
+		azimuth = Geometry.normalize02PI(azimuth);
 		
 		// Calculate the elevation and deal with NaN case
 		PVector difference = targetPosition.copy().sub(refPosition);
@@ -82,4 +78,40 @@ public class Geometry {
 		PVector absolutePosition = new PVector(x,y,z);
 		return absolutePosition;
 	}
+
+	public static double normalize02PI(double angle) {
+		while (angle < 0)                                                                                    
+			angle += (2 * Math.PI);
+		
+		while (angle > (2 * Math.PI))
+			angle -= (2 * Math.PI);
+	
+		return angle;
+	}
+
+	public static double normalizeMinusPIPI(double angle) {
+		while (angle < -Math.PI)                                                                                    
+			angle += 2* (Math.PI);
+		
+		while (angle > Math.PI)
+			angle -= 2* (Math.PI);
+	
+		return angle;
+	}
+
+
+	//normalize polar angles elevation / azimuth to account for case where object is "behind" agent
+	public static double[] normalizePolar(double azimuth, double elevation) {
+		double azimuth2 = normalize02PI(azimuth);
+		double elevation2 = normalizeMinusPIPI(elevation);
+		if (elevation2 > 0.5 * Math.PI) {
+			elevation2 = Math.PI - elevation2;
+			azimuth2 = normalize02PI(azimuth2 +Math.PI);
+		} else if (elevation2 < -0.5 * Math.PI){
+			elevation2 = -Math.PI - elevation2;
+			azimuth2 = normalize02PI(azimuth2 +Math.PI);
+		}
+		return new double [] {azimuth2, elevation2};
+	}
+	
 }

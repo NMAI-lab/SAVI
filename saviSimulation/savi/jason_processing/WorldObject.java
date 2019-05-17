@@ -54,6 +54,4 @@ public class WorldObject{
 			
 			return position;
 		}
-
-
 }

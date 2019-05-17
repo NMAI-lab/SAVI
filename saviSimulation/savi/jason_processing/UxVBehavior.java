@@ -30,7 +30,6 @@ public abstract class UxVBehavior extends AgentModel {
 	protected double time;	
 	protected double sensorsErrorProb;
 	protected double sensorsErrorStdDev;
-	protected static Random rand = new Random();
 	//***********************************************************//
 	//I THINK IS BETTER TO HAVE THE ROBOTS ITS DATA AND THE SYNCAGENTSTATE ITS OWN.
 	//IF WE WANT TO IMPLEMENTE MALFUNCTION OF SENSORS, THE INFO RECEIVED IN 
@@ -184,13 +183,16 @@ public abstract class UxVBehavior extends AgentModel {
 	 */
 	protected void updatePercepts(PVector mypos) {
 		PerceptionSnapshot P = new PerceptionSnapshot();
-
+		double azimuth, elevation, range;
 		//if position sensor is failing will return an error
 		PVector myposWithError = getPositionWithError(mypos,sensorsErrorProb);
 		double compassAngleWithError = this.compasAngle;
 
 		if(isSensorFailing(sensorsErrorProb))
 			compassAngleWithError = calculateFailureValue(compasAngle, sensorsErrorStdDev);
+		
+		// to normalize between 0 to 2 Pi                                                                
+		compasAngle = Geometry.normalize02PI(compasAngle);
 		
 		P.addPerception(new PositionPerception(this.time, (double)myposWithError.x, (double)myposWithError.y, (double)myposWithError.z));
 
@@ -201,15 +203,26 @@ public abstract class UxVBehavior extends AgentModel {
 		P.addPerception(new TimePerception(this.time));
 		
 		//Add Visible items
-		for(CameraPerception cpi : this.visibleItems) {
-			for(int i=0; i<cpi.getParameters().size(); i++) {
-				if(isSensorFailing(sensorsErrorProb)) {
-					cpi.getParameters().set(i, calculateFailureValue(cpi.getParameters().get(i), this.sensorsErrorStdDev));
+				for(CameraPerception cpi : this.visibleItems) {
+						if(isSensorFailing(sensorsErrorProb)) {
+							azimuth = calculateFailureValue(cpi.getParameters().get(0), this.sensorsErrorStdDev);
+							elevation = calculateFailureValue(cpi.getParameters().get(1), this.sensorsErrorStdDev);
+							range = calculateFailureValue(cpi.getParameters().get(2), this.sensorsErrorStdDev);
+							
+							
+							//azimuth=Geometry.normalize02PI(azimuth);
+							//elevation=Geometry.normalizeMinusPIPI(elevation);
+							double az_el [] = Geometry.normalizePolar(azimuth, elevation);
+							azimuth = az_el[0];
+							elevation = az_el[1];
+
+							cpi.getParameters().set(0, azimuth);
+							cpi.getParameters().set(1, elevation);
+							cpi.getParameters().set(2, range);
+						}	
+					P.addPerception(cpi);
 				}
-			}	
-			P.addPerception(cpi);
-		}
-		
+				
 		agentState.setPerceptions(P);
 	}
 	
@@ -231,21 +244,17 @@ public abstract class UxVBehavior extends AgentModel {
 	
 	// takes probability parameter between 0 and 1 
 	protected boolean isSensorFailing (double probability) {
-		return (rand.nextDouble()<probability);
+		return (SAVIWorld_model.rand.nextDouble()<probability);
 	}
 
 	
-	// generate random value for a normal distribution (mean, stdDev)
+	// Generate random value for a normal distribution (mean, stdDev)
+	// nextGaussian returns a value for the normal distribution (0,1)
+	// multiply for the stdDev to get error and this error value is added to the mean
 	protected double calculateFailureValue (double mean, double stdDev) {
-		return ((rand.nextGaussian()*stdDev)+mean);
+		return ((SAVIWorld_model.rand.nextGaussian()*stdDev)+mean);
 	}
-
 	
-	public static void setSeed(int seed) {
-		if(seed != -1) {
-			rand = new Random(seed);
-		}
-	}
 	
 	/**
 	 * Get UAS id

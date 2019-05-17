@@ -12,7 +12,6 @@ public class WifiAntenna {
 	int ID;
 	double wifiProbFailing = 1;
 	Communicator communicator; //the source and destination of messages exchanged over the wifi
-	private static Random rand = new Random();
 	private static double wifiPerceptionDistance;
 	
 	public WifiAntenna(int id, Communicator communicator, double failureProb) {
@@ -78,17 +77,11 @@ public class WifiAntenna {
 
 	// takes probability parameter between 0 and 1 
 	protected boolean isWifiFailing(double probability) { 
-		return (rand.nextDouble()>probability); //prob is prob of error
+		return (SAVIWorld_model.rand.nextDouble()>probability); //prob is prob of error
 	}
 	
 	public static void setPerceptionDistance(double value) {
 		wifiPerceptionDistance=value;
-	}
-	
-	public static void setSeed(int seed) {
-		if(seed != -1) {
-			rand = new Random(seed);
-		}
 	}
 	
 }
