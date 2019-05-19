@@ -1,9 +1,12 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'nmai-lab'
 version '1.0-SNAPSHOT'
+
+def mainClass = 'savi.simulation.SAVI_Controller'
 
 sourceCompatibility = 1.8
 
@@ -22,10 +25,14 @@ dependencies {
 }
 
 
-task fatJar(type: Jar) {
+task buildJar(type: Jar) {
     manifest {
-        attributes 'Main-Class': 'savi.simulation.SAVI_Controller'
+        attributes 'Main-Class': mainClass
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
+}
+
+application {
+    mainClassName = mainClass
 }
