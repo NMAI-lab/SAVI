@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'nmai-lab'
+version '1.0-SNAPSHOT'
+
+def mainClass = 'savi.simulation.SAVI_Controller'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url "http://jacamo.sourceforge.net/maven2" }
+}
+
+dependencies {
+    compile group: 'org.jason-lang', name: 'jason', version: '2.4-SNAPSHOT'
+    compile group: 'org.processing', name: 'core', version: '3.3.7'
+    compile group: 'fr.irit.smac.thirdparty.edu.gmu.cs', name: 'mason', version: '18'
+
+
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.5.0-M1'
+}
+
+
+task buildJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': mainClass
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+application {
+    mainClassName = mainClass
+}

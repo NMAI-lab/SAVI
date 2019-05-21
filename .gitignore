@@ -1,4 +1,11 @@
 bin/
+output/
+build/
+gradle/
+.idea/
+.gradle/
+.settings/
+out/
 *.java~
 *.class
 *.asl~
@@ -9,3 +16,5 @@ bin/
 *.1
 *.0
 *.lck
+
+
