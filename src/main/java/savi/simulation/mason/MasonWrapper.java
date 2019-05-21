@@ -1,4 +1,4 @@
-package savi.mason;
+package savi.simulation.mason;
 
 import savi.simulation.SAVIWorld_model;
 import sim.engine.SimState;

@@ -1,9 +1,10 @@
-package savi.simulation;
+package savi.agentBehaviour;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import savi.agentBehaviour.SimpleJasonAgent;
+import savi.simulation.model.AgentModel;
 
 public class JasonMAS {
 

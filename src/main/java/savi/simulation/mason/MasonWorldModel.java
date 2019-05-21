@@ -1,13 +1,11 @@
-package savi.mason;
+package savi.simulation.mason;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Properties;
 
 import savi.simulation.SAVIWorld_model;
-import savi.simulation.SAVI_Processing;
+import savi.simulation.processing.SAVI_Processing;
 import savi.util.ResourceManager;
 import sim.engine.SimState;
 
@@ -80,7 +78,7 @@ public class MasonWorldModel extends SimState {
 		
 		int FRAME_RATE = Integer.parseInt(modelProps.getProperty("FRAME_RATE"));
 		
-		String[] appletArgs = new String[] { "savi.simulation.SAVI_Processing" };
+		String[] appletArgs = new String[] { "savi.simulation.processing.SAVI_Processing" };
 		//PApplet processingView = new SAVI_Processing(world, FRAME_RATE);
 		//processingView.noLoop();
 		//PApplet.runSketch(appletArgs, processingView);

@@ -18,7 +18,7 @@ import jason.asSyntax.*;
 
 import processing.core.PVector;
 
-import savi.simulation.*;
+import savi.util.Geometry;
 
 public class GetRelativePosition extends DefaultInternalAction {
 

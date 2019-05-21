@@ -1,14 +1,14 @@
 package savi.simulation;
 
 import processing.core.*;
-//import savi.simulation.SAVIWorld_model.Button;
 
 import java.util.*;
 import java.util.logging.Logger;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
+import savi.agentBehaviour.JasonMAS;
+import savi.simulation.behaviour.WifiAntenna;
+import savi.simulation.model.*;
 import savi.util.ResourceManager;
 
 public class SAVIWorld_model {
@@ -111,7 +111,7 @@ public class SAVIWorld_model {
 		for(int i = 0; i < NUMBER_UAV; i++)  { //Put UaV
 			//_PIXELS is the maximum and the 1 is our minimum
 			//TODO: right now agents are initialized with strings "0", "1", "2", ... as identifiers and a fixed type "demo" which matches their asl file name. This should be configurable...
-			UaV uav = new UaV(i, new PVector(SAVIWorld_model.rand.nextInt(X_PIXELS) + 1, SAVIWorld_model.rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE, 
+			UaV uav = new UaV(i, new PVector(SAVIWorld_model.rand.nextInt(X_PIXELS) + 1, SAVIWorld_model.rand.nextInt(Y_PIXELS) + 1, UAV_SIZE/2), UAV_SIZE,
 					this, REASONING_CYCLE_PERIOD, UAV_PERCEPTION_DISTANCE, SENSORS_ERROR_PROB, SENSORS_ERROR_STD_DEV, WIFI_ERROR_PROB);
 			wifiParticipants.add(uav.getAntennaRef());
 			objects.add(uav);
@@ -138,7 +138,7 @@ public class SAVIWorld_model {
 		WifiAntenna.setPerceptionDistance(WIFI_PERCEPTION_DISTANCE);
 		consoleProxy = new FieldAntenna(NUMBER_UAV+NUMBER_UGV+1, new PVector(SAVIWorld_model.rand.nextInt(X_PIXELS) + 1, SAVIWorld_model.rand.nextInt(Y_PIXELS) + 1, ANTENNA_SIZE/2), this, ANTENNA_SIZE, WIFI_ERROR_PROB);
 		objects.add(consoleProxy);
-		logger.fine("console proxy coordinates:"+consoleProxy.position.x+" / "+consoleProxy.position.y);
+		logger.fine("console proxy coordinates:"+consoleProxy.getPosition().x+" / "+consoleProxy.getPosition().y);
 		wifiParticipants.add(consoleProxy.getAntennaRef());
 
 		// smoother rendering (optional)

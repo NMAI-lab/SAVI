@@ -1,7 +1,7 @@
 package savi.commandStation;
 
 
-import savi.simulation.FieldAntenna;
+import savi.simulation.model.FieldAntenna;
 
 /**
  * Wraps a connection to the command station using a SocketConnector.

@@ -2,7 +2,7 @@ package savi;
 
 import org.junit.jupiter.api.Test;
 import processing.core.PVector;
-import savi.simulation.Geometry;
+import savi.util.Geometry;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package savi.simulation;
+package savi.simulation.behaviour;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -6,6 +6,11 @@ import java.util.logging.Logger;
 import processing.core.*;
 
 import savi.StateSynchronization.*;
+import savi.simulation.SAVIWorld_model;
+import savi.simulation.model.AgentModel;
+import savi.simulation.model.UxV;
+import savi.simulation.model.WorldObject;
+import savi.util.Geometry;
 
 
 public abstract class UxVBehavior extends AgentModel {
@@ -97,7 +102,7 @@ public abstract class UxVBehavior extends AgentModel {
 		}
 			
 		//Update percepts	
-		updatePercepts(uxv.position);
+		updatePercepts(uxv.getPosition());
 		//this.notifyAgent(); //this interrupts the Jason if it was sleeping while waiting for a new percept.
 	}
 	
@@ -127,8 +132,8 @@ public abstract class UxVBehavior extends AgentModel {
             	double dist = polar.get(Geometry.DISTANCE);
             	if (isObjectDetected (azimuth, elevation, dist, perceptionDistance) ) {
 					//it's visible 
-					detectedObjects.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
-					uncoveredObjects.add(new CameraPerception(wo.type, this.time, azimuth, elevation, dist, wo.pixels/2));
+					detectedObjects.add(new CameraPerception(wo.getType(), this.time, azimuth, elevation, dist, wo.getPixels()/2));
+					uncoveredObjects.add(new CameraPerception(wo.getType(), this.time, azimuth, elevation, dist, wo.getPixels()/2));
             	}
 			}	   	
 		}

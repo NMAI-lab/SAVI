@@ -1,7 +1,5 @@
 package savi.simulation;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -9,6 +7,7 @@ import java.util.logging.Logger;
 
 import processing.core.PApplet;
 import savi.commandStation.CommandStationCore;
+import savi.simulation.processing.SAVI_Processing;
 import savi.util.ResourceManager;
 
 public class SAVI_Controller {
@@ -63,7 +62,7 @@ public class SAVI_Controller {
 		SAVIWorld_model world = new SAVIWorld_model();
 		
 		int FRAME_RATE = Integer.parseInt(modelProps.getProperty("FRAME_RATE"));
-		String[] appletArgs = new String[] { "savi.simulation.SAVI_Processing" };
+		String[] appletArgs = new String[] { "savi.simulation.processing.SAVI_Processing" };
 		PApplet processingView = new SAVI_Processing(world, FRAME_RATE);
 		//processingView.noLoop();
 		PApplet.runSketch(appletArgs, processingView);

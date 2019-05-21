@@ -1,9 +1,11 @@
-package savi.simulation;
+package savi.simulation.behaviour;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import processing.core.PVector;
+import savi.simulation.Communicator;
+import savi.simulation.SAVIWorld_model;
 
 public class WifiAntenna {
 	

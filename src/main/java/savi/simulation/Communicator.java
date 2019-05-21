@@ -3,6 +3,7 @@ package savi.simulation;
 import java.util.List;
 
 import processing.core.PVector;
+import savi.simulation.behaviour.WifiAntenna;
 
 public interface Communicator {
 	

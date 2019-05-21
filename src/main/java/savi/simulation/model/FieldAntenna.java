@@ -1,10 +1,13 @@
-package savi.simulation;
+package savi.simulation.model;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import processing.core.PVector;
 import savi.commandStation.*;
+import savi.simulation.Communicator;
+import savi.simulation.SAVIWorld_model;
+import savi.simulation.behaviour.WifiAntenna;
 
 public class FieldAntenna extends WorldObject implements Communicator, CommandStationConnector{
 	

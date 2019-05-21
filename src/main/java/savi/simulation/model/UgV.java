@@ -1,6 +1,8 @@
-package savi.simulation;
+package savi.simulation.model;
 
 import processing.core.*;
+import savi.simulation.SAVIWorld_model;
+import savi.simulation.behaviour.UgVBehavior;
 
 
 public class UgV extends UxV {
@@ -25,7 +27,7 @@ public class UgV extends UxV {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UgV(int id, PVector pos, int pixels, SAVIWorld_model sim, double reasoningCyclePeriod, int perceptionDistance, double sensorsErrorProb, double sensorsErrorStdDev, double probWifiFailing) {			
+	public UgV(int id, PVector pos, int pixels, SAVIWorld_model sim, double reasoningCyclePeriod, int perceptionDistance, double sensorsErrorProb, double sensorsErrorStdDev, double probWifiFailing) {
 		// Initializes UAS as WorldObject
 		super(id, pos, pixels, UGVType, sim, reasoningCyclePeriod, perceptionDistance, UGVperceptionAngle, sensorsErrorProb, sensorsErrorStdDev, probWifiFailing);
 		// Initializes Behavior

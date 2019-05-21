@@ -1,10 +1,7 @@
-package savi.simulation;
+package savi.simulation.model;
 
 import java.util.logging.Logger;
-
 import savi.StateSynchronization.SyncAgentState;
-
-//import jason.asSyntax.Structure;
 
 public abstract class AgentModel {
 
@@ -30,14 +27,14 @@ public abstract class AgentModel {
 	}
 	
 	
-	protected void pauseAgent() {
+	public void pauseAgent() {
 		if (theAgentThread != null) {
 			logger.fine("Agent "+ID+" paused-----");
 			theAgentThread.suspend();
 		
 		}
 	}
-	protected void unPauseAgent() {
+	public void unPauseAgent() {
 		if (theAgentThread != null) {
 				theAgentThread.resume();
 			

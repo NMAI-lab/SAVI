@@ -1,8 +1,12 @@
-package savi.simulation;
+package savi.simulation.model;
 
 import java.util.*;
 
 import processing.core.*;
+import savi.simulation.Communicator;
+import savi.simulation.SAVIWorld_model;
+import savi.simulation.behaviour.UxVBehavior;
+import savi.simulation.behaviour.WifiAntenna;
 
 
 public abstract class UxV extends WorldObject implements Communicator {
@@ -32,7 +36,7 @@ public abstract class UxV extends WorldObject implements Communicator {
 	 * @param type
 	 * @param initialPosition
 	 */
-	public UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, double reasoningCyclePeriod, int perceptionDistance, double perceptionAngle, double sensorsErrorProb, double sensorsErrorStdDev, double probWifiFailure) {			
+	public UxV(int id, PVector pos, int pixels, String Type, SAVIWorld_model sim, double reasoningCyclePeriod, int perceptionDistance, double perceptionAngle, double sensorsErrorProb, double sensorsErrorStdDev, double probWifiFailure) {
 		// Initializes UAS as WorldObject
 		super(id, pos, pixels, Type, sim);
 		//this.imageName=imageName;
@@ -75,6 +79,10 @@ public abstract class UxV extends WorldObject implements Communicator {
 	@Override
 	public WifiAntenna getAntennaRef() {		
 		return this.wifiAntenna;
+	}
+
+	public float getPerceptionDistance() {
+		return this.perceptionDistance;
 	}
 	
 }

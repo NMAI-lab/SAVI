@@ -1,4 +1,4 @@
-package savi.simulation;
+package savi.simulation.processing;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,6 +11,11 @@ import processing.core.PImage;
 import processing.core.PShape;
 import processing.core.PVector;
 import savi.StateSynchronization.CameraPerception;
+import savi.simulation.SAVIWorld_model;
+import savi.simulation.SimView;
+import savi.simulation.model.UxV;
+import savi.simulation.model.WorldObject;
+import savi.util.Geometry;
 
 public class SAVI_Processing extends PApplet implements SimView {
 	
@@ -133,13 +138,13 @@ public class SAVI_Processing extends PApplet implements SimView {
 			image.rotate((float) ((float)uxv.getBehavior().getCompassAngle()+Math.PI/2));
 
 				//draw image
-			shape(image, wo.position.x+wo.pixels/2, wo.position.y+wo.pixels/2, wo.pixels, wo.pixels);
+			shape(image, wo.getPosition().x+wo.getPixels()/2, wo.getPosition().y+wo.getPixels()/2, wo.getPixels(), wo.getPixels());
 			
 			//undo rotation and translation
 			image.rotate((-1)* (float) ((float)uxv.getBehavior().getCompassAngle()+Math.PI/2));
 			image.translate(image.width/2,image.height/2);		
 			
-			text(Double.toString(wo.position.z+(wo.pixels/2))+"\n"+Double.toString(wo.position.z-(wo.pixels/2)), wo.position.x, wo.position.y);
+			text(Double.toString(wo.getPosition().z+(wo.getPixels()/2))+"\n"+Double.toString(wo.getPosition().z-(wo.getPixels()/2)), wo.getPosition().x, wo.getPosition().y);
 			noFill();
 
 				//draw perception area
@@ -152,7 +157,7 @@ public class SAVI_Processing extends PApplet implements SimView {
 					elevation = cpi.getParameters().get(1);
 					range = cpi.getParameters().get(2);
 					diam = cpi.getParameters().get(3);
-					p1 = Geometry.absolutePositionFromPolar(azimuth, elevation, range, uxv.position, uxv.getBehavior().getCompassAngle());
+					p1 = Geometry.absolutePositionFromPolar(azimuth, elevation, range, uxv.getPosition(), uxv.getBehavior().getCompassAngle());
 					//double horiz_angle = (uxv.getBehavior().getCompassAngle()+cpi.getParameters().get(0));// % 2* Math.PI;
 					//double cosv = Math.cos(horiz_angle);
 					//double sinv = Math.sin(horiz_angle);
@@ -167,10 +172,10 @@ public class SAVI_Processing extends PApplet implements SimView {
 		shapeMode(PConstants.CENTER);
 		//simulator.shape(this.image, this.position.x, this.position.y,pixels,pixels);
 		//show height lower and upper
-		text(Double.toString(wo.position.z+(wo.pixels/2))+"\n"+Double.toString(wo.position.z-(wo.pixels/2)), wo.position.x, wo.position.y);
+		text(Double.toString(wo.getPosition().z+(wo.getPixels()/2))+"\n"+Double.toString(wo.getPosition().z-(wo.getPixels()/2)), wo.getPosition().x, wo.getPosition().y);
 		
 		if(visibleThings.contains(wo.getType())) {
-			shape(modelImages.get(wo.getType()), wo.position.x, wo.position.y,wo.pixels,wo.pixels);
+			shape(modelImages.get(wo.getType()), wo.getPosition().x, wo.getPosition().y,wo.getPixels(),wo.getPixels());
 
 		}
 		}
@@ -178,13 +183,13 @@ public class SAVI_Processing extends PApplet implements SimView {
 
 	public void drawPerceptionArea(UxV uxv) {
 		// calculate the projection of the perception distance on the ground (important for UAV)
-		float groundPerceptionDistance = (float) Math.sqrt(uxv.perceptionDistance*uxv.perceptionDistance - uxv.position.z*uxv.position.z);
-		arc(uxv.position.x, uxv.position.y, groundPerceptionDistance*2, groundPerceptionDistance*2, (float)(uxv.getBehavior().getCompassAngle()) - uxv.perceptionAngle/2, (float)(uxv.getBehavior().getCompassAngle()) + uxv.perceptionAngle/2);
+		float groundPerceptionDistance = (float) Math.sqrt(uxv.getPerceptionDistance()*uxv.getPerceptionDistance() - uxv.getPosition().z*uxv.getPosition().z);
+		arc(uxv.getPosition().x, uxv.getPosition().y, groundPerceptionDistance*2, groundPerceptionDistance*2, (float)(uxv.getBehavior().getCompassAngle()) - uxv.perceptionAngle/2, (float)(uxv.getBehavior().getCompassAngle()) + uxv.perceptionAngle/2);
 	}
 
 	
 	/*public static void main(String[] passedArgs) {
-		String[] appletArgs = new String[] { "savi.simulation.SAVI_Processing" };
+		String[] appletArgs = new String[] { "savi.simulation.processing.SAVI_Processing" };
 		if (passedArgs != null) {
 			PApplet.main(concat(appletArgs, passedArgs));
 		} else {

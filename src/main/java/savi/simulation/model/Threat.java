@@ -1,16 +1,18 @@
-package savi.simulation;
+package savi.simulation.model;
 
 import java.util.List;
 
 import processing.core.PVector;
+import savi.simulation.SAVIWorld_model;
+import savi.simulation.behaviour.WifiAntenna;
 
 public class Threat extends WorldObject{
 	//-----------------------------------------
 	// DATA (or state variables)
 	//-----------------------------------------
-	double maxSpeed;
-	double movingAngle = 0;
-	PVector nextRandomDestination;
+	private double maxSpeed;
+	private double movingAngle = 0;
+	private PVector nextRandomDestination;
 	//-----------------------------------------
 	// METHODS (functions that act on the data)
 	//-----------------------------------------
@@ -19,7 +21,7 @@ public class Threat extends WorldObject{
 	//              that doesn't have a type (not even void).
 	
 
-	Threat(int id, PVector initialPosition, double MS, int pxSize, String type, SAVIWorld_model world) {
+	public Threat(int id, PVector initialPosition, double MS, int pxSize, String type, SAVIWorld_model world) {
 		// Initialize data values
 		super(id, initialPosition, pxSize, type, world);
 		maxSpeed = MS;// the max speed 
@@ -73,7 +75,7 @@ public class Threat extends WorldObject{
 	
 	
 	// State reset
-	void reset(int X_PIXELS, int Y_PIXELS){
+	private void reset(int X_PIXELS, int Y_PIXELS){
 		// Initialize data values
 		position = new PVector(X_PIXELS/2,Y_PIXELS/2,pixels/2); //Assume that the initial position is at the center of the display window
 	}
