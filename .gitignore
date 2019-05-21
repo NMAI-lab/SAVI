@@ -4,6 +4,8 @@ build/
 gradle/
 .idea/
 .gradle/
+.settings/
+out/
 *.java~
 *.class
 *.asl~
@@ -14,3 +16,5 @@ gradle/
 *.1
 *.0
 *.lck
+
+
