@@ -48,9 +48,6 @@ public class MasonWorldModel extends SimState {
 		}
 
 
-
-		SAVIWorld_model.NUMBER_TREES = Integer.parseInt(modelProps.getProperty("NUMBER_TREES"));
-		SAVIWorld_model.NUMBER_HOUSES = Integer.parseInt(modelProps.getProperty("NUMBER_HOUSES"));
 		SAVIWorld_model.NUMBER_THREATS = Integer.parseInt(modelProps.getProperty("NUMBER_THREATS"));
 		SAVIWorld_model.X_PIXELS = Integer.parseInt(modelProps.getProperty("X_PIXELS"));
 		SAVIWorld_model.Y_PIXELS = Integer.parseInt(modelProps.getProperty("Y_PIXELS"));	

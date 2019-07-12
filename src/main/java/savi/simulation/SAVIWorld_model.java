@@ -14,8 +14,6 @@ import savi.util.ResourceManager;
 public class SAVIWorld_model {
 
 	/********** CONSTANTS TO BE LOADED FROM CONFIG FILE **********/
-	public static int NUMBER_TREES;
-	public static int NUMBER_HOUSES;
 	public static int NUMBER_THREATS;
 	
 	public static double MAX_SPEED;
